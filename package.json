@@ -1,0 +1,11 @@
+{
+  "name": "cornel-trend-wave",
+  "version": "1.0.0",
+  "description": "Cornel Trend Wave — electronics & fashion online shop",
+  "scripts": {
+    "build": "echo 'no build needed'",
+    "start": "node server.js"
+  },
+  "keywords": ["shop", "electronics", "fashion", "kenya"],
+  "author": "Cornel Trend Wave"
+}
