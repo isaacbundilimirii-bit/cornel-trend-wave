@@ -2,8 +2,8 @@ services:
   - type: web
     name: cornel-trend-wave
     env: static
-    buildCommand: echo "No build needed"
-    staticPublishPath: ./www
+    buildCommand: echo "no build needed"
+    staticPublishPath: www
     routes:
       - type: rewrite
         source: /*
