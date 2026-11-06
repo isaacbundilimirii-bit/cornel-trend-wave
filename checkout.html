@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Checkout - Cornel Trend Wave</title>
+<meta name="description" content="Complete your purchase with MPesa, card, or cash on delivery.">
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.checkout-container { max-width: 1200px; margin: 0 auto; }
+.checkout-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+@media (min-width: 768px) { .checkout-grid { grid-template-columns: 2fr 1fr; } }
+.payment-method { border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1rem; cursor: pointer; transition: all 0.2s; }
+.payment-method:hover { border-color: #f0b000; }
+.payment-method.selected { border-color: #f0b000; background-color: #fefce8; }
+.payment-method-icon { width: 3rem; height: 3rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+.payment-method-mpesa { background-color: #10b981; color: white; }
+.payment-method-card { background-color: #3b82f6; color: white; }
+.payment-method-cod { background-color: #6b7280; color: white; }
+.payment-form { display: none; }
+.payment-form.active { display: block; }
+.mpesa-steps { background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem; padding: 1.5rem; margin-top: 1rem; }
+.mpesa-step { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.mpesa-step:last-child { margin-bottom: 0; }
+.mpesa-step-number { width: 2rem; height: 2rem; border-radius: 50%; background-color: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+.order-summary-item { display: flex; justify-content: space-between; padding: 0.5rem 0; }
+.order-summary-total { border-top: 2px solid #e5e7eb; margin-top: 1rem; padding-top: 1rem; font-weight: bold; font-size: 1.125rem; }
+</style>
+</head>
+<body>
+<!-- ===== Header ===== -->
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-1.5">
+    <div class="container mx-auto px-4 text-center">
+      <i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-bolt ml-2 mr-1"></i> Flash Sale up to 40% off
+    </div>
+  </div>
+  <div id="logoSection" class="header-section py-3 md:py-2.5">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center gap-3 md:gap-5">
+        <a href="index.html" class="flex items-center gap-2.5 flex-shrink-0">
+          <img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy">
+        </a>
+        <div class="flex-1 hidden md:block">
+          <form class="big-search" onsubmit="return ctw.search(event)">
+            <input type="text" id="searchInput" placeholder="Search products, brands and categories...">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+          </form>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4 ml-auto">
+          <a href="auth.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
+            <i class="far fa-user"></i> 
+            <span data-user-name>Account</span>
+          </a>
+          <a href="wishlist.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
+            <i class="fas fa-heart"></i> 
+            <span data-wishlist-count>0</span>
+          </a>
+          <a href="cart.html" class="relative text-xl text-gray-800">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge hidden" data-cart-badge>0</span>
+          </a>
+          <button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+      <!-- Mobile search -->
+      <div class="md:hidden mt-3">
+        <form class="big-search" onsubmit="return ctw.search(event)">
+          <input type="text" id="searchInputM" placeholder="Search products...">
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="mainNav" class="header-section cat-nav py-2.5 hidden md:block">
+    <div class="container mx-auto px-4">
+      <nav class="cat-nav-inner">
+        <a href="index.html" class="active"><i class="fas fa-house"></i> Home</a>
+        <a href="products.html"><i class="fas fa-bag-shopping"></i> Shop</a>
+        <a href="products.html#electronics"><i class="fas fa-bolt"></i> Electronics</a>
+        <a href="products.html#fashion"><i class="fas fa-shirt"></i> Fashion</a>
+        <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+        <a href="contact.html"><i class="fas fa-phone"></i> Contact</a>
+        <a href="auth.html" data-guest-link><i class="fas fa-user"></i> My Account</a>
+        <a href="wishlist.html" data-user-link class="hidden"><i class="fas fa-heart"></i> Wishlist</a>
+        <a href="orders.html" data-user-link class="hidden"><i class="fas fa-box"></i> Orders</a>
+        <a href="#" data-user-link class="hidden" data-logout><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div id="menuOverlay" class="mobile-menu-overlay"></div>
+<aside id="mobileMenu" class="mobile-menu p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy">
+      <span class="font-extrabold">Cornel Trend Wave</span>
+    </div>
+    <button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button>
+  </div>
+  <nav class="flex flex-col gap-2 text-lg font-semibold">
+    <a href="index.html" class="py-2">Home</a>
+    <a href="products.html" class="py-2">Shop</a>
+    <a href="products.html#electronics" class="py-2">Electronics</a>
+    <a href="products.html#fashion" class="py-2">Fashion</a>
+    <a href="about.html" class="py-2">About</a>
+    <a href="contact.html" class="py-2">Contact</a>
+    <a href="auth.html" class="py-2 text-yellow-700" data-guest-link>My Account</a>
+    <a href="wishlist.html" class="py-2 hidden" data-user-link>Wishlist</a>
+    <a href="orders.html" class="py-2 hidden" data-user-link>Orders</a>
+    <a href="#" class="py-2 hidden text-red-600" data-user-link data-logout>Logout</a>
+  </nav>
+</aside>
+
+<main class="fade-in pt-32 pb-20 px-4">
+  <div class="checkout-container">
+    <div class="mb-8">
+      <h1 class="section-title text-3xl md:text-4xl">Checkout</h1>
+      <p class="text-gray-500 mt-2">Complete your purchase with secure payment</p>
+    </div>
+
+    <div class="checkout-grid">
+      <!-- Left column: Payment methods and forms -->
+      <div>
+        <div class="cute-card p-6 md:p-8 mb-6">
+          <h2 class="text-xl font-bold mb-4">Select Payment Method</h2>
+          
+          <div class="payment-method" onclick="checkout.selectPayment('mpesa')" id="mpesaMethod">
+            <div class="payment-method-icon payment-method-mpesa">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <div class="font-bold text-lg">MPesa</div>
+            <p class="text-gray-600 text-sm">Pay instantly via MPesa. You'll receive a prompt on your phone.</p>
+          </div>
+
+          <div class="payment-method" onclick="checkout.selectPayment('card')" id="cardMethod">
+            <div class="payment-method-icon payment-method-card">
+              <i class="far fa-credit-card"></i>
+            </div>
+            <div class="font-bold text-lg">Credit/Debit Card</div>
+            <p class="text-gray-600 text-sm">Pay securely with Visa, Mastercard, or American Express.</p>
+          </div>
+
+          <div class="payment-method" onclick="checkout.selectPayment('cod')" id="codMethod">
+            <div class="payment-method-icon payment-method-cod">
+              <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="font-bold text-lg">Cash on Delivery</div>
+            <p class="text-gray-600 text-sm">Pay when your order arrives. Available in Nairobi and major towns.</p>
+          </div>
+        </div>
+
+        <!-- MPesa Payment Form -->
+        <div class="payment-form active" id="mpesaForm">
+          <div class="cute-card p-6 md:p-8">
+            <h2 class="text-xl font-bold mb-4">MPesa Payment</h2>
+            <p class="text-gray-600 mb-6">Enter your MPesa phone number to receive a payment prompt.</p>
+            
+            <form onsubmit="return checkout.processMPesa(event)">
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <div class="flex">
+                  <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+254</span>
+                  <input type="tel" id="mpesaPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="759 051 333" value="759051333">
+                </div>
+              </div>
+              
+              <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Amount to Pay</label>
+                <div class="text-2xl font-bold cute-grad-text" id="mpesaAmount">Ksh 0</div>
+              </div>
+              
+              <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">
+                <i class="fas fa-mobile-alt mr-2"></i> Pay with MPesa
+              </button>
+            </form>
+            
+            <div class="mpesa-steps mt-6">
+              <h3 class="font-bold mb-3">How to pay with MPesa:</h3>
+              <div class="mpesa-step">
+                <div class="mpesa-step-number">1</div>
+                <div>
+                  <div class="font-semibold">Enter your phone number</div>
+                  <div class="text-sm text-gray-600">Use the number registered with MPesa</div>
+                </div>
+              </div>
+              <div class="mpesa-step">
+                <div class="mpesa-step-number">2</div>
+                <div>
+                  <div class="font-semibold">Click "Pay with MPesa"</div>
+                  <div class="text-sm text-gray-600">You'll receive a prompt on your phone</div>
+                </div>
+              </div>
+              <div class="mpesa-step">
+                <div class="mpesa-step-number">3</div>
+                <div>
+                  <div class="font-semibold">Enter your MPesa PIN</div>
+                  <div class="text-sm text-gray-600">Complete the transaction on your phone</div>
+                </div>
+              </div>
+              <div class="mpesa-step">
+                <div class="mpesa-step-number">4</div>
+                <div>
+                  <div class="font-semibold">Get confirmation</div>
+                  <div class="text-sm text-gray-600">You'll receive an SMS and order confirmation</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Payment Form -->
+        <div class="payment-form" id="cardForm">
+          <div class="cute-card p-6 md:p-8">
+            <h2 class="text-xl font-bold mb-4">Card Payment</h2>
+            <p class="text-gray-600 mb-6">Enter your card details securely. We use SSL encryption.</p>
+            
+            <form onsubmit="return checkout.processCard(event)">
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                <input type="text" id="cardNumber" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="1234 5678 9012 3456" maxlength="19">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                  <input type="text" id="cardExpiry" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                  <input type="text" id="cardCVV" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="123" maxlength="3">
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                <input type="text" id="cardName" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="John Doe">
+              </div>
+              
+              <div class="flex items-center mb-6">
+                <input type="checkbox" id="saveCard" class="accent-yellow-600 mr-2">
+                <label for="saveCard" class="text-sm text-gray-600">Save card for future purchases</label>
+              </div>
+              
+              <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">
+                <i class="far fa-credit-card mr-2"></i> Pay Ksh <span id="cardAmount">0</span>
+              </button>
+              
+              <div class="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+                <i class="fas fa-lock"></i>
+                <span>Secure payment encrypted with SSL</span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Cash on Delivery Form -->
+        <div class="payment-form" id="codForm">
+          <div class="cute-card p-6 md:p-8">
+            <h2 class="text-xl font-bold mb-4">Cash on Delivery</h2>
+            <p class="text-gray-600 mb-6">Pay when your order arrives. Available in select areas.</p>
+            
+            <form onsubmit="return checkout.processCOD(event)">
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+                <textarea id="codAddress" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" rows="3" placeholder="Enter your complete delivery address"></textarea>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Instructions (Optional)</label>
+                <textarea id="codInstructions" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" rows="2" placeholder="e.g., Call before delivery, leave at gate, etc."></textarea>
+              </div>
+              
+              <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Amount to Pay on Delivery</label>
+                <div class="text-2xl font-bold cute-grad-text" id="codAmount">Ksh 0</div>
+                <p class="text-sm text-gray-500 mt-1">Have exact change ready for the delivery person</p>
+              </div>
+              
+              <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                  <i class="fas fa-info-circle text-yellow-600 mt-0.5"></i>
+                  <div>
+                    <div class="font-semibold text-yellow-800">Cash on Delivery Terms</div>
+                    <ul class="text-sm text-yellow-700 mt-1 space-y-1">
+                      <li>• Available in Nairobi, Mombasa, Kisumu, and Nakuru</li>
+                      <li>• Delivery within 2-3 business days</li>
+                      <li>• Maximum order value: Ksh 20,000</li>
+                      <li>• Ksh 200 cash handling fee applies</li>
+                      <li>• You can inspect items before paying</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">
+                <i class="fas fa-truck mr-2"></i> Place Order (Pay on Delivery)
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: Order summary -->
+      <div>
+        <div class="cute-card p-6 md:p-8 sticky top-24">
+          <h2 class="text-xl font-bold mb-4">Order Summary</h2>
+          
+          <div id="checkoutItems">
+            <!-- Cart items will be loaded here -->
+          </div>
+          
+          <div class="order-summary-item">
+            <span>Subtotal</span>
+            <span id="subtotal">Ksh 0</span>
+          </div>
+          <div class="order-summary-item">
+            <span>Delivery</span>
+            <span id="delivery">Ksh 0</span>
+          </div>
+          <div class="order-summary-item">
+            <span>Service Fee</span>
+            <span id="serviceFee">Ksh 0</span>
+          </div>
+          
+          <div class="order-summary-item order-summary-total">
+            <span>Total</span>
+            <span id="totalAmount">Ksh 0</span>
+          </div>
+          
+          <div class="mt-6 text-sm text-gray-500">
+            <p>By completing your purchase, you agree to our <a href="#" class="text-yellow-600 hover:underline">Terms of Service</a> and <a href="#" class="text-yellow-600 hover:underline">Privacy Policy</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="px-4 pt-14 pb-28 md:pb-10">
+  <div class="container mx-auto grid md:grid-cols-4 gap-10">
+    <div>
+      <div class="flex items-center gap-3 mb-4">
+        <img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy">
+        <span class="font-extrabold text-lg text-white">Cornel Trend Wave</span>
+      </div>
+      <p class="text-white/60 text-sm">Electronics & fashion, delivered with love across Kenya.</p>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Shop</h4>
+      <ul class="space-y-2 text-sm text-white/60">
+        <li><a href="products.html#electronics" class="hover:text-white">Electronics</a></li>
+        <li><a href="products.html#fashion" class="hover:text-white">Fashion</a></li>
+        <li><a href="products.html" class="hover:text-white">All products</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Company</h4>
+      <ul class="space-y-2 text-sm text-white/60">
+        <li><a href="about.html" class="hover:text-white">About</a></li>
+        <li><a href="contact.html" class="hover:text-white">Contact</a></li>
+        <li><a href="auth.html" class="hover:text-white">My Account</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Reach us</h4>
+      <ul class="space-y-2 text-sm text-white/60">
+        <li><i class="fas fa-phone mr-2"></i>+254 759 051 333</li>
+        <li><i class="fas fa-envelope mr-2"></i>sales@corneltrendwave.co.ke</li>
+        <li><i class="fas fa-location-dot mr-2"></i>Eastleigh 9th Street, Nairobi, Kenya</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container mx-auto mt-10 pt-6 border-t border-white/10 text-center text-white/50 text-sm">© 2026 Cornel Trend Wave</div>
+</footer>
+
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Added!</span></div>
+
+<nav class="bottom-nav md:hidden">
+  <div>
+    <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+    <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+    <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+    <a href="checkout.html" class="bottom-nav-item active"><i class="fas fa-shopping-cart"></i><span>Checkout</span></a>
+  </div>
+</nav>
+
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+<script src="js/orders.js"></script>
+<script>
+(function() {
+  'use strict';
+  
+  // Checkout functionality
+  let selectedPayment = 'mpesa';
+  let cart = JSON.parse(localStorage.getItem('ctw_cart') || '[]');
+  
+  function selectPayment(method) {
+    selectedPayment = method;
+    
+    // Update UI
+    document.querySelectorAll('.payment-method').forEach(el => {
+      el.classList.remove('selected');
+    });
+    document.querySelectorAll('.payment-form').forEach(el => {
+      el.classList.remove('active');
+    });
+    
+    document.getElementById(method + 'Method').classList.add('selected');
+    document.getElementById(method + 'Form').classList.add('active');
+  }
+  
+  function calculateOrder() {
+    let subtotal = 0;
+    cart.forEach(item => {
+      const product = window.CTW_PRODUCTS.find(p => p.id === item.id);
+      if (product) {
+        subtotal += product.price * item.qty;
+      }
+    });
+    
+    const delivery = subtotal >= 3000 ? 0 : 200;
+    const serviceFee = subtotal > 0 ? 50 : 0;
+    const total = subtotal + delivery + serviceFee;
+    
+    return { subtotal, delivery, serviceFee, total };
+  }
+  
+  function updateOrderSummary() {
+    const { subtotal, delivery, serviceFee, total } = calculateOrder();
+    
+    document.getElementById('subtotal').textContent = 'Ksh ' + Number(subtotal).toLocaleString('en-KE');
+    document.getElementById('delivery').textContent = delivery === 0 ? 'FREE' : 'Ksh ' + Number(delivery).toLocaleString('en-KE');
+    document.getElementById('serviceFee').textContent = 'Ksh ' + Number(serviceFee).toLocaleString('en-KE');
+    document.getElementById('totalAmount').textContent = 'Ksh ' + Number(total).toLocaleString('en-KE');
+    
+    // Update payment amounts
+    document.getElementById('mpesaAmount').textContent = 'Ksh ' + Number(total).toLocaleString('en-KE');
+    document.getElementById('cardAmount').textContent = Number(total).toLocaleString('en-KE');
+    document.getElementById('codAmount').textContent = 'Ksh ' + Number(total).toLocaleString('en-KE');
+    
+    // Render cart items
+    const container = document.getElementById('checkoutItems');
+    if (!container) return;
+    
+    if (cart.length === 0) {
+      container.innerHTML = '<p class="text-gray-500 text-center py-4">Your cart is empty</p>';
+      return;
+    }
+    
+    container.innerHTML = cart.map(item => {
+      const product = window.CTW_PRODUCTS.find(p => p.id === item.id);
+      if (!product) return '';
+      
+      return `
+        <div class="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
+          <img src="${product.img}" alt="${product.name}" class="w-16 h-16 object-cover rounded-lg">
+          <div class="flex-1">
+            <div class="font-semibold text-sm line-clamp-1">${product.name}</div>
+            <div class="text-xs text-gray-500">Qty: ${item.qty}</div>
+          </div>
+          <div class="font-bold text-sm">Ksh ${Number(product.price * item.qty).toLocaleString('en-KE')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  function processMPesa(e) {
+    e.preventDefault();
+    
+    if (cart.length === 0) {
+      toast('Your cart is empty');
+      return false;
+    }
+    
+    const phone = document.getElementById('mpesaPhone').value;
+    const { total } = calculateOrder();
+    
+    // Simulate MPesa payment
+    toast('Sending MPesa prompt to ' + phone + '...');
+    
+    setTimeout(() => {
+      // Create order
+      const order = orders.createOrder(cart, total, 'Eastleigh 9th Street, Nairobi', 'MPesa');
+      
+      // Clear cart
+      localStorage.removeItem('ctw_cart');
+      cart = [];
+      
+      // Show success
+      const modalHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl max-w-md w-full">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-check"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
+              <p class="text-gray-600 mb-4">Your MPesa payment of Ksh ${Number(total).toLocaleString('en-KE')} has been processed.</p>
+              <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="font-semibold">Order ID: ${order.id}</div>
+                <div class="text-sm text-gray-500">You'll receive an SMS confirmation shortly</div>
+              </div>
+              <div class="flex gap-3">
+                <a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a>
+                <a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }, 2000);
+    
+    return false;
+  }
+  
+  function processCard(e) {
+    e.preventDefault();
+    
+    if (cart.length === 0) {
+      toast('Your cart is empty');
+      return false;
+    }
+    
+    const cardNumber = document.getElementById('cardNumber').value;
+    const { total } = calculateOrder();
+    
+    // Validate card number (basic)
+    if (cardNumber.replace(/\s/g, '').length < 16) {
+      toast('Please enter a valid card number');
+      return false;
+    }
+    
+    toast('Processing card payment...');
+    
+    setTimeout(() => {
+      // Create order
+      const order = orders.createOrder(cart, total, 'Eastleigh 9th Street, Nairobi', 'Card');
+      
+      // Clear cart
+      localStorage.removeItem('ctw_cart');
+      cart = [];
+      
+      // Show success
+      const modalHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl max-w-md w-full">
+            <div class="p-6 text-center">
+              <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-check"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
+              <p class="text-gray-600 mb-4">Your card payment of Ksh ${Number(total).toLocaleString('en-KE')} has been processed.</p>
+              <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="font-semibold">Order ID: ${order.id}</div>
+                <div class="text-sm text-gray-500">Transaction ID: TXN-${Date.now().toString().slice(-8)}</div>
+              </div>
+              <div class="flex gap-3">
+                <a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a>
+                <a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }, 2000);
+    
+    return false;
+  }
+  
+  function processCOD(e) {
+    e.preventDefault();
+    
+    if (cart.length === 0) {
+      toast('Your cart is empty');
+      return false;
+    }
+    
+    const address = document.getElementById('codAddress').value;
+    const { total } = calculateOrder();
+    
+    if (!address.trim()) {
+      toast('Please enter delivery address');
+      return false;
+    }
+    
+    // Create order
+    const order = orders.createOrder(cart, total, address, 'Cash on Delivery');
+    
+    // Clear cart
+    localStorage.removeItem('ctw_cart');
+    cart = [];
+    
+    // Show success
+    const modalHTML = `
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-md w-full">
+          <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+              <i class="fas fa-truck"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Order Placed Successfully!</h3>
+            <p class="text-gray-600 mb-4">Your order will be delivered to:</p>
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+              <div class="font-semibold">${address}</div>
+              <div class="text-sm text-gray-500 mt-2">Amount to pay on delivery: Ksh ${Number(total).toLocaleString('en-KE')}</div>
+            </div>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
+              <div class="font-semibold text-yellow-800">What happens next?</div>
+              <ul class="text-sm text-yellow-700 mt-2 space-y-1">
+                <li>• We'll call you within 24 hours to confirm delivery</li>
+                <li>• Delivery in 2-3 business days</li>
+                <li>• Have exact change ready for the delivery person</li>
+                <li>• You can inspect items before paying</li>
+              </ul>
+            </div>
+            <div class="flex gap-3">
+              <a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">Track Order</a>
+              <a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    return false;
+  }
+  
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    updateOrderSummary();
+    selectPayment('mpesa');
+    
+    // Check if cart is empty
+    if (cart.length === 0) {
+      toast('Your cart is empty. Redirecting to shop...');
+      setTimeout(() => {
+        window.location.href = 'products.html';
+      }, 1500);
+    }
+    
+    // Format card inputs
+    const cardNumber = document.getElementById('cardNumber');
+    if (cardNumber) {
+      cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+        value = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = value.substring(0, 19);
+      });
+    }
+    
+    const cardExpiry = document.getElementById('cardExpiry');
+    if (cardExpiry) {
+      cardExpiry.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value.substring(0, 5);
+      });
+    }
+    
+    const cardCVV = document.getElementById('cardCVV');
+    if (cardCVV) {
+      cardCVV.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 3);
+      });
+    }
+  });
+  
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    if (!t) return;
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._ctwToast);
+    window._ctwToast = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  
+  window.checkout = {
+    selectPayment: selectPayment,
+    processMPesa: processMPesa,
+    processCard: processCard,
+    processCOD: processCOD,
+    updateOrderSummary: updateOrderSummary
+  };
+})();
+</script>
+</body>
+</html>

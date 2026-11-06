@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shop — Cornel Trend Wave</title>
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-2"><div class="container mx-auto px-4 text-center"><i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-phone ml-2 mr-1"></i> +254 759 051 333</div></div>
+  <div id="logoSection" class="header-section py-4 md:py-3"><div class="container mx-auto px-4 flex items-center justify-between gap-4">
+    <a href="index.html" class="flex items-center gap-3"><img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy"><span class="hidden sm:block font-extrabold text-lg">Cornel Trend Wave</span></a>
+    <form class="flex-1 max-w-md hidden md:block" onsubmit="return false"><div class="relative"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i><input class="search-input" placeholder="Search electronics, fashion..."></div></form>
+    <div class="flex items-center gap-3">
+      <a href="cart.html" class="relative text-xl text-gray-800"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span></a>
+      <a href="#" class="hidden md:inline-flex cute-btn border-2 border-yellow-300 px-4 py-2 text-sm text-yellow-700">Login</a>
+      <button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button>
+    </div>
+  </div></div>
+  <div id="mainNav" class="header-section hidden md:block py-2"><div class="container mx-auto px-4"><nav class="flex items-center justify-center gap-8 text-sm font-semibold uppercase tracking-wide">
+    <a href="index.html" class="text-gray-600 hover:text-yellow-700">Home</a>
+    <a href="products.html" class="text-yellow-700">Shop</a>
+    <a href="products.html#electronics" class="text-gray-600 hover:text-yellow-700">Electronics</a>
+    <a href="products.html#fashion" class="text-gray-600 hover:text-yellow-700">Fashion</a>
+    <a href="about.html" class="text-gray-600 hover:text-yellow-700">About</a>
+    <a href="contact.html" class="text-gray-600 hover:text-yellow-700">Contact</a>
+  </nav></div></div>
+</div>
+<div id="menuOverlay" class="mobile-menu-overlay"></div>
+<aside id="mobileMenu" class="mobile-menu p-6"><div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy"><span class="font-extrabold">Cornel Trend Wave</span></div><button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button></div>
+<nav class="flex flex-col gap-2 text-lg font-semibold"><a href="index.html" class="py-2">Home</a><a href="products.html" class="py-2 text-yellow-700">Shop</a><a href="products.html#electronics" class="py-2">Electronics</a><a href="products.html#fashion" class="py-2">Fashion</a><a href="about.html" class="py-2">About</a><a href="contact.html" class="py-2">Contact</a></nav></aside>
+
+<main class="fade-in pt-32 pb-20 px-4" style="width:100%;max-width:100%;overflow-x:hidden">
+  <div class="container mx-auto">
+    <div class="text-center mb-8">
+      <span class="section-eyebrow">Shop all</span>
+      <h1 class="section-title text-3xl md:text-4xl">Everything <span class="cute-grad-gold-text">trendy</span>, in one place</h1>
+      <p class="text-gray-500 mt-3">Electronics & fashion · order online · delivery or pickup</p>
+    </div>
+
+    <!-- Filter buttons -->
+    <div class="flex flex-wrap justify-center gap-2 mb-6">
+      <button onclick="ctw.filter('all')" class="cute-btn cute-grad-gold text-white px-5 py-2 text-sm" data-filter="all">All</button>
+      <button onclick="ctw.filter('electronics')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm" data-filter="electronics"><i class="fas fa-bolt mr-1"></i>Electronics</button>
+      <button onclick="ctw.filter('fashion')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm" data-filter="fashion"><i class="fas fa-shirt mr-1"></i>Fashion</button>
+      <button onclick="ctw.filterBySub('phones')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm" data-filter="phones"><i class="fas fa-mobile mr-1"></i>Phones</button>
+      <button onclick="ctw.filterBySub('audio')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm" data-filter="audio"><i class="fas fa-headphones mr-1"></i>Audio</button>
+      <button onclick="ctw.filterBySub('shoes')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm" data-filter="shoes"><i class="fas fa-shoe-prints mr-1"></i>Shoes</button>
+    </div>
+
+    <!-- Sort options -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10">
+      <span class="text-sm font-semibold text-gray-600 flex items-center">Sort by:</span>
+      <button onclick="ctw.sortBy('price-asc')" class="cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs">Price: Low to High</button>
+      <button onclick="ctw.sortBy('price-desc')" class="cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs">Price: High to Low</button>
+      <button onclick="ctw.sortBy('rating')" class="cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs">Top Rated</button>
+      <button onclick="ctw.sortBy('newest')" class="cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs">Newest</button>
+    </div>
+
+    <!-- Delivery & pickup banner -->
+    <div class="cute-grad-gold rounded-3xl p-6 text-white mb-12">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+        <div class="flex items-center gap-3"><i class="fas fa-truck-fast text-2xl"></i><div><div class="font-bold">Home Delivery</div><div class="text-white/80 text-sm">Same-day Nairobi · 1–2 days countrywide</div></div></div>
+        <div class="hidden md:block w-px h-10 bg-white/30"></div>
+        <div class="flex items-center gap-3"><i class="fas fa-store text-2xl"></i><div><div class="font-bold">Pickup</div><div class="text-white/80 text-sm">Collect at Eastleigh 9th Street, Nairobi — free</div></div></div>
+        <div class="hidden md:block w-px h-10 bg-white/30"></div>
+        <div class="flex items-center gap-3"><i class="fas fa-shield-alt text-2xl"></i><div><div class="font-bold">Secure Payment</div><div class="text-white/80 text-sm">MPesa · Card · Cash on Delivery</div></div></div>
+      </div>
+      <div class="mt-4 pt-4 border-t border-white/20 text-sm text-white/80">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><i class="fas fa-check-circle mr-2"></i>Free delivery on orders over Ksh 3,000</div>
+          <div><i class="fas fa-check-circle mr-2"></i>Same-day delivery for Nairobi (order before 2 PM)</div>
+          <div><i class="fas fa-check-circle mr-2"></i>7-day return policy for electronics</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Electronics -->
+    <section id="electronics" class="mb-14">
+      <div class="flex items-end justify-between mb-6"><div><span class="section-eyebrow"><i class="fas fa-bolt"></i> Electronics</span><h2 class="section-title text-2xl">Phones, audio & accessories</h2></div></div>
+      <div id="electronicsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"></div>
+    </section>
+
+    <!-- Fashion -->
+    <section id="fashion">
+      <div class="flex items-end justify-between mb-6"><div><span class="section-eyebrow"><i class="fas fa-shirt"></i> Fashion</span><h2 class="section-title text-2xl">Tops, bottoms & shoes</h2></div></div>
+      <div id="fashionGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"></div>
+    </section>
+
+    <!-- Filtered results -->
+    <section id="filteredSection" class="hidden">
+      <h2 class="section-title text-2xl mb-6" id="filteredTitle">Results</h2>
+      <div id="filteredGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="px-4 pt-14 pb-28 md:pb-10"><div class="container mx-auto grid md:grid-cols-4 gap-10">
+  <div><div class="flex items-center gap-3 mb-4"><img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy"><span class="font-extrabold text-lg text-white">Cornel Trend Wave</span></div><p class="text-white/60 text-sm">Electronics & fashion, delivered with love across Kenya.</p></div>
+  <div><h4 class="font-bold mb-4">Shop</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="products.html#electronics" class="hover:text-white">Electronics</a></li><li><a href="products.html#fashion" class="hover:text-white">Fashion</a></li><li><a href="products.html" class="hover:text-white">All products</a></li></ul></div>
+  <div><h4 class="font-bold mb-4">Company</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="about.html" class="hover:text-white">About</a></li><li><a href="contact.html" class="hover:text-white">Contact</a></li></ul></div>
+  <div><h4 class="font-bold mb-4">Reach us</h4><ul class="space-y-2 text-sm text-white/60"><li><i class="fas fa-phone mr-2"></i>+254 759 051 333</li><li><i class="fas fa-envelope mr-2"></i>sales@corneltrendwave.co.ke</li><li><i class="fas fa-location-dot mr-2"></i>Eastleigh 9th Street, Nairobi, Kenya</li></ul></div>
+</div><div class="container mx-auto mt-10 pt-6 border-t border-white/10 text-center text-white/50 text-sm">© 2026 Cornel Trend Wave</div></footer>
+
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Added!</span></div>
+<nav class="bottom-nav md:hidden"><div>
+  <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="products.html" class="bottom-nav-item active"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+  <a href="contact.html" class="bottom-nav-item"><i class="fas fa-phone"></i><span>Contact</span></a>
+</div></nav>
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function(){
+  function money(n){return 'Ksh '+Number(n).toLocaleString('en-KE');}
+  
+  function productCard(p){
+    var badge=p.badge?'<span class="badge-cute">'+p.badge+'</span>':'';
+    return '<div class="prod-card cute-card">'+
+      '<div class="img-wrap">'+
+        badge+
+        '<button class="wish-btn" onclick="this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button>'+
+        '<img src="'+p.img+'" alt="'+p.name+'" loading="lazy">'+
+      '</div>'+
+      '<div class="p-4 flex flex-col flex-1">'+
+        '<div class="text-[10px] uppercase tracking-wide font-bold text-yellow-600 mb-1">'+p.sub+'</div>'+
+        '<h3 class="font-bold text-sm mb-1 line-clamp-1">'+p.name+'</h3>'+
+        '<div class="flex items-center mb-2"><div class="flex text-yellow-400 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div><span class="text-xs text-gray-500 ml-1">'+p.rating+'</span></div>'+
+        '<div class="font-extrabold cute-grad-gold-text mt-auto mb-3">'+money(p.price)+'</div>'+
+        '<button onclick="ctw.addToCart(\''+p.id+'\')" class="cute-btn cute-grad-gold text-white text-xs py-2 w-full"><i class="fas fa-plus mr-1"></i> Add to cart</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function filter(cat){
+    document.querySelectorAll('[data-filter]').forEach(function(b){ b.className='cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm'; });
+    var btn=document.querySelector('[data-filter="'+cat+'"]'); if(btn) btn.className='cute-btn cute-grad-gold text-white px-5 py-2 text-sm';
+    if(cat==='all'){ document.getElementById('filteredSection').classList.add('hidden'); document.getElementById('electronics').classList.remove('hidden'); document.getElementById('fashion').classList.remove('hidden'); return; }
+    document.getElementById('electronics').classList.add('hidden'); document.getElementById('fashion').classList.add('hidden');
+    var sec=document.getElementById('filteredSection'); sec.classList.remove('hidden');
+    document.getElementById('filteredTitle').textContent = cat==='electronics'?'Electronics':'Fashion';
+    var items=window.CTW_PRODUCTS.filter(function(p){return p.cat===cat;});
+    document.getElementById('filteredGrid').innerHTML=items.map(productCard).join('');
+  }
+
+  function filterBySub(sub){
+    document.querySelectorAll('[data-filter]').forEach(function(b){ b.className='cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm'; });
+    var btn=document.querySelector('[data-filter="'+sub+'"]'); if(btn) btn.className='cute-btn cute-grad-gold text-white px-5 py-2 text-sm';
+    document.getElementById('electronics').classList.add('hidden'); document.getElementById('fashion').classList.add('hidden');
+    var sec=document.getElementById('filteredSection'); sec.classList.remove('hidden');
+    var subNames={'phones':'Phones','audio':'Audio & Speakers','shoes':'Shoes & Footwear'};
+    document.getElementById('filteredTitle').textContent = subNames[sub]||sub;
+    var items=window.CTW_PRODUCTS.filter(function(p){return p.sub===sub;});
+    document.getElementById('filteredGrid').innerHTML=items.map(productCard).join('');
+  }
+
+  function sortBy(type){
+    var items=[];
+    var sec=document.getElementById('filteredSection');
+    if(!sec.classList.contains('hidden')){
+      var grid=document.getElementById('filteredGrid');
+      var currentItems=window.CTW_PRODUCTS.filter(function(p){
+        var catMatch=document.getElementById('filteredTitle').textContent.toLowerCase();
+        if(catMatch==='electronics') return p.cat==='electronics';
+        if(catMatch==='fashion') return p.cat==='fashion';
+        if(catMatch.includes('phones')) return p.sub==='phones';
+        if(catMatch.includes('audio')) return p.sub==='audio';
+        if(catMatch.includes('shoes')) return p.sub==='shoes';
+        return true;
+      });
+      items=currentItems;
+    }else{
+      items=window.CTW_PRODUCTS;
+    }
+    
+    if(type==='price-asc') items.sort(function(a,b){return a.price-b.price;});
+    else if(type==='price-desc') items.sort(function(a,b){return b.price-a.price;});
+    else if(type==='rating') items.sort(function(a,b){return b.rating-a.rating;});
+    else if(type==='newest') items.sort(function(a,b){return b.id.localeCompare(a.id);});
+    
+    if(!sec.classList.contains('hidden')){
+      document.getElementById('filteredGrid').innerHTML=items.map(productCard).join('');
+    }else{
+      document.getElementById('electronicsGrid').innerHTML=items.filter(function(p){return p.cat==='electronics';}).map(productCard).join('');
+      document.getElementById('fashionGrid').innerHTML=items.filter(function(p){return p.cat==='fashion';}).map(productCard).join('');
+    }
+  }
+
+  window.ctw.filter=filter;
+  window.ctw.filterBySub=filterBySub;
+  window.ctw.sortBy=sortBy;
+})();
+</script>
+</body></html>
