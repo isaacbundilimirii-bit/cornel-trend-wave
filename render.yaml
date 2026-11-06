@@ -1,0 +1,12 @@
+# Render Static Site config for Cornel Trend Wave
+# Deploy the www/ folder as a static website
+services:
+  - type: web
+    name: cornel-trend-wave
+    env: static
+    buildCommand: echo "No build needed"
+    staticSitePath: www
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Login / Register - Cornel Trend Wave</title>
+<meta name="description" content="Create an account or login to Cornel Trend Wave for faster checkout, order tracking, and wishlists.">
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.auth-container { max-width: 480px; margin: 0 auto; }
+.auth-tabs { display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; }
+.auth-tab { flex: 1; text-align: center; padding: 1rem; font-weight: 600; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; }
+.auth-tab.active { color: #d08000; border-bottom-color: #f0b000; }
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+.otp-inputs { display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; }
+.otp-input { width: 3rem; height: 3rem; text-align: center; font-size: 1.5rem; font-weight: bold; border: 2px solid #d1d5db; border-radius: 0.5rem; outline: none; }
+.otp-input:focus { border-color: #f0b000; box-shadow: 0 0 0 3px rgba(240, 176, 0, 0.1); }
+.resend-btn { color: #d08000; cursor: pointer; font-weight: 600; }
+.resend-btn:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<!-- ===== Header ===== -->
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-1.5">
+    <div class="container mx-auto px-4 text-center">
+      <i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-bolt ml-2 mr-1"></i> Flash Sale up to 40% off
+    </div>
+  </div>
+  <div id="logoSection" class="header-section py-3 md:py-2.5">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center gap-3 md:gap-5">
+        <a href="index.html" class="flex items-center gap-2.5 flex-shrink-0">
+          <img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy">
+        </a>
+        <div class="flex-1 hidden md:block">
+          <form class="big-search" onsubmit="return ctw.search(event)">
+            <input type="text" id="searchInput" placeholder="Search products, brands and categories...">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+          </form>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4 ml-auto">
+          <a href="auth.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600"><i class="far fa-user"></i> Account</a>
+          <a href="cart.html" class="relative text-xl text-gray-800">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge hidden" data-cart-badge>0</span>
+          </a>
+          <button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+      <!-- Mobile search -->
+      <div class="md:hidden mt-3">
+        <form class="big-search" onsubmit="return ctw.search(event)">
+          <input type="text" id="searchInputM" placeholder="Search products...">
+          <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="mainNav" class="header-section cat-nav py-2.5 hidden md:block">
+    <div class="container mx-auto px-4">
+      <nav class="cat-nav-inner">
+        <a href="index.html" class="active"><i class="fas fa-house"></i> Home</a>
+        <a href="products.html"><i class="fas fa-bag-shopping"></i> Shop</a>
+        <a href="products.html#electronics"><i class="fas fa-bolt"></i> Electronics</a>
+        <a href="products.html#fashion"><i class="fas fa-shirt"></i> Fashion</a>
+        <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+        <a href="contact.html"><i class="fas fa-phone"></i> Contact</a>
+        <a href="auth.html"><i class="fas fa-user"></i> My Account</a>
+        <a href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a>
+        <a href="orders.html"><i class="fas fa-box"></i> Orders</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div id="menuOverlay" class="mobile-menu-overlay"></div>
+<aside id="mobileMenu" class="mobile-menu p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy">
+      <span class="font-extrabold">Cornel Trend Wave</span>
+    </div>
+    <button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button>
+  </div>
+  <nav class="flex flex-col gap-2 text-lg font-semibold">
+    <a href="index.html" class="py-2">Home</a>
+    <a href="products.html" class="py-2">Shop</a>
+    <a href="products.html#electronics" class="py-2">Electronics</a>
+    <a href="products.html#fashion" class="py-2">Fashion</a>
+    <a href="about.html" class="py-2">About</a>
+    <a href="contact.html" class="py-2">Contact</a>
+    <a href="auth.html" class="py-2 text-yellow-700">My Account</a>
+    <a href="wishlist.html" class="py-2">Wishlist</a>
+    <a href="orders.html" class="py-2">Orders</a>
+  </nav>
+</aside>
+
+<main class="fade-in pt-32 pb-20 px-4">
+  <div class="container mx-auto">
+    <div class="auth-container">
+      <div class="text-center mb-8">
+        <h1 class="section-title text-3xl md:text-4xl">Welcome to <span class="cute-grad-gold-text">Cornel Trend Wave</span></h1>
+        <p class="text-gray-500 mt-3">Login or create an account for faster checkout, order tracking, and wishlists</p>
+      </div>
+
+      <div class="cute-card p-6 md:p-8">
+        <div class="auth-tabs">
+          <div class="auth-tab active" onclick="switchTab('login')">Login</div>
+          <div class="auth-tab" onclick="switchTab('register')">Register</div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="auth-form active" onsubmit="return handleLogin(event)">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <div class="flex">
+                <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+254</span>
+                <input type="tel" id="loginPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="759 051 333">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <input type="password" id="loginPassword" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="Enter your password">
+            </div>
+            <div class="flex items-center justify-between">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" class="accent-yellow-600">
+                <span class="text-sm text-gray-600">Remember me</span>
+              </label>
+              <a href="#" class="text-sm text-yellow-600 hover:underline">Forgot password?</a>
+            </div>
+            <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">Login</button>
+            <div class="text-center text-sm text-gray-500">
+              Don't have an account? <a href="#" onclick="switchTab('register'); return false;" class="text-yellow-600 font-semibold hover:underline">Sign up</a>
+            </div>
+          </div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="auth-form" onsubmit="return handleRegister(event)">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <input type="text" id="registerName" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="John Doe">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <div class="flex">
+                <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+254</span>
+                <input type="tel" id="registerPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="759 051 333">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email Address (Optional)</label>
+              <input type="email" id="registerEmail" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="john@example.com">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <input type="password" id="registerPassword" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="Create a strong password">
+              <p class="text-xs text-gray-500 mt-1">At least 8 characters with letters and numbers</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+              <input type="password" id="registerConfirm" required class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="Confirm your password">
+            </div>
+            <label class="flex items-start gap-2">
+              <input type="checkbox" required class="accent-yellow-600 mt-1">
+              <span class="text-sm text-gray-600">I agree to the <a href="#" class="text-yellow-600 hover:underline">Terms & Conditions</a> and <a href="#" class="text-yellow-600 hover:underline">Privacy Policy</a></span>
+            </label>
+            <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">Create Account</button>
+            <div class="text-center text-sm text-gray-500">
+              Already have an account? <a href="#" onclick="switchTab('login'); return false;" class="text-yellow-600 font-semibold hover:underline">Login</a>
+            </div>
+          </div>
+        </form>
+
+        <!-- OTP Verification Form -->
+        <form id="otpForm" class="auth-form" onsubmit="return verifyOTP(event)">
+          <div class="text-center space-y-4">
+            <div class="text-2xl font-bold text-gray-800">Verify Your Phone</div>
+            <p class="text-gray-600">We've sent a 6-digit code to <span id="otpPhoneNumber" class="font-semibold">+254 759 051 333</span></p>
+            <p class="text-sm text-gray-500">Enter the code below to verify your account</p>
+            
+            <div class="otp-inputs">
+              <input type="text" maxlength="1" class="otp-input" data-index="0" oninput="moveToNext(this)">
+              <input type="text" maxlength="1" class="otp-input" data-index="1" oninput="moveToNext(this)">
+              <input type="text" maxlength="1" class="otp-input" data-index="2" oninput="moveToNext(this)">
+              <input type="text" maxlength="1" class="otp-input" data-index="3" oninput="moveToNext(this)">
+              <input type="text" maxlength="1" class="otp-input" data-index="4" oninput="moveToNext(this)">
+              <input type="text" maxlength="1" class="otp-input" data-index="5" oninput="moveToNext(this)">
+            </div>
+            
+            <input type="hidden" id="otpCode">
+            
+            <div class="text-sm text-gray-500">
+              Didn't receive the code? 
+              <span id="resendTimer" class="text-gray-400">Resend in <span id="countdown">60</span>s</span>
+              <span id="resendLink" class="hidden resend-btn" onclick="resendOTP()">Resend code</span>
+            </div>
+            
+            <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">Verify & Continue</button>
+            <button type="button" onclick="switchTab('register')" class="text-sm text-gray-500 hover:text-gray-700">← Back to registration</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="mt-6 text-center text-sm text-gray-500">
+        <p>By continuing, you agree to our <a href="#" class="text-yellow-600 hover:underline">Terms of Service</a> and <a href="#" class="text-yellow-600 hover:underline">Privacy Policy</a></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="px-4 pt-14 pb-28 md:pb-10">
+  <div class="container mx-auto grid md:grid-cols-4 gap-10">
+    <div>
+      <div class="flex items-center gap-3 mb-4">
+        <img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy">
+        <span class="font-extrabold text-lg text-white">Cornel Trend Wave</span>
+      </div>
+      <p class="text-white/60 text-sm">Electronics & fashion, delivered with love across Kenya.</p>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Shop</h4>
+      <ul class="space-y-2 text-sm text-white/60">
+        <li><a href="products.html#electronics" class="hover:text-white">Electronics</a></li>
+        <li><a href="products.html#fashion" class="hover:text-white">Fashion</a></li>
+        <li><a href="products.html" class="hover:text-white">All products</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Company</h4>
+      <ul class="space-y-2 text-sm text-white/60">
+        <li><a href="about.html" class="hover:text-white">About</a></li>
+        <li><a href="contact.html" class="hover:text-white">Contact</a></li>
+        <li><a href="auth.html" class="hover:text-white">My Account</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Reach us</h4>
+      <ul class="space-y-2 text-sm text-white/60">
+        <li><i class="fas fa-phone mr-2"></i>+254 759 051 333</li>
+        <li><i class="fas fa-envelope mr-2"></i>sales@corneltrendwave.co.ke</li>
+        <li><i class="fas fa-location-dot mr-2"></i>Eastleigh 9th Street, Nairobi, Kenya</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container mx-auto mt-10 pt-6 border-t border-white/10 text-center text-white/50 text-sm">© 2026 Cornel Trend Wave</div>
+</footer>
+
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Added!</span></div>
+
+<nav class="bottom-nav md:hidden">
+  <div>
+    <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+    <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+    <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+    <a href="auth.html" class="bottom-nav-item active"><i class="fas fa-user"></i><span>Account</span></a>
+  </div>
+</nav>
+
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// Update inline event handlers to use the external auth module
+(function() {
+  'use strict';
+  
+  // Update onclick handlers to use auth.switchTab
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    const onclick = tab.getAttribute('onclick');
+    if (onclick && onclick.includes('switchTab')) {
+      const tabName = onclick.match(/switchTab\('(\w+)'\)/)?.[1];
+      if (tabName) {
+        tab.onclick = () => window.auth.switchTab(tabName);
+      }
+    }
+  });
+  
+  // Update form onsubmit handlers
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.onsubmit = (e) => window.auth.handleLoginSubmit(e);
+  }
+  
+  const registerForm = document.getElementById('registerForm');
+  if (registerForm) {
+    registerForm.onsubmit = (e) => window.auth.handleRegisterSubmit(e);
+  }
+  
+  const otpForm = document.getElementById('otpForm');
+  if (otpForm) {
+    otpForm.onsubmit = (e) => window.auth.handleOTPSubmit(e);
+  }
+  
+  // Update OTP input oninput handlers
+  document.querySelectorAll('.otp-input').forEach(input => {
+    input.oninput = function() {
+      window.auth.moveToNextOTP(this);
+    };
+  });
+  
+  // Update resend OTP link
+  const resendLink = document.getElementById('resendLink');
+  if (resendLink) {
+    resendLink.onclick = (e) => window.auth.handleResendOTP(e);
+  }
+  
+  // Update switchTab links in text
+  document.querySelectorAll('a[onclick*="switchTab"]').forEach(link => {
+    const onclick = link.getAttribute('onclick');
+    if (onclick) {
+      const tabName = onclick.match(/switchTab\('(\w+)'\)/)?.[1];
+      if (tabName) {
+        link.onclick = (e) => {
+          e.preventDefault();
+          window.auth.switchTab(tabName);
+          return false;
+        };
+      }
+    }
+  });
+  
+  // Initialize auth system
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already logged in
+    const user = JSON.parse(localStorage.getItem('ctw_user') || 'null');
+    if (user && user.loggedIn && user.verified) {
+      // Redirect to homepage if already logged in and verified
+      window.location.href = 'index.html';
+    }
+  });
+})();
+</script>
+</body>
+</html>
