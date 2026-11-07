@@ -40,6 +40,13 @@ body{font-family:'Poppins',system-ui,sans-serif;margin:0;color:var(--ink);backgr
 .logo-bubble{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;box-shadow:0 6px 16px -4px rgba(240,176,0,.5);background:linear-gradient(135deg,#0f0f0f,#f0b000)}
 .logo-img{width:48px;height:48px;border-radius:12px;object-fit:cover;box-shadow:0 6px 16px -4px rgba(0,0,0,.3);border:2px solid #f0b000}
 .logo-img-lg{width:56px;height:56px}
+.brand-name{font-weight:800;font-size:1.05rem;line-height:1.05;letter-spacing:-.01em;color:#0f0f0f;white-space:nowrap}
+.brand-name .accent{color:#d08000;display:block;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-top:1px}
+@media(max-width:639px){
+  .brand-name{font-size:.85rem}
+  .brand-name .accent{font-size:.58rem;letter-spacing:.12em}
+  .logo-img{width:36px;height:36px;border-radius:9px;border-width:1.5px}
+}
 
 /* ---------- Big search ---------- */
 .big-search{display:flex;width:100%;max-width:640px;background:#fff;border-radius:9999px;box-shadow:0 6px 20px -8px rgba(0,0,0,.2);overflow:hidden;border:2.5px solid #f0b000;transition:border-color .2s,box-shadow .2s}
