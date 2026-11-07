@@ -238,25 +238,46 @@
     });
   }
 
-  // ---- OTP ----
-  function genOtp(){ return String(Math.floor(100000 + Math.random()*900000)); }
+  // ---- OTP (via backend API) ----
   var otpData = null;
   var otpTimer = null;
+  // API base URL — change this to your deployed Render API URL
+  var API_BASE = window.NWT_API_BASE || 'https://next-wave-trends-api.onrender.com';
 
   function sendOtp(target, purpose){
-    var code = genOtp();
-    otpData = { target: target, code: code, purpose: purpose, ts: Date.now() };
-    // Try to send real SMS if Africa's Talking is configured
-    if(window.nwtSendSms && isPhone(target)){
-      window.nwtSendSms(normalizePhone(target), 'Your Next Wave Trends verification code is: ' + code);
-    }
-    return code;
+    return fetch(API_BASE + '/api/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: target })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.success){
+        otpData = { target: target, purpose: purpose, otpId: data.otpId, ts: Date.now(), demoCode: data.demoCode || null };
+        return { success: true, demoCode: data.demoCode || null };
+      }
+      return { success: false, error: data.error || 'Failed to send OTP' };
+    })
+    .catch(function(err){
+      return { success: false, error: err.message };
+    });
   }
+
   function verifyOtpCode(code){
-    if(!otpData) return { ok:false, reason:'no-otp' };
-    if(Date.now() - otpData.ts > 60*1000) return { ok:false, reason:'expired' };
-    if(String(otpData.code) !== String(code)) return { ok:false, reason:'wrong' };
-    return { ok:true, target: otpData.target, purpose: otpData.purpose };
+    if(!otpData || !otpData.otpId) return Promise.resolve({ ok:false, reason:'no-otp' });
+    return fetch(API_BASE + '/api/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ otpId: otpData.otpId, code: code })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.success) return { ok: true, target: otpData.target, purpose: otpData.purpose };
+      if(data.error && data.error.toLowerCase().indexOf('expired') >= 0) return { ok:false, reason:'expired' };
+      if(data.error && data.error.toLowerCase().indexOf('incorrect') >= 0) return { ok:false, reason:'wrong' };
+      return { ok:false, reason:'error', message: data.error };
+    })
+    .catch(function(err){ return { ok:false, reason:'error', message: err.message }; });
   }
 
   // ---- UI ----
@@ -353,19 +374,30 @@
     if(!id){ toast('Enter your email or phone number', true); return false; }
     var user = findUser(id);
     if(!user){ toast('No account found. Sign up first.', true); return false; }
-    // Send OTP
-    var code = sendOtp(id, 'reset');
-    document.getElementById('otpTarget').textContent = id;
-    // Demo notice
-    var demoNotice = document.getElementById('otpDemoNotice');
-    demoNotice.classList.remove('hidden');
-    document.getElementById('otpDemoCode').textContent = code;
-    // Show OTP section
-    document.getElementById('forgotForm').classList.add('hidden');
-    document.getElementById('otpSection').classList.remove('hidden');
-    renderOtpBoxes();
-    startOtpCountdown();
-    toast('Verification code sent to ' + id);
+    // Show loading
+    toast('Sending verification code...');
+    // Send OTP via backend API (async)
+    sendOtp(id, 'reset').then(function(result){
+      if(!result.success){
+        toast('Failed to send code: ' + (result.error || 'Unknown error'), true);
+        return;
+      }
+      document.getElementById('otpTarget').textContent = id;
+      // Demo notice (only shown if backend returns demoCode, i.e. sandbox mode)
+      var demoNotice = document.getElementById('otpDemoNotice');
+      if(result.demoCode){
+        demoNotice.classList.remove('hidden');
+        document.getElementById('otpDemoCode').textContent = result.demoCode;
+      } else {
+        demoNotice.classList.add('hidden');
+      }
+      // Show OTP section
+      document.getElementById('forgotForm').classList.add('hidden');
+      document.getElementById('otpSection').classList.remove('hidden');
+      renderOtpBoxes();
+      startOtpCountdown();
+      toast('Verification code sent to ' + id);
+    });
     return false;
   }
 
@@ -423,30 +455,28 @@
   function verifyOtp(){
     var code = getOtpValue();
     if(!/^\d{6}$/.test(code)){ toast('Enter the 6-digit code', true); return; }
-    var res = verifyOtpCode(code);
-    if(res.ok){
-      clearInterval(otpTimer);
-      if(res.purpose === 'reset'){
-        // Allow setting a new password
-        var user = findUser(res.target);
-        if(user){
-          toast('Verified! Please set a new password');
-          // Simple: just let them set a new password via prompt
-          var newPwd = window.prompt ? null : null;
-          // Show a new password form
-          showNewPasswordForm(user);
+    toast('Verifying...');
+    verifyOtpCode(code).then(function(res){
+      if(res.ok){
+        clearInterval(otpTimer);
+        if(res.purpose === 'reset'){
+          var user = findUser(res.target);
+          if(user){
+            toast('Verified! Please set a new password');
+            showNewPasswordForm(user);
+          }
+        } else {
+          toast('Verified! Logging you in...');
+          setTimeout(function(){ window.location.href = 'index.html'; }, 800);
         }
+      } else if(res.reason === 'expired'){
+        toast('Code expired. Resend a new one.', true);
+      } else if(res.reason === 'wrong'){
+        toast('Incorrect code. Try again.', true);
       } else {
-        toast('Verified! Logging you in...');
-        setTimeout(function(){ window.location.href = 'index.html'; }, 800);
+        toast('Could not verify. ' + (res.message || 'Try again.'), true);
       }
-    } else if(res.reason === 'expired'){
-      toast('Code expired. Resend a new one.', true);
-    } else if(res.reason === 'wrong'){
-      toast('Incorrect code. Try again.', true);
-    } else {
-      toast('Please request a new code.', true);
-    }
+    });
   }
 
   function showNewPasswordForm(user){
@@ -466,10 +496,19 @@
 
   function resendOtp(){
     if(!otpData) return;
-    var code = sendOtp(otpData.target, otpData.purpose);
-    document.getElementById('otpDemoCode').textContent = code;
-    startOtpCountdown();
-    toast('New code sent');
+    toast('Sending new code...');
+    sendOtp(otpData.target, otpData.purpose).then(function(result){
+      if(!result.success){
+        toast('Failed to resend: ' + (result.error || 'Unknown error'), true);
+        return;
+      }
+      if(result.demoCode){
+        document.getElementById('otpDemoCode').textContent = result.demoCode;
+        document.getElementById('otpDemoNotice').classList.remove('hidden');
+      }
+      startOtpCountdown();
+      toast('New code sent');
+    });
   }
 
   function showForgot(){
@@ -552,6 +591,7 @@
     googleSignIn: googleSignIn,
     saveNewPwd: saveNewPwd,
     getCurrent: getCurrent,
+    getCurrentUser: getCurrent,
     isLoggedIn: function(){ return !!getCurrent(); },
     logoutUser: function(){ localStorage.removeItem('nwt_current'); }
   };
