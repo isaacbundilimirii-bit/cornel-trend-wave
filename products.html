@@ -150,55 +150,74 @@
   function filter(cat){
     document.querySelectorAll('[data-filter]').forEach(function(b){ b.className='cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm'; });
     var btn=document.querySelector('[data-filter="'+cat+'"]'); if(btn) btn.className='cute-btn cute-grad-gold text-white px-5 py-2 text-sm';
-    if(cat==='all'){ document.getElementById('filteredSection').classList.add('hidden'); document.getElementById('electronics').classList.remove('hidden'); document.getElementById('fashion').classList.remove('hidden'); return; }
-    document.getElementById('electronics').classList.add('hidden'); document.getElementById('fashion').classList.add('hidden');
-    var sec=document.getElementById('filteredSection'); sec.classList.remove('hidden');
-    document.getElementById('filteredTitle').textContent = cat==='electronics'?'Electronics':'Fashion';
-    var items=window.CTW_PRODUCTS.filter(function(p){return p.cat===cat;});
-    document.getElementById('filteredGrid').innerHTML=items.map(productCard).join('');
+    currentCat = cat;
+    // Reset sort highlight when changing filter
+    currentSort = null;
+    document.querySelectorAll('[onclick^="ctw.sortBy"]').forEach(function(b){ b.className = 'cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs'; });
+    renderCurrent();
   }
 
   function filterBySub(sub){
     document.querySelectorAll('[data-filter]').forEach(function(b){ b.className='cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-5 py-2 text-sm'; });
     var btn=document.querySelector('[data-filter="'+sub+'"]'); if(btn) btn.className='cute-btn cute-grad-gold text-white px-5 py-2 text-sm';
-    document.getElementById('electronics').classList.add('hidden'); document.getElementById('fashion').classList.add('hidden');
-    var sec=document.getElementById('filteredSection'); sec.classList.remove('hidden');
-    var subNames={'phones':'Phones','audio':'Audio & Speakers','shoes':'Shoes & Footwear'};
-    document.getElementById('filteredTitle').textContent = subNames[sub]||sub;
-    var items=window.CTW_PRODUCTS.filter(function(p){return p.sub===sub;});
-    document.getElementById('filteredGrid').innerHTML=items.map(productCard).join('');
+    currentCat = sub.toLowerCase();
+    currentSort = null;
+    document.querySelectorAll('[onclick^="ctw.sortBy"]').forEach(function(b){ b.className = 'cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs'; });
+    renderCurrent();
+  }
+
+  // Track the current filter state so sort can apply to the right products
+  var currentCat = 'all'; // 'all' | 'electronics' | 'fashion' | a sub-category
+  var currentSort = null;
+
+  function getFilteredItems(){
+    if(currentCat === 'all') return window.CTW_PRODUCTS.slice();
+    if(currentCat === 'electronics') return window.CTW_PRODUCTS.filter(function(p){return p.cat==='electronics';});
+    if(currentCat === 'fashion') return window.CTW_PRODUCTS.filter(function(p){return p.cat==='fashion';});
+    // sub-category filter
+    return window.CTW_PRODUCTS.filter(function(p){return (p.sub||'').toLowerCase() === currentCat;});
+  }
+
+  function applySort(items){
+    if(!currentSort) return items;
+    var s = currentSort;
+    if(s==='price-asc') return items.sort(function(a,b){return a.price-b.price;});
+    if(s==='price-desc') return items.sort(function(a,b){return b.price-a.price;});
+    if(s==='rating') return items.sort(function(a,b){return b.rating-a.rating;});
+    if(s==='newest') return items.sort(function(a,b){return String(b.id).localeCompare(String(a.id));});
+    return items;
+  }
+
+  function renderCurrent(){
+    var items = getFilteredItems();
+    items = applySort(items);
+    if(currentCat === 'all'){
+      document.getElementById('filteredSection').classList.add('hidden');
+      document.getElementById('electronics').classList.remove('hidden');
+      document.getElementById('fashion').classList.remove('hidden');
+      document.getElementById('electronicsGrid').innerHTML = items.filter(function(p){return p.cat==='electronics';}).map(productCard).join('');
+      document.getElementById('fashionGrid').innerHTML = items.filter(function(p){return p.cat==='fashion';}).map(productCard).join('');
+    } else {
+      document.getElementById('electronics').classList.add('hidden');
+      document.getElementById('fashion').classList.add('hidden');
+      var sec = document.getElementById('filteredSection'); sec.classList.remove('hidden');
+      var title = currentCat.charAt(0).toUpperCase() + currentCat.slice(1);
+      if(currentCat === 'electronics') title = 'Electronics';
+      if(currentCat === 'fashion') title = 'Fashion';
+      document.getElementById('filteredTitle').textContent = title;
+      document.getElementById('filteredGrid').innerHTML = items.map(productCard).join('');
+    }
   }
 
   function sortBy(type){
-    var items=[];
-    var sec=document.getElementById('filteredSection');
-    if(!sec.classList.contains('hidden')){
-      var grid=document.getElementById('filteredGrid');
-      var currentItems=window.CTW_PRODUCTS.filter(function(p){
-        var catMatch=document.getElementById('filteredTitle').textContent.toLowerCase();
-        if(catMatch==='electronics') return p.cat==='electronics';
-        if(catMatch==='fashion') return p.cat==='fashion';
-        if(catMatch.includes('phones')) return p.sub==='phones';
-        if(catMatch.includes('audio')) return p.sub==='audio';
-        if(catMatch.includes('shoes')) return p.sub==='shoes';
-        return true;
-      });
-      items=currentItems;
-    }else{
-      items=window.CTW_PRODUCTS;
-    }
-    
-    if(type==='price-asc') items.sort(function(a,b){return a.price-b.price;});
-    else if(type==='price-desc') items.sort(function(a,b){return b.price-a.price;});
-    else if(type==='rating') items.sort(function(a,b){return b.rating-a.rating;});
-    else if(type==='newest') items.sort(function(a,b){return b.id.localeCompare(a.id);});
-    
-    if(!sec.classList.contains('hidden')){
-      document.getElementById('filteredGrid').innerHTML=items.map(productCard).join('');
-    }else{
-      document.getElementById('electronicsGrid').innerHTML=items.filter(function(p){return p.cat==='electronics';}).map(productCard).join('');
-      document.getElementById('fashionGrid').innerHTML=items.filter(function(p){return p.cat==='fashion';}).map(productCard).join('');
-    }
+    currentSort = type;
+    // Highlight the active sort button
+    document.querySelectorAll('[onclick^="ctw.sortBy"]').forEach(function(b){
+      b.className = 'cute-btn bg-white border border-gray-300 text-gray-700 px-4 py-1.5 text-xs';
+    });
+    var btn = document.querySelector('[onclick="ctw.sortBy(\'' + type + '\')"]');
+    if(btn) btn.className = 'cute-btn cute-grad-gold text-white px-4 py-1.5 text-xs';
+    renderCurrent();
   }
 
   window.ctw.filter=filter;
