@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin - Next Wave Trends</title>
+<meta name="description" content="Manage your products, stock, and prices">
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.admin-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.admin-table th{text-align:left;padding:.7rem .5rem;background:#0f0f0f;color:#f0b000;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+.admin-table td{padding:.6rem .5rem;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.admin-table tr:hover{background:#fffbeb}
+.stock-on{display:inline-flex;align-items:center;gap:.3rem;background:#d1fae5;color:#065f46;padding:.25rem .6rem;border-radius:9999px;font-size:.7rem;font-weight:700;cursor:pointer}
+.stock-off{display:inline-flex;align-items:center;gap:.3rem;background:#fee2e2;color:#991b1b;padding:.25rem .6rem;border-radius:9999px;font-size:.7rem;font-weight:700;cursor:pointer}
+.admin-btn{padding:.4rem .7rem;border-radius:.5rem;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid #e5e7eb;background:#fff;transition:all .15s}
+.admin-btn:hover{background:#fffbeb;border-color:#f0b000}
+.admin-btn-danger:hover{background:#fee2e2;border-color:#ef4444;color:#991b1b}
+.prod-thumb{width:40px;height:40px;border-radius:.4rem;object-fit:cover;border:1px solid #eee}
+.form-input{width:100%;padding:.5rem .7rem;border:1px solid #e5e7eb;border-radius:.5rem;font-size:.85rem;outline:none;transition:border .15s}
+.form-input:focus{border-color:#f0b000}
+.form-label{display:block;font-size:.78rem;font-weight:600;color:#374151;margin-bottom:.3rem}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:1rem;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem}
+.stat-card{background:#fff;border-radius:.9rem;padding:1rem;border:1px solid #f0f0f0;display:flex;align-items:center;gap:.8rem}
+.stat-icon{width:44px;height:44px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff}
+</style>
+</head>
+<body class="bg-gray-50">
+<!-- Simple header -->
+<header class="bg-white border-b-2 border-yellow-500 sticky top-0 z-40">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" style="width:36px;height:36px">
+      <span class="brand-name" style="font-size:.85rem">Next Wave<span class="accent">Trends</span></span>
+    </a>
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-bold text-yellow-700 bg-yellow-100 px-2.5 py-1 rounded-full"><i class="fas fa-lock mr-1"></i> Admin</span>
+      <a href="index.html" class="text-sm text-gray-600 hover:text-yellow-600"><i class="fas fa-store mr-1"></i> View shop</a>
+    </div>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 py-6 max-w-6xl">
+  <!-- Title + actions -->
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div>
+      <h1 class="text-2xl font-extrabold"><i class="fas fa-gauge text-yellow-600"></i> Admin Dashboard</h1>
+      <p class="text-gray-500 text-sm mt-1">Manage products, stock & prices</p>
+    </div>
+    <button onclick="admin.openAdd()" class="cute-btn cute-grad-gold text-white px-5 py-2.5"><i class="fas fa-plus mr-1"></i> Add product</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="statsGrid"></div>
+
+  <!-- Filter -->
+  <div class="flex gap-2 mb-4 flex-wrap">
+    <button onclick="admin.setFilter('all')" class="cute-btn cute-grad-gold text-white px-4 py-2 text-sm" data-filter="all">All</button>
+    <button onclick="admin.setFilter('electronics')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-4 py-2 text-sm" data-filter="electronics"><i class="fas fa-bolt mr-1"></i>Electronics</button>
+    <button onclick="admin.setFilter('fashion')" class="cute-btn bg-white border-2 border-yellow-300 text-yellow-700 px-4 py-2 text-sm" data-filter="fashion"><i class="fas fa-shirt mr-1"></i>Fashion</button>
+    <button onclick="admin.setFilter('instock')" class="cute-btn bg-white border-2 border-green-300 text-green-700 px-4 py-2 text-sm" data-filter="instock"><i class="fas fa-check mr-1"></i>In stock</button>
+    <button onclick="admin.setFilter('outofstock')" class="cute-btn bg-white border-2 border-red-300 text-red-700 px-4 py-2 text-sm" data-filter="outofstock"><i class="fas fa-times mr-1"></i>Out of stock</button>
+  </div>
+
+  <!-- Products table -->
+  <div class="bg-white rounded-xl shadow-sm overflow-hidden overflow-x-auto">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="hidden md:table-cell">Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productsBody"></tbody>
+    </table>
+  </div>
+
+  <p class="text-center text-gray-400 text-xs mt-6"><i class="fas fa-info-circle"></i> Changes are saved on this device. To push to the live site, export and update <code>js/products.js</code>.</p>
+</main>
+
+<!-- Add/Edit modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="flex items-center justify-between mb-5">
+      <h2 id="modalTitle" class="text-xl font-extrabold">Add product</h2>
+      <button onclick="admin.closeModal()" class="text-2xl text-gray-400 hover:text-gray-700"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="productForm" onsubmit="return admin.save(event)" class="space-y-3">
+      <input type="hidden" id="f_id">
+      <div>
+        <label class="form-label">Product name</label>
+        <input type="text" id="f_name" class="form-input" required placeholder="e.g. Samsung Galaxy A05">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Category</label>
+          <select id="f_cat" class="form-input">
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Sub-category</label>
+          <input type="text" id="f_sub" class="form-input" placeholder="e.g. Phones, Audio, Tops" required>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Price (Ksh)</label>
+          <input type="number" id="f_price" class="form-input" required min="0" placeholder="2999">
+        </div>
+        <div>
+          <label class="form-label">Old price (optional)</label>
+          <input type="number" id="f_oldPrice" class="form-input" min="0" placeholder="3999">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Rating (0-5)</label>
+          <input type="number" id="f_rating" class="form-input" step="0.1" min="0" max="5" value="4.5">
+        </div>
+        <div>
+          <label class="form-label">Reviews count</label>
+          <input type="number" id="f_reviews" class="form-input" min="0" value="0">
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Image URL</label>
+        <input type="url" id="f_img" class="form-input" required placeholder="https://...">
+      </div>
+      <div>
+        <label class="form-label">Description</label>
+        <textarea id="f_desc" class="form-input" rows="3" placeholder="Product description..."></textarea>
+      </div>
+      <div>
+        <label class="form-label">Badge (optional)</label>
+        <select id="f_badge" class="form-input">
+          <option value="">None</option>
+          <option value="Hot">Hot</option>
+          <option value="New">New</option>
+          <option value="Best">Best</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="f_inStock" checked class="w-4 h-4">
+        <label for="f_inStock" class="text-sm font-semibold">In stock</label>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button type="submit" class="cute-btn cute-grad-gold text-white px-6 py-2.5 flex-1"><i class="fas fa-save mr-1"></i> Save</button>
+        <button type="button" onclick="admin.closeModal()" class="cute-btn bg-gray-100 text-gray-700 px-6 py-2.5">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Saved!</span></div>
+
+<script src="js/products.js"></script>
+<script>
+(function(){
+  'use strict';
+  // Load custom products from localStorage, merge with defaults
+  var custom = JSON.parse(localStorage.getItem('ctw_admin_products') || '[]');
+  var stock = JSON.parse(localStorage.getItem('ctw_admin_stock') || '{}');
+
+  function getAllProducts(){
+    var base = window.CTW_PRODUCTS.slice();
+    custom.forEach(function(c){
+      var idx = base.findIndex(function(b){return b.id === c.id;});
+      if(idx >= 0) base[idx] = Object.assign({}, base[idx], c);
+      else base.push(c);
+    });
+    base.forEach(function(p){ if(stock[p.id] !== undefined) p.inStock = stock[p.id]; else p.inStock = true; });
+    return base;
+  }
+
+  function saveStock(){ localStorage.setItem('ctw_admin_stock', JSON.stringify(stock)); }
+  function saveCustom(){ localStorage.setItem('ctw_admin_products', JSON.stringify(custom)); }
+
+  function money(n){return 'Ksh ' + Number(n).toLocaleString('en-KE');}
+  function toast(msg){ var t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); clearTimeout(window._adminToast); window._adminToast=setTimeout(function(){t.classList.remove('show');},2000); }
+
+  var currentFilter = 'all';
+  function setFilter(f){
+    currentFilter = f;
+    document.querySelectorAll('[data-filter]').forEach(function(b){
+      b.className = 'cute-btn bg-white border-2 px-4 py-2 text-sm ' + (b.dataset.filter===f ? 'cute-grad-gold text-white' : 'border-yellow-300 text-yellow-700');
+      if(b.dataset.filter==='instock' && f==='instock') b.className = 'cute-btn bg-green-600 text-white px-4 py-2 text-sm';
+      if(b.dataset.filter==='outofstock' && f==='outofstock') b.className = 'cute-btn bg-red-600 text-white px-4 py-2 text-sm';
+    });
+    render();
+  }
+
+  function render(){
+    var all = getAllProducts();
+    // Stats
+    var inStock = all.filter(function(p){return p.inStock !== false;}).length;
+    var outStock = all.length - inStock;
+    var elec = all.filter(function(p){return p.cat==='electronics';}).length;
+    var fash = all.filter(function(p){return p.cat==='fashion';}).length;
+    document.getElementById('statsGrid').innerHTML =
+      '<div class="stat-card"><div class="stat-icon" style="background:#0f0f0f;color:#f0b000"><i class="fas fa-box"></i></div><div><div class="text-2xl font-extrabold">'+all.length+'</div><div class="text-xs text-gray-500">Total products</div></div></div>'+
+      '<div class="stat-card"><div class="stat-icon" style="background:#10b981"><i class="fas fa-check"></i></div><div><div class="text-2xl font-extrabold">'+inStock+'</div><div class="text-xs text-gray-500">In stock</div></div></div>'+
+      '<div class="stat-card"><div class="stat-icon" style="background:#ef4444"><i class="fas fa-times"></i></div><div><div class="text-2xl font-extrabold">'+outStock+'</div><div class="text-xs text-gray-500">Out of stock</div></div></div>'+
+      '<div class="stat-card"><div class="stat-icon" style="background:#f0b000;color:#0f0f0f"><i class="fas fa-tags"></i></div><div><div class="text-2xl font-extrabold">'+(elec+fash)+'</div><div class="text-xs text-gray-500">Categories</div></div></div>';
+
+    // Filter
+    var list = all;
+    if(currentFilter==='electronics') list = all.filter(function(p){return p.cat==='electronics';});
+    else if(currentFilter==='fashion') list = all.filter(function(p){return p.cat==='fashion';});
+    else if(currentFilter==='instock') list = all.filter(function(p){return p.inStock !== false;});
+    else if(currentFilter==='outofstock') list = all.filter(function(p){return p.inStock === false;});
+
+    // Table
+    var body = document.getElementById('productsBody');
+    if(list.length === 0){ body.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-8">No products found</td></tr>'; return; }
+    body.innerHTML = list.map(function(p){
+      var stockBadge = p.inStock !== false
+        ? '<span class="stock-on" onclick="admin.toggleStock(\''+p.id+'\')"><i class="fas fa-check-circle"></i> In stock</span>'
+        : '<span class="stock-off" onclick="admin.toggleStock(\''+p.id+'\')"><i class="fas fa-times-circle"></i> Out of stock</span>';
+      var oldP = p.oldPrice ? '<span class="text-gray-400 line-through text-xs ml-1">'+money(p.oldPrice)+'</span>' : '';
+      return '<tr>'+
+        '<td><div class="flex items-center gap-2"><img src="'+p.img+'" class="prod-thumb" alt=""><div><div class="font-semibold text-sm">'+p.name+'</div><div class="text-xs text-gray-400">'+p.sub+'</div></div></div></td>'+
+        '<td class="hidden md:table-cell"><span class="text-xs font-semibold uppercase">'+p.cat+'</span></td>'+
+        '<td><div class="font-bold">'+money(p.price)+'</div>'+oldP+'</td>'+
+        '<td>'+stockBadge+'</td>'+
+        '<td><div class="flex gap-1"><button onclick="admin.edit(\''+p.id+'\')" class="admin-btn" title="Edit"><i class="fas fa-pen"></i></button><button onclick="admin.remove(\''+p.id+'\')" class="admin-btn admin-btn-danger" title="Delete"><i class="fas fa-trash"></i></button></div></td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  function toggleStock(id){
+    var p = getAllProducts().find(function(x){return x.id===id;});
+    if(!p) return;
+    stock[id] = p.inStock === false;
+    saveStock();
+    render();
+    toast(p.inStock === false ? p.name + ' marked OUT of stock' : p.name + ' marked IN stock');
+  }
+
+  function openAdd(){
+    document.getElementById('modalTitle').textContent = 'Add product';
+    document.getElementById('productForm').reset();
+    document.getElementById('f_id').value = '';
+    document.getElementById('f_rating').value = '4.5';
+    document.getElementById('f_reviews').value = '0';
+    document.getElementById('f_inStock').checked = true;
+    document.getElementById('modalOverlay').classList.add('active');
+  }
+
+  function edit(id){
+    var p = getAllProducts().find(function(x){return x.id===id;});
+    if(!p) return;
+    document.getElementById('modalTitle').textContent = 'Edit product';
+    document.getElementById('f_id').value = p.id;
+    document.getElementById('f_name').value = p.name;
+    document.getElementById('f_cat').value = p.cat;
+    document.getElementById('f_sub').value = p.sub;
+    document.getElementById('f_price').value = p.price;
+    document.getElementById('f_oldPrice').value = p.oldPrice || '';
+    document.getElementById('f_rating').value = p.rating || 4.5;
+    document.getElementById('f_reviews').value = p.reviews || 0;
+    document.getElementById('f_img').value = p.img;
+    document.getElementById('f_desc').value = p.desc || '';
+    document.getElementById('f_badge').value = p.badge || '';
+    document.getElementById('f_inStock').checked = p.inStock !== false;
+    document.getElementById('modalOverlay').classList.add('active');
+  }
+
+  function save(e){
+    e.preventDefault();
+    var id = document.getElementById('f_id').value || ('p' + Date.now());
+    var data = {
+      id: id,
+      name: document.getElementById('f_name').value.trim(),
+      cat: document.getElementById('f_cat').value,
+      sub: document.getElementById('f_sub').value.trim(),
+      price: parseInt(document.getElementById('f_price').value, 10) || 0,
+      oldPrice: parseInt(document.getElementById('f_oldPrice').value, 10) || null,
+      rating: parseFloat(document.getElementById('f_rating').value) || 4.5,
+      reviews: parseInt(document.getElementById('f_reviews').value, 10) || 0,
+      img: document.getElementById('f_img').value.trim(),
+      desc: document.getElementById('f_desc').value.trim(),
+      badge: document.getElementById('f_badge').value || null,
+      inStock: document.getElementById('f_inStock').checked
+    };
+    var idx = custom.findIndex(function(c){return c.id === id;});
+    if(idx >= 0) custom[idx] = data; else custom.push(data);
+    saveCustom();
+    stock[id] = data.inStock;
+    saveStock();
+    closeModal();
+    render();
+    toast('Product saved successfully');
+    return false;
+  }
+
+  function remove(id){
+    if(!confirm('Delete this product? This cannot be undone.')) return;
+    var p = getAllProducts().find(function(x){return x.id===id;});
+    custom = custom.filter(function(c){return c.id !== id;});
+    saveCustom();
+    delete stock[id]; saveStock();
+    render();
+    toast((p ? p.name : 'Product') + ' deleted');
+  }
+
+  function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    render();
+    document.getElementById('modalOverlay').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
+  });
+
+  window.admin = { setFilter:setFilter, toggleStock:toggleStock, openAdd:openAdd, edit:edit, save:save, remove:remove, closeModal:closeModal };
+})();
+</script>
+</body>
+</html>

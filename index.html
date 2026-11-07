@@ -348,6 +348,7 @@
 (function(){
   function money(n){return 'Ksh '+Number(n).toLocaleString('en-KE');}
   function stars(r){var s='';for(var i=1;i<=5;i++){s+='<i class="fas fa-star '+(i<=Math.round(r)?'text-yellow-400':'text-gray-300')+'"></i>';}return s;}
+  function inStockFor(id){ try{var s=JSON.parse(localStorage.getItem('ctw_admin_stock')||'{}'); if(s[id]!==undefined) return s[id];}catch(e){} return true; }
   function card(p){
     var disc = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
     var discBadge = disc>0 ? '<span class="discount-badge">-'+disc+'%</span>' : '';
@@ -355,16 +356,21 @@
     var oldPrice = p.oldPrice ? '<span class="old-price">'+money(p.oldPrice)+'</span>' : '';
     var waMsg = encodeURIComponent('Hello Next Wave Trends!\n\nI want to order:\n*'+p.name+'*\nPrice: '+money(p.price)+'\n\nIs it available?');
     var WA = '254759051333';
-    return '<div class="prod-card cute-card">'
-      + '<a href="product.html?id='+p.id+'" class="block">'
-      + '<div class="img-wrap">'+discBadge+newBadge+'<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div>'
+    var inStock = p.inStock !== undefined ? p.inStock !== false : inStockFor(p.id);
+    var soldOverlay = inStock ? '' : '<div class="absolute inset-0 bg-black/50 flex items-center justify-center z-10 pointer-events-none"><span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">SOLD OUT</span></div>';
+    var addBtn = inStock
+      ? '<button onclick="ctw.addToCart(\''+p.id+'\')" class="add-btn flex-1"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>'
+      : '<button disabled class="add-btn flex-1 opacity-50 cursor-not-allowed">Sold out</button>';
+    return '<div class="prod-card cute-card'+(inStock?'':' opacity-75')+'">'
+      + '<a href="product.html?id='+p.id+'" class="block relative">'
+      + '<div class="img-wrap relative">'+discBadge+newBadge+soldOverlay+'<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div>'
       + '<div class="body">'
       + '<div class="name">'+p.name+'</div>'
       + '<div class="rating">'+stars(p.rating)+' <span>'+p.rating+' ('+p.reviews+')</span></div>'
       + '<div class="price-row"><span class="price">'+money(p.price)+'</span>'+oldPrice+'</div>'
       + '</div></a>'
       + '<div class="px-3 pb-3 flex gap-1.5">'
-      + '<button onclick="ctw.addToCart(\''+p.id+'\')" class="add-btn flex-1"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>'
+      + addBtn
       + '<a href="https://wa.me/'+WA+'?text='+waMsg+'" target="_blank" class="add-btn wa-btn" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>'
       + '</div></div>';
   }

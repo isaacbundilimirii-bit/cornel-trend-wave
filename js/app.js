@@ -115,15 +115,24 @@
 
   // ---- Product card renderer ----
   var WA_NUMBER = '254759051333';
+  function isInStock(id){
+    try { var s = JSON.parse(localStorage.getItem('ctw_admin_stock') || '{}'); if(s[id] !== undefined) return s[id]; } catch(e){}
+    return true;
+  }
   function productCard(p) {
     var badge = p.badge ? '<span class="badge-cute">' + p.badge + '</span>' : '';
     var discBadge = p.oldPrice ? '<span class="discount-badge">-' + Math.round((1 - p.price/p.oldPrice)*100) + '%</span>' : '';
     var newBadge = p.badge === 'New' ? '<span class="new-badge">NEW</span>' : '';
     var waMsg = encodeURIComponent('Hello Next Wave Trends!\n\nI want to order:\n*' + p.name + '*\nPrice: ' + money(p.price) + '\n\nIs it available?');
-    return '<div class="prod-card cute-card">' +
-      '<a href="product.html?id=' + p.id + '" class="block">' +
-        '<div class="img-wrap">' +
-          badge +
+    var inStock = p.inStock !== undefined ? p.inStock !== false : isInStock(p.id);
+    var soldOverlay = inStock ? '' : '<div class="absolute inset-0 bg-black/50 flex items-center justify-center z-10 pointer-events-none"><span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">SOLD OUT</span></div>';
+    var addBtn = inStock
+      ? '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="add-btn flex-1" title="Add to cart"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>'
+      : '<button disabled class="add-btn flex-1 opacity-50 cursor-not-allowed" title="Out of stock">Sold out</button>';
+    return '<div class="prod-card cute-card' + (inStock ? '' : ' opacity-75') + '">' +
+      '<a href="product.html?id=' + p.id + '" class="block relative">' +
+        '<div class="img-wrap relative">' +
+          badge + soldOverlay +
           '<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button>' +
           '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
         '</div>' +
@@ -134,7 +143,7 @@
         '</div>' +
       '</a>' +
       '<div class="px-3 pb-3 flex gap-1.5">' +
-        '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="add-btn flex-1" title="Add to cart"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>' +
+        addBtn +
         '<a href="https://wa.me/' + WA_NUMBER + '?text=' + waMsg + '" target="_blank" class="add-btn wa-btn" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>' +
       '</div>' +
     '</div>';
