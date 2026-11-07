@@ -227,6 +227,23 @@
     </div>
   </section>
 
+  <!-- ===== Recommended for You ===== -->
+  <section class="px-4 pt-10 shop-section" id="recommended">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)"><i class="fas fa-wand-magic-sparkles"></i></div>
+          <div>
+            <h2>Recommended for You</h2>
+            <div class="sub">Handpicked picks you might love</div>
+          </div>
+        </div>
+        <a href="products.html" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="recommendedGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
   <!-- ===== Testimonials ===== -->
   <section class="px-4 py-10">
     <div class="container mx-auto">
@@ -354,6 +371,8 @@
   renderGrid('audioGrid', function(p){return p.sub==='Audio';});
   renderGrid('fashionGrid', function(p){return p.cat==='fashion';});
   renderGrid('electronicsGrid', function(p){return p.cat==='electronics' && p.sub!=='Phones' && p.sub!=='Audio';});
+  // Recommended for You = mix of top-rated + discounted products across categories
+  renderGrid('recommendedGrid', function(p){return p.rating >= 4.6 || (p.badge === 'Hot') || (p.badge === 'Best');});
   window.ctw.card = card;
 
   // ---- Hero carousel ----
