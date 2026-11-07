@@ -160,16 +160,37 @@
         <!-- MPesa Payment Form -->
         <div class="payment-form active" id="mpesaForm">
           <div class="cute-card p-6 md:p-8">
-            <h2 class="text-xl font-bold mb-4">MPesa Payment</h2>
-            <p class="text-gray-600 mb-6">Enter your MPesa phone number to receive a payment prompt.</p>
+            <h2 class="text-xl font-bold mb-4">M-Pesa Payment</h2>
+            <div id="mpesaTillBox" class="mb-5 hidden">
+              <div class="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-2">
+                  <i class="fas fa-mobile-screen text-green-600 text-xl"></i>
+                  <span class="font-bold text-green-800" id="mpesaTillLabel">Lipa na M-Pesa Till</span>
+                </div>
+                <div class="text-3xl font-extrabold text-green-700 tracking-wide" id="mpesaTillNumber">—</div>
+                <div class="text-sm text-green-700 mt-1" id="mpesaTillName"></div>
+              </div>
+            </div>
+            <div id="mpesaNoTillBox" class="mb-5 hidden">
+              <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-800">
+                <i class="fas fa-circle-info"></i> No M-Pesa till set yet. The shop owner will confirm payment via WhatsApp.
+              </div>
+            </div>
+            <p class="text-gray-600 mb-4">Pay to the till above, then enter the M-Pesa confirmation code you receive.</p>
             
             <form onsubmit="return checkout.processMPesa(event)">
               <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Your M-Pesa phone number</label>
                 <div class="flex">
                   <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+254</span>
-                  <input type="tel" id="mpesaPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="759 051 333" value="759051333">
+                  <input type="tel" id="mpesaPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="759 051 333">
                 </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">M-Pesa confirmation code</label>
+                <input type="text" id="mpesaCode" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="e.g. QG7H8X9K2L" required>
+                <p class="text-xs text-gray-500 mt-1">Enter the code from the SMS you received after paying</p>
               </div>
               
               <div class="mb-6">
@@ -178,35 +199,43 @@
               </div>
               
               <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">
-                <i class="fas fa-mobile-alt mr-2"></i> Pay with MPesa
+                <i class="fas fa-check-circle mr-2"></i> I've Paid — Confirm Order
               </button>
             </form>
             
             <div class="mpesa-steps mt-6">
-              <h3 class="font-bold mb-3">How to pay with MPesa:</h3>
+              <h3 class="font-bold mb-3">How to pay:</h3>
               <div class="mpesa-step">
                 <div class="mpesa-step-number">1</div>
                 <div>
-                  <div class="font-semibold">Enter your phone number</div>
-                  <div class="text-sm text-gray-600">Use the number registered with MPesa</div>
+                  <div class="font-semibold">Go to M-Pesa → Lipa na M-Pesa</div>
+                  <div class="text-sm text-gray-600">Send money to the till/paybill number shown above</div>
                 </div>
               </div>
               <div class="mpesa-step">
                 <div class="mpesa-step-number">2</div>
                 <div>
-                  <div class="font-semibold">Click "Pay with MPesa"</div>
-                  <div class="text-sm text-gray-600">You'll receive a prompt on your phone</div>
+                  <div class="font-semibold">Enter the amount</div>
+                  <div class="text-sm text-gray-600">Pay the exact amount shown above</div>
                 </div>
               </div>
               <div class="mpesa-step">
                 <div class="mpesa-step-number">3</div>
                 <div>
-                  <div class="font-semibold">Enter your MPesa PIN</div>
+                  <div class="font-semibold">Enter your M-Pesa PIN</div>
                   <div class="text-sm text-gray-600">Complete the transaction on your phone</div>
                 </div>
               </div>
               <div class="mpesa-step">
                 <div class="mpesa-step-number">4</div>
+                <div>
+                  <div class="font-semibold">Enter the confirmation code</div>
+                  <div class="text-sm text-gray-600">Copy the code from the SMS and paste it above</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
                 <div>
                   <div class="font-semibold">Get confirmation</div>
                   <div class="text-sm text-gray-600">You'll receive an SMS and order confirmation</div>
@@ -482,10 +511,12 @@
     }
     
     const phone = document.getElementById('mpesaPhone').value;
+    const code = document.getElementById('mpesaCode').value.trim();
     const { total } = calculateOrder();
     
-    // Simulate MPesa payment
-    toast('Sending MPesa prompt to ' + phone + '...');
+    if(!code){ toast('Enter your M-Pesa confirmation code'); return false; }
+    
+    toast('Confirming your payment...');
     
     setTimeout(() => {
       // Create order
@@ -640,9 +671,27 @@
     return false;
   }
   
+  // Load M-Pesa settings from admin
+  function loadMpesaSettings(){
+    var data = JSON.parse(localStorage.getItem('ctw_mpesa') || 'null');
+    var tillBox = document.getElementById('mpesaTillBox');
+    var noTillBox = document.getElementById('mpesaNoTillBox');
+    if(data && data.number){
+      tillBox.classList.remove('hidden');
+      noTillBox.classList.add('hidden');
+      document.getElementById('mpesaTillLabel').textContent = data.type === 'paybill' ? 'Paybill Number' : 'Lipa na M-Pesa Till';
+      document.getElementById('mpesaTillNumber').textContent = data.number;
+      document.getElementById('mpesaTillName').textContent = data.name || '';
+    } else {
+      tillBox.classList.add('hidden');
+      noTillBox.classList.remove('hidden');
+    }
+  }
+
   // Initialize
   document.addEventListener('DOMContentLoaded', function() {
     updateOrderSummary();
+    loadMpesaSettings();
     selectPayment('mpesa');
     
     // Check if cart is empty

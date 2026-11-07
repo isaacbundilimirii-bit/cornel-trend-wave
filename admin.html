@@ -60,6 +60,34 @@
   <!-- Stats -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="statsGrid"></div>
 
+  <!-- Payment settings -->
+  <div class="bg-white rounded-xl p-5 mb-6 border-2 border-yellow-200">
+    <h2 class="font-extrabold text-lg mb-1"><i class="fas fa-mobile-screen text-green-600"></i> M-Pesa Payment Settings</h2>
+    <p class="text-gray-500 text-sm mb-4">Set the Till/Paybill number customers will pay to at checkout.</p>
+    <div class="grid md:grid-cols-3 gap-3">
+      <div>
+        <label class="form-label">Payment type</label>
+        <select id="mpesaType" class="form-input" onchange="admin.savePayment()">
+          <option value="till">Lipa na M-Pesa Till</option>
+          <option value="paybill">Paybill</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Till / Paybill number</label>
+        <input type="text" id="mpesaNumber" class="form-input" placeholder="e.g. 759051" onchange="admin.savePayment()">
+      </div>
+      <div>
+        <label class="form-label">Business name (optional)</label>
+        <input type="text" id="mpesaName" class="form-input" placeholder="e.g. Next Wave Trends" onchange="admin.savePayment()">
+      </div>
+    </div>
+    <div id="mpesaPreview" class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800 hidden"></div>
+    <div class="mt-3 flex gap-2">
+      <button onclick="admin.savePayment(true)" class="cute-btn cute-grad-gold text-white px-5 py-2 text-sm"><i class="fas fa-save mr-1"></i> Save</button>
+      <button onclick="admin.clearPayment()" class="cute-btn bg-gray-100 text-gray-700 px-5 py-2 text-sm">Clear</button>
+    </div>
+  </div>
+
   <!-- Filter -->
   <div class="flex gap-2 mb-4 flex-wrap">
     <button onclick="admin.setFilter('all')" class="cute-btn cute-grad-gold text-white px-4 py-2 text-sm" data-filter="all">All</button>
@@ -318,12 +346,49 @@
 
   function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
 
+  // ---- M-Pesa payment settings ----
+  function loadPayment(){
+    var data = JSON.parse(localStorage.getItem('ctw_mpesa') || 'null');
+    if(data){
+      document.getElementById('mpesaType').value = data.type || 'till';
+      document.getElementById('mpesaNumber').value = data.number || '';
+      document.getElementById('mpesaName').value = data.name || '';
+      showPaymentPreview(data);
+    }
+  }
+  function showPaymentPreview(data){
+    var preview = document.getElementById('mpesaPreview');
+    if(!data || !data.number){ preview.classList.add('hidden'); return; }
+    preview.classList.remove('hidden');
+    var label = data.type === 'paybill' ? 'Paybill' : 'Till No.';
+    preview.innerHTML = '<i class="fas fa-check-circle"></i> Checkout will show: <strong>' + label + ': ' + data.number + '</strong>' + (data.name ? ' (' + data.name + ')' : '');
+  }
+  function savePayment(showToast){
+    var data = {
+      type: document.getElementById('mpesaType').value,
+      number: document.getElementById('mpesaNumber').value.trim(),
+      name: document.getElementById('mpesaName').value.trim()
+    };
+    localStorage.setItem('ctw_mpesa', JSON.stringify(data));
+    showPaymentPreview(data);
+    if(showToast) toast('M-Pesa settings saved');
+  }
+  function clearPayment(){
+    localStorage.removeItem('ctw_mpesa');
+    document.getElementById('mpesaType').value = 'till';
+    document.getElementById('mpesaNumber').value = '';
+    document.getElementById('mpesaName').value = '';
+    document.getElementById('mpesaPreview').classList.add('hidden');
+    toast('M-Pesa settings cleared');
+  }
+
   document.addEventListener('DOMContentLoaded', function(){
     render();
+    loadPayment();
     document.getElementById('modalOverlay').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
   });
 
-  window.admin = { setFilter:setFilter, toggleStock:toggleStock, openAdd:openAdd, edit:edit, save:save, remove:remove, closeModal:closeModal };
+  window.admin = { setFilter:setFilter, toggleStock:toggleStock, openAdd:openAdd, edit:edit, save:save, remove:remove, closeModal:closeModal, savePayment:savePayment, clearPayment:clearPayment };
 })();
 </script>
 </body>
