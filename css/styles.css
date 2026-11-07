@@ -69,17 +69,23 @@ body{font-family:'Poppins',system-ui,sans-serif;margin:0;color:var(--ink);backgr
 .cat-nav a:hover,.cat-nav a.active{color:#d08000;border-bottom-color:#f0b000}
 
 /* ---------- Hero banner ---------- */
-.hero-banner{border-radius:1.5rem;overflow:hidden;position:relative;background:linear-gradient(120deg,#0f0f0f 0%,#2a2a2a 50%,#f0b000 100%);min-height:340px}
-.hero-slide{position:absolute;inset:0;padding:2.5rem;display:flex;flex-direction:column;justify-content:center;color:#fff;opacity:0;transition:opacity .6s;pointer-events:none}
-.hero-slide.active{opacity:1;pointer-events:auto}
-.hero-slide .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;opacity:.9;margin-bottom:.5rem;color:#f0b000}
-.hero-slide h2{font-size:clamp(1.5rem,3.5vw,2.6rem);font-weight:800;line-height:1.1;max-width:60%}
-.hero-slide p{margin-top:.8rem;opacity:.9;max-width:50%}
-.hero-slide .cta{margin-top:1.4rem;display:inline-flex;align-items:center;gap:.5rem;background:#0f0f0f;color:#f0b000;font-weight:700;padding:.7rem 1.5rem;border-radius:9999px;width:fit-content;transition:transform .2s}
-.hero-slide .cta:hover{transform:translateX(4px)}
-.hero-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:.4rem;z-index:5}
-.hero-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:background .2s}
-.hero-dots span.active{background:#f0b000;width:22px;border-radius:9999px}
+.hero-banner{border-radius:1.5rem;overflow:hidden;position:relative;background:#0f0f0f;min-height:340px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)}
+.hero-slide{position:absolute;inset:0;padding:2.5rem;display:flex;flex-direction:column;justify-content:center;color:#fff;opacity:0;transition:opacity .7s ease,transform 1s ease;pointer-events:none;transform:scale(1.05)}
+.hero-slide.active{opacity:1;pointer-events:auto;transform:scale(1)}
+.hero-slide .eyebrow{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.7rem;color:#0f0f0f;background:linear-gradient(120deg,#f0b000,#fbbf24);padding:.3rem .9rem;border-radius:9999px;width:fit-content;box-shadow:0 4px 12px -2px rgba(240,176,0,.5)}
+.hero-slide h2{font-size:clamp(1.6rem,3.5vw,2.8rem);font-weight:900;line-height:1.05;max-width:65%;text-shadow:0 2px 20px rgba(0,0,0,.6);letter-spacing:-.02em}
+.hero-slide h2 .accent{color:#f0b000;display:inline-block}
+.hero-slide p{margin-top:.7rem;opacity:.95;max-width:55%;font-size:1rem;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.hero-slide .cta{margin-top:1.4rem;display:inline-flex;align-items:center;gap:.6rem;background:#f0b000;color:#0f0f0f;font-weight:800;padding:.8rem 1.8rem;border-radius:9999px;width:fit-content;transition:transform .25s,box-shadow .25s;box-shadow:0 8px 20px -6px rgba(240,176,0,.6);font-size:.95rem}
+.hero-slide .cta:hover{transform:translateX(6px) scale(1.04);box-shadow:0 12px 28px -6px rgba(240,176,0,.8)}
+.hero-slide .cta i{transition:transform .25s}
+.hero-slide .cta:hover i{transform:translateX(3px)}
+.hero-dots{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);display:flex;gap:.5rem;z-index:5}
+.hero-dots span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .25s;border:1.5px solid rgba(255,255,255,.6)}
+.hero-dots span.active{background:#f0b000;border-color:#f0b000;width:28px;border-radius:9999px;box-shadow:0 0 12px rgba(240,176,0,.6)}
+/* Subtle shine sweep on active slide */
+.hero-slide.active::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);pointer-events:none;animation:shine 3s ease-in-out}
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 
 /* ---------- Flash deals ---------- */
 .flash-bar{background:linear-gradient(120deg,#0f0f0f,#2a2a2a);color:#fff;border-radius:1rem;padding:.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
@@ -140,23 +146,23 @@ body{font-family:'Poppins',system-ui,sans-serif;margin:0;color:var(--ink);backgr
 
 /* ---------- Mobile hero: smaller & neat ---------- */
 @media(max-width:639px){
-  .hero-banner{min-height:160px;border-radius:.9rem;margin-top:.3rem}
+  .hero-banner{min-height:170px;border-radius:1rem;margin-top:.3rem;box-shadow:0 12px 30px -15px rgba(0,0,0,.5)}
   .hero-slide{padding:1rem 1.1rem;justify-content:flex-end}
-  .hero-slide .eyebrow{font-size:.6rem;margin-bottom:.25rem;letter-spacing:.12em}
-  .hero-slide h2{font-size:1.05rem;max-width:95%;line-height:1.15;font-weight:800}
-  .hero-slide p{font-size:.72rem;max-width:90%;margin-top:.3rem;opacity:.85}
-  .hero-slide .cta{margin-top:.6rem;padding:.45rem .9rem;font-size:.72rem;border-radius:9999px}
-  .hero-dots{bottom:.5rem;gap:.3rem}
-  .hero-dots span{width:5px;height:5px}
-  .hero-dots span.active{width:16px}
+  .hero-slide .eyebrow{font-size:.58rem;margin-bottom:.4rem;padding:.2rem .6rem;letter-spacing:.1em}
+  .hero-slide h2{font-size:1.1rem;max-width:95%;line-height:1.15;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+  .hero-slide p{font-size:.72rem;max-width:90%;margin-top:.3rem;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+  .hero-slide .cta{margin-top:.7rem;padding:.5rem 1.1rem;font-size:.72rem;box-shadow:0 6px 14px -4px rgba(240,176,0,.5)}
+  .hero-dots{bottom:.6rem;gap:.35rem}
+  .hero-dots span{width:6px;height:6px}
+  .hero-dots span.active{width:20px}
 }
 /* Even smaller phones */
 @media(max-width:374px){
-  .hero-banner{min-height:140px}
+  .hero-banner{min-height:150px}
   .hero-slide{padding:.85rem .9rem}
   .hero-slide h2{font-size:.95rem}
   .hero-slide p{font-size:.65rem}
-  .hero-slide .cta{padding:.4rem .8rem;font-size:.65rem}
+  .hero-slide .cta{padding:.4rem .85rem;font-size:.65rem}
 }
 
 /* ---------- Mobile flash bar: compact ---------- */
