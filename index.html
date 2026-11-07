@@ -352,13 +352,19 @@
     var discBadge = disc>0 ? '<span class="discount-badge">-'+disc+'%</span>' : '';
     var newBadge = p.badge==='New' ? '<span class="new-badge">NEW</span>' : '';
     var oldPrice = p.oldPrice ? '<span class="old-price">'+money(p.oldPrice)+'</span>' : '';
-    return '<div class="prod-card">'
-      + '<div class="img-wrap">'+discBadge+newBadge+'<img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div>'
+    var waMsg = encodeURIComponent('Hello Cornel Trend Wave!\n\nI want to order:\n*'+p.name+'*\nPrice: '+money(p.price)+'\n\nIs it available?');
+    var WA = '254759051333';
+    return '<div class="prod-card cute-card">'
+      + '<a href="product.html?id='+p.id+'" class="block">'
+      + '<div class="img-wrap">'+discBadge+newBadge+'<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div>'
       + '<div class="body">'
       + '<div class="name">'+p.name+'</div>'
       + '<div class="rating">'+stars(p.rating)+' <span>'+p.rating+' ('+p.reviews+')</span></div>'
       + '<div class="price-row"><span class="price">'+money(p.price)+'</span>'+oldPrice+'</div>'
-      + '<button onclick="ctw.addToCart(\''+p.id+'\')" class="add-btn"><i class="fas fa-cart-plus"></i> Add to cart</button>'
+      + '</div></a>'
+      + '<div class="px-3 pb-3 flex gap-1.5">'
+      + '<button onclick="ctw.addToCart(\''+p.id+'\')" class="add-btn flex-1"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>'
+      + '<a href="https://wa.me/'+WA+'?text='+waMsg+'" target="_blank" class="add-btn wa-btn" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>'
       + '</div></div>';
   }
   function renderGrid(id, filter){

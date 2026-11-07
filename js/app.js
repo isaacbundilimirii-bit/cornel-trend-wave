@@ -134,8 +134,8 @@
         '</div>' +
       '</a>' +
       '<div class="px-3 pb-3 flex gap-1.5">' +
-        '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="add-btn flex-1"><i class="fas fa-cart-plus"></i> Add</button>' +
-        '<a href="https://wa.me/' + WA_NUMBER + '?text=' + waMsg + '" target="_blank" class="add-btn" style="background:#25d366;color:#fff;flex:0 0 36px;padding:.5rem 0;border-radius:.5rem" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>' +
+        '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="add-btn flex-1" title="Add to cart"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>' +
+        '<a href="https://wa.me/' + WA_NUMBER + '?text=' + waMsg + '" target="_blank" class="add-btn wa-btn" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>' +
       '</div>' +
     '</div>';
   }
