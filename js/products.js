@@ -1,4 +1,4 @@
-/* ===== Cornel Trend Wave - product catalogue ===== */
+/* ===== Next Wave Trends - product catalogue ===== */
 window.CTW_PRODUCTS = [
   // ---------- ELECTRONICS / PHONES ----------
   { id:'p1', name:'Samsung Galaxy A05 - 6.7", 4GB/128GB, Dual SIM', cat:'electronics', sub:'Phones', price:13999, oldPrice:16999, rating:4.6, reviews:214, img:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=70', badge:'Hot',

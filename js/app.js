@@ -1,4 +1,4 @@
-/* ===== Cornel Trend Wave - app logic (cart, menu, toast) ===== */
+/* ===== Next Wave Trends - app logic (cart, menu, toast) ===== */
 (function () {
   'use strict';
   var cart = JSON.parse(localStorage.getItem('ctw_cart') || '[]');
@@ -119,7 +119,7 @@
     var badge = p.badge ? '<span class="badge-cute">' + p.badge + '</span>' : '';
     var discBadge = p.oldPrice ? '<span class="discount-badge">-' + Math.round((1 - p.price/p.oldPrice)*100) + '%</span>' : '';
     var newBadge = p.badge === 'New' ? '<span class="new-badge">NEW</span>' : '';
-    var waMsg = encodeURIComponent('Hello Cornel Trend Wave!\n\nI want to order:\n*' + p.name + '*\nPrice: ' + money(p.price) + '\n\nIs it available?');
+    var waMsg = encodeURIComponent('Hello Next Wave Trends!\n\nI want to order:\n*' + p.name + '*\nPrice: ' + money(p.price) + '\n\nIs it available?');
     return '<div class="prod-card cute-card">' +
       '<a href="product.html?id=' + p.id + '" class="block">' +
         '<div class="img-wrap">' +

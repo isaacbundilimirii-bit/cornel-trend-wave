@@ -1,4 +1,4 @@
-/* ===== Cornel Trend Wave - app logic (cart, menu, toast) ===== */
+/* ===== Next Wave Trends - app logic (cart, menu, toast) ===== */
 (function () {
   'use strict';
   var cart = JSON.parse(localStorage.getItem('ctw_cart') || '[]');

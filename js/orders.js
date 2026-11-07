@@ -1,4 +1,4 @@
-// Orders management system for Cornel Trend Wave
+// Orders management system for Next Wave Trends
 (function() {
   'use strict';
   

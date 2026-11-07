@@ -1,4 +1,4 @@
-/* ===== Cornel Trend Wave - Authentication & OTP System ===== */
+/* ===== Next Wave Trends - Authentication & OTP System ===== */
 (function() {
   'use strict';
   

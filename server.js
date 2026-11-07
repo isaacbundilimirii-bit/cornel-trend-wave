@@ -9,4 +9,4 @@ const server = http.createServer((req,res)=>{
   const fp = path.join(ROOT,p);
   fs.readFile(fp,(err,data)=>{ if(err){res.writeHead(404);res.end('Not found: '+p);return;} res.writeHead(200,{'Content-Type':MIME[path.extname(fp).toLowerCase()]||'application/octet-stream'});res.end(data);});
 });
-server.listen(PORT,()=>console.log('Cornel Trend Wave on http://localhost:'+PORT));
+server.listen(PORT,()=>console.log('Next Wave Trends on http://localhost:'+PORT));
