@@ -51,6 +51,16 @@ body{font-family:'Poppins',system-ui,sans-serif;margin:0;color:var(--ink);backgr
 .big-search button:active{transform:scale(.96)}
 .big-search button i{font-size:1rem}
 
+/* ---------- Mobile search: smaller & compact ---------- */
+@media (max-width:767px){
+  .big-search{max-width:100%;border-radius:9999px;box-shadow:0 4px 12px -6px rgba(0,0,0,.15);border-width:2px}
+  .big-search input{padding:.55rem .8rem;font-size:.85rem}
+  .big-search input::placeholder{font-size:.8rem}
+  .big-search button{padding:0 .9rem;font-size:.8rem;gap:.3rem}
+  .big-search button i{font-size:.85rem}
+  .big-search button span{font-size:.78rem}
+}
+
 /* ---------- Category nav ---------- */
 .cat-nav{background:#fff;border-bottom:2px solid #fffbeb}
 .cat-nav-inner{display:flex;gap:1.5rem;overflow-x:auto;scrollbar-width:none;padding:.7rem 0}
