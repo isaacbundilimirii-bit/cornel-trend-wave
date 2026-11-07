@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Search - Cornel Trend Wave</title>
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-1.5"><div class="container mx-auto px-4 text-center"><i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-bolt ml-2 mr-1"></i> Flash Sale up to 40% off</div></div>
+  <div id="logoSection" class="header-section py-3 md:py-2.5"><div class="container mx-auto px-4">
+    <div class="flex items-center gap-3 md:gap-5">
+      <a href="index.html" class="flex items-center gap-2.5 flex-shrink-0"><img src="images/logo.jpeg" alt="Cornel Trend Wave" class="logo-img" loading="lazy"></a>
+      <div class="flex-1 hidden md:block"><form class="big-search" onsubmit="return ctw.search(event)"><input type="text" id="searchInput" placeholder="Search products, brands and categories..."><button type="submit"><i class="fas fa-search"></i> Search</button></form></div>
+      <div class="flex items-center gap-3 md:gap-4 ml-auto">
+        <a href="auth.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600"><i class="far fa-user"></i> Account</a>
+        <a href="cart.html" class="relative text-xl text-gray-800"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span></a>
+        <button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+    <div class="md:hidden mt-3"><form class="big-search" onsubmit="return ctw.search(event)"><input type="text" placeholder="Search products..."><button type="submit"><i class="fas fa-search"></i></button></form></div>
+  </div></div>
+  <div id="mainNav" class="header-section cat-nav hidden md:block"><div class="container mx-auto px-4"><div class="cat-nav-inner">
+    <a href="products.html"><i class="fas fa-th"></i> All</a>
+    <a href="products.html#phones"><i class="fas fa-mobile-screen"></i> Phones</a>
+    <a href="products.html#audio"><i class="fas fa-headphones"></i> Audio</a>
+    <a href="products.html#accessories"><i class="fas fa-plug"></i> Accessories</a>
+    <a href="products.html#tops"><i class="fas fa-shirt"></i> Tops</a>
+    <a href="products.html#bottoms"><i class="fas fa-person"></i> Bottoms</a>
+    <a href="products.html#shoes"><i class="fas fa-shoe-prints"></i> Shoes</a>
+    <a href="products.html#dresses"><i class="fas fa-vest"></i> Dresses</a>
+    <a href="about.html"><i class="fas fa-circle-info"></i> About</a>
+    <a href="contact.html"><i class="fas fa-phone"></i> Contact</a>
+  </div></div></div>
+</div>
+<div id="menuOverlay" class="mobile-menu-overlay"></div>
+<aside id="mobileMenu" class="mobile-menu p-6"><div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><img src="images/logo.jpeg" alt="CTW" class="logo-img"><span class="font-extrabold">Cornel Trend Wave</span></div><button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button></div>
+<nav class="flex flex-col gap-1 text-base font-semibold">
+  <a href="index.html" class="py-2.5 text-gray-700 pl-3">Home</a>
+  <a href="products.html" class="py-2.5 text-gray-700 pl-3">All Products</a>
+  <a href="products.html#electronics" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-bolt w-5"></i>Electronics</a>
+  <a href="products.html#fashion" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-shirt w-5"></i>Fashion</a>
+  <a href="about.html" class="py-2.5 text-gray-700 pl-3">About</a>
+  <a href="contact.html" class="py-2.5 text-gray-700 pl-3">Contact</a>
+</nav></aside>
+
+<main class="fade-in pt-32 pb-20 px-4" style="width:100%;max-width:100%;overflow-x:hidden">
+  <div class="container mx-auto max-w-6xl">
+    <div class="mb-6">
+      <h1 id="searchTitle" class="text-2xl font-extrabold">Search results</h1>
+      <p id="searchCount" class="text-gray-500 text-sm mt-1"></p>
+    </div>
+    <div id="searchResults" class="prod-grid"></div>
+    <div id="noResults" class="hidden text-center py-16">
+      <i class="fas fa-magnifying-glass text-5xl text-yellow-500 mb-4"></i>
+      <h2 class="text-xl font-bold mb-2">No products found</h2>
+      <p class="text-gray-500 mb-5">Try different keywords like "earbuds", "phone", "shoes", "dress".</p>
+      <a href="products.html" class="cute-btn cute-grad-gold text-white px-6 py-2.5">Browse all products</a>
+    </div>
+  </div>
+</main>
+
+<footer class="px-4 pt-14 pb-28 md:pb-10 mt-6"><div class="container mx-auto text-center text-white/60 text-sm">© 2026 Cornel Trend Wave</div></footer>
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg"></span></div>
+<nav class="bottom-nav md:hidden"><div>
+  <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+  <a href="contact.html" class="bottom-nav-item"><i class="fas fa-phone"></i><span>Contact</span></a>
+</div></nav>
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function(){
+  var q = new URLSearchParams(window.location.search).get('q') || '';
+  document.getElementById('searchTitle').textContent = 'Search: "' + q + '"';
+  var ql = q.toLowerCase();
+  var results = window.CTW_PRODUCTS.filter(function(p){
+    return p.name.toLowerCase().indexOf(ql) !== -1 ||
+           p.sub.toLowerCase().indexOf(ql) !== -1 ||
+           p.cat.toLowerCase().indexOf(ql) !== -1 ||
+           (p.desc && p.desc.toLowerCase().indexOf(ql) !== -1);
+  });
+  document.getElementById('searchCount').textContent = results.length + ' product' + (results.length !== 1 ? 's' : '') + ' found';
+  var grid = document.getElementById('searchResults');
+  var empty = document.getElementById('noResults');
+  if (results.length === 0) {
+    grid.classList.add('hidden');
+    empty.classList.remove('hidden');
+  } else {
+    grid.innerHTML = results.map(function(p){ return window.ctw.card(p); }).join('');
+  }
+})();
+</script>
+</body></html>

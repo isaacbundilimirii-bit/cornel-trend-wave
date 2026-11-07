@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const PORT = 8090;
-const ROOT = path.join(__dirname, 'www');
+const ROOT = __dirname;
 const MIME = {'.html':'text/html;charset=utf-8','.css':'text/css;charset=utf-8','.js':'application/javascript;charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon','.json':'application/json'};
 const server = http.createServer((req,res)=>{
   let p = decodeURIComponent(req.url.split('?')[0]); if(p==='/')p='/index.html';

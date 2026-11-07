@@ -114,19 +114,28 @@
   }
 
   // ---- Product card renderer ----
+  var WA_NUMBER = '254759051333';
   function productCard(p) {
     var badge = p.badge ? '<span class="badge-cute">' + p.badge + '</span>' : '';
+    var discBadge = p.oldPrice ? '<span class="discount-badge">-' + Math.round((1 - p.price/p.oldPrice)*100) + '%</span>' : '';
+    var newBadge = p.badge === 'New' ? '<span class="new-badge">NEW</span>' : '';
+    var waMsg = encodeURIComponent('Hello Cornel Trend Wave!\n\nI want to order:\n*' + p.name + '*\nPrice: ' + money(p.price) + '\n\nIs it available?');
     return '<div class="prod-card cute-card">' +
-      '<div class="img-wrap">' +
-        badge +
-        '<button class="wish-btn" onclick="this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button>' +
-        '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
-      '</div>' +
-      '<div class="p-4 flex flex-col flex-1">' +
-        '<div class="text-[10px] uppercase tracking-wide font-bold text-yellow-600 mb-1">' + p.sub + '</div>' +
-        '<h3 class="font-bold text-sm mb-1 line-clamp-1">' + p.name + '</h3>' +
-        '<div class="font-extrabold cute-grad-text mt-auto mb-3">' + money(p.price) + '</div>' +
-        '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="cute-btn cute-grad text-white text-xs py-2 w-full"><i class="fas fa-plus mr-1"></i> Add to cart</button>' +
+      '<a href="product.html?id=' + p.id + '" class="block">' +
+        '<div class="img-wrap">' +
+          badge +
+          '<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button>' +
+          '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
+        '</div>' +
+        '<div class="body">' +
+          '<div class="name">' + p.name + '</div>' +
+          '<div class="rating"><i class="fas fa-star text-yellow-400"></i> ' + p.rating + ' (' + p.reviews + ')</div>' +
+          '<div class="price-row"><span class="price">' + money(p.price) + '</span>' + (p.oldPrice ? '<span class="old-price">' + money(p.oldPrice) + '</span>' : '') + '</div>' +
+        '</div>' +
+      '</a>' +
+      '<div class="px-3 pb-3 flex gap-1.5">' +
+        '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="add-btn flex-1"><i class="fas fa-cart-plus"></i> Add</button>' +
+        '<a href="https://wa.me/' + WA_NUMBER + '?text=' + waMsg + '" target="_blank" class="add-btn" style="background:#25d366;color:#fff;flex:0 0 36px;padding:.5rem 0;border-radius:.5rem" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>' +
       '</div>' +
     '</div>';
   }
@@ -157,6 +166,25 @@
   }
 
   function subscribe(e) { e.preventDefault(); toast('Thanks! Your 10% code is on the way'); return false; }
+
+  // ---- Working search ----
+  function search(e) {
+    if (e) e.preventDefault();
+    var input = (document.getElementById('searchInput') || e && e.target && e.target.querySelector('input'));
+    var q = '';
+    if (typeof input === 'string') { q = input; }
+    else if (input && input.value !== undefined) { q = input.value.trim(); }
+    // Try multiple input sources
+    var si = document.getElementById('searchInput');
+    if (!q && si) q = si.value.trim();
+    if (!q) {
+      var allInputs = document.querySelectorAll('.big-search input');
+      allInputs.forEach(function(inp){ if(!q) q = inp.value.trim(); });
+    }
+    if (!q) { toast('Type something to search'); return false; }
+    window.location.href = 'search.html?q=' + encodeURIComponent(q);
+    return false;
+  }
 
   // ---- Mobile menu ----
   function openMenu() { document.getElementById('mobileMenu').classList.add('active'); document.getElementById('menuOverlay').classList.add('active'); }
@@ -195,6 +223,8 @@
     closeCart: closeCart, 
     checkout: checkout, 
     subscribe: subscribe,
+    search: search,
+    card: productCard,
     getUser: getUser,
     isLoggedIn: isLoggedIn,
     logoutUser: logoutUser
