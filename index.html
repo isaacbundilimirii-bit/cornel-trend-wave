@@ -159,25 +159,71 @@
     </div>
   </section>
 
-  <!-- ===== Electronics ===== -->
-  <section class="px-4 pt-10" id="electronics">
+  <!-- ===== Shop Phones ===== -->
+  <section class="px-4 pt-10 shop-section" id="phones">
     <div class="container mx-auto">
-      <div class="section-head">
-        <h2><i class="fas fa-bolt text-yellow-600"></i> Electronics</h2>
-        <a href="products.html#electronics">View all →</a>
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-phones"><i class="fas fa-mobile-screen"></i></div>
+          <div>
+            <h2>Shop Phones</h2>
+            <div class="sub">Smartphones & feature phones</div>
+          </div>
+        </div>
+        <a href="products.html#phones" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
       </div>
-      <div id="electronicsGrid" class="prod-grid"></div>
+      <div id="phonesGrid" class="prod-grid"></div>
     </div>
   </section>
 
-  <!-- ===== Fashion ===== -->
-  <section class="px-4 pt-10" id="fashion">
+  <!-- ===== Shop Audio ===== -->
+  <section class="px-4 pt-10 shop-section" id="audio">
     <div class="container mx-auto">
-      <div class="section-head">
-        <h2><i class="fas fa-shirt text-yellow-600"></i> Fashion</h2>
-        <a href="products.html#fashion">View all →</a>
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-audio"><i class="fas fa-headphones"></i></div>
+          <div>
+            <h2>Shop Audio</h2>
+            <div class="sub">Earbuds, speakers & headphones</div>
+          </div>
+        </div>
+        <a href="products.html#audio" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="audioGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Shop Fashion ===== -->
+  <section class="px-4 pt-10 shop-section" id="fashion">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-fashion"><i class="fas fa-shirt"></i></div>
+          <div>
+            <h2>Shop Fashion</h2>
+            <div class="sub">Clothes, shoes & accessories</div>
+          </div>
+        </div>
+        <a href="products.html#fashion" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
       </div>
       <div id="fashionGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Electronics accessories ===== -->
+  <section class="px-4 pt-10 shop-section" id="electronics">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-phones" style="background:linear-gradient(135deg,#34d399,#10b981)"><i class="fas fa-plug"></i></div>
+          <div>
+            <h2>Electronics Accessories</h2>
+            <div class="sub">Chargers, power banks & gadgets</div>
+          </div>
+        </div>
+        <a href="products.html#accessories" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="electronicsGrid" class="prod-grid"></div>
     </div>
   </section>
 
@@ -304,8 +350,10 @@
   }
   // Flash deals = products with discount
   renderGrid('flashGrid', function(p){return p.oldPrice && p.oldPrice>p.price;});
-  renderGrid('electronicsGrid', function(p){return p.cat==='electronics';});
+  renderGrid('phonesGrid', function(p){return p.sub==='Phones';});
+  renderGrid('audioGrid', function(p){return p.sub==='Audio';});
   renderGrid('fashionGrid', function(p){return p.cat==='fashion';});
+  renderGrid('electronicsGrid', function(p){return p.cat==='electronics' && p.sub!=='Phones' && p.sub!=='Audio';});
   window.ctw.card = card;
 
   // ---- Hero carousel ----

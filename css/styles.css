@@ -108,6 +108,93 @@ body{font-family:'Poppins',system-ui,sans-serif;margin:0;color:var(--ink);backgr
 .prod-card .add-btn:hover{filter:brightness(1.3)}
 .prod-card .add-btn.added{background:#10b981;color:#fff}
 
+/* ---------- Mobile: compact product cards ---------- */
+@media(max-width:639px){
+  .prod-grid{gap:.5rem}
+  .prod-card .img-wrap{padding:.3rem}
+  .prod-card .body{padding:.5rem .55rem .55rem}
+  .prod-card .name{font-size:.75rem;min-height:2rem}
+  .prod-card .price{font-size:.85rem}
+  .prod-card .old-price{font-size:.7rem}
+  .prod-card .rating{font-size:.62rem;margin-top:.15rem}
+  .prod-card .add-btn{padding:.4rem;font-size:.7rem;gap:.2rem;margin-top:.4rem}
+  .discount-badge{font-size:.6rem;padding:.15rem .35rem;top:.3rem;left:.3rem}
+  .new-badge{font-size:.55rem;padding:.15rem .35rem;top:.3rem;right:.3rem}
+}
+
+/* ---------- Shop category section (Shop Phones / Audio / Fashion) ---------- */
+.shop-section{margin-top:1.5rem}
+.shop-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;padding:0 .25rem}
+.shop-section-head .title{display:flex;align-items:center;gap:.6rem}
+.shop-section-head .icon-wrap{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#0f0f0f;font-size:1.1rem;flex-shrink:0}
+@media(max-width:639px){.shop-section-head .icon-wrap{width:32px;height:32px;font-size:.95rem;border-radius:10px}}
+.shop-section-head .icon-phones{background:linear-gradient(135deg,#f0b000,#fbbf24)}
+.shop-section-head .icon-audio{background:linear-gradient(135deg,#a78bfa,#c4b5fd)}
+.shop-section-head .icon-fashion{background:linear-gradient(135deg,#f472b6,#fb7185)}
+.shop-section-head h2{font-size:1.15rem;font-weight:800;color:#0f0f0f;line-height:1.1}
+@media(max-width:639px){.shop-section-head h2{font-size:1rem}}
+.shop-section-head .sub{font-size:.72rem;color:#6b7280;font-weight:500}
+@media(max-width:639px){.shop-section-head .sub{font-size:.65rem}}
+.shop-section-head .view-all{font-size:.78rem;font-weight:700;color:#d08000;white-space:nowrap;display:flex;align-items:center;gap:.3rem}
+@media(max-width:639px){.shop-section-head .view-all{font-size:.7rem}}
+
+/* ---------- Mobile hero: smaller & neat ---------- */
+@media(max-width:639px){
+  .hero-banner{min-height:160px;border-radius:.9rem;margin-top:.3rem}
+  .hero-slide{padding:1rem 1.1rem;justify-content:flex-end}
+  .hero-slide .eyebrow{font-size:.6rem;margin-bottom:.25rem;letter-spacing:.12em}
+  .hero-slide h2{font-size:1.05rem;max-width:95%;line-height:1.15;font-weight:800}
+  .hero-slide p{font-size:.72rem;max-width:90%;margin-top:.3rem;opacity:.85}
+  .hero-slide .cta{margin-top:.6rem;padding:.45rem .9rem;font-size:.72rem;border-radius:9999px}
+  .hero-dots{bottom:.5rem;gap:.3rem}
+  .hero-dots span{width:5px;height:5px}
+  .hero-dots span.active{width:16px}
+}
+/* Even smaller phones */
+@media(max-width:374px){
+  .hero-banner{min-height:140px}
+  .hero-slide{padding:.85rem .9rem}
+  .hero-slide h2{font-size:.95rem}
+  .hero-slide p{font-size:.65rem}
+  .hero-slide .cta{padding:.4rem .8rem;font-size:.65rem}
+}
+
+/* ---------- Mobile flash bar: compact ---------- */
+@media(max-width:639px){
+  .flash-bar{padding:.6rem .8rem;gap:.5rem;border-radius:.8rem}
+  .flash-bar h3{font-size:.95rem}
+  .countdown span{padding:.15rem .35rem;min-width:1.6rem;font-size:.8rem}
+}
+
+/* ---------- Mobile service strip: neat ---------- */
+@media(max-width:639px){
+  .service-item{padding:.6rem;gap:.4rem}
+  .service-item i{width:30px;height:30px;font-size:.85rem;border-radius:8px}
+  .service-item .t{font-size:.7rem}
+  .service-item .s{font-size:.62rem}
+}
+
+/* ---------- Mobile header: more compact ---------- */
+@media(max-width:639px){
+  #logoSection{padding-top:.6rem;padding-bottom:.6rem}
+  .logo-img{width:38px;height:38px}
+  #topBar{padding-top:.4rem;padding-bottom:.4rem;font-size:.65rem}
+  body{padding-top:7.5rem}
+}
+
+/* ---------- Mobile section spacing: tighter ---------- */
+@media(max-width:639px){
+  .shop-section{margin-top:1rem}
+  section{padding-left:.75rem;padding-right:.75rem}
+  .container{padding-left:.5rem;padding-right:.5rem}
+}
+
+/* ---------- Mobile bottom nav: neat ---------- */
+@media(max-width:639px){
+  .bottom-nav-item{font-size:.6rem}
+  .bottom-nav-item i{font-size:1.1rem}
+}
+
 /* ---------- Section heads ---------- */
 .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
 .section-head h2{font-weight:800;font-size:1.3rem}
