@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FAQ — Next Wave Trends</title>
+<link rel="icon" href="images/logo.jpeg"><link rel="apple-touch-icon" href="images/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.faq-item{border:1px solid #ececec;border-radius:.8rem;overflow:hidden;margin-bottom:.75rem}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;font-weight:600;font-size:.9rem;color:#1a1a1a;background:#fff;transition:background .15s}
+.faq-q:hover{background:#fffbeb}
+.faq-q i{transition:transform .2s;color:#d08000}
+.faq-q.open i{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-a.open{max-height:300px}
+.faq-a-inner{padding:0 1.25rem 1rem;color:#6b6b6b;font-size:.85rem;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-2"><div class="container mx-auto px-4 text-center"><i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-phone ml-2 mr-1"></i> +254 759 051 333</div></div>
+  <div id="logoSection" class="header-section py-4 md:py-3"><div class="container mx-auto px-4 flex items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-3"><img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy"><span class="brand-name">Next Wave<span class="accent">Trends</span></span></a>
+    <div class="flex items-center gap-3"><a href="/cart" class="relative text-xl text-gray-800"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span></a><button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button></div>
+  </div></div>
+  <div id="mainNav" class="header-section hidden md:block py-2"><div class="container mx-auto px-4"><nav class="flex items-center justify-center gap-8 text-sm font-semibold uppercase tracking-wide">
+    <a href="/" class="text-gray-600 hover:text-yellow-700">Home</a><a href="/products" class="text-gray-600 hover:text-yellow-700">Shop</a>
+    <a href="/products#electronics" class="text-gray-600 hover:text-yellow-700">Electronics</a><a href="/products#fashion" class="text-gray-600 hover:text-yellow-700">Fashion</a>
+    <a href="/about" class="text-gray-600 hover:text-yellow-700">About</a><a href="/contact" class="text-gray-600 hover:text-yellow-700">Contact</a>
+  </nav></div></div>
+</div>
+<div id="menuOverlay" class="mobile-menu-overlay"></div>
+<aside id="mobileMenu" class="mobile-menu p-6"><div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><img src="images/logo.jpeg" alt="NWT" class="logo-img" loading="lazy"><span class="font-extrabold">Next Wave Trends</span></div><button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button></div>
+<nav class="flex flex-col gap-2 text-lg font-semibold"><a href="/" class="py-2">Home</a><a href="/products" class="py-2">Shop</a><a href="/about" class="py-2">About</a><a href="/contact" class="py-2">Contact</a></nav></aside>
+
+<main class="fade-in pt-32 pb-20 px-4" style="width:100%;max-width:100%;overflow-x:hidden">
+  <div class="container mx-auto max-w-2xl">
+    <span class="section-eyebrow">Help Center</span>
+    <h1 class="section-title text-3xl md:text-4xl mb-3">Frequently Asked <span class="cute-grad-text">Questions</span></h1>
+    <p class="text-gray-500 mb-8">Everything you need to know about shopping with Next Wave Trends.</p>
+
+    <div id="faqList">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How do I place an order?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Browse our products, click "Add to cart", then go to your cart and click "Checkout". Choose delivery or pickup, enter your details, select payment method (M-Pesa, card, or cash on delivery), and place your order. You'll get a WhatsApp confirmation.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How long does delivery take?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Nairobi (CBD & environs): Same day. Nairobi outer: Same/Next day. Major towns (Mombasa, Kisumu): 1-2 days. Other areas: 2-3 days. Free delivery on orders over Ksh 3,000.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I pick up my order?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Yes! Choose "Pickup" at checkout and collect your order at our Nairobi shop. No delivery fee. We'll WhatsApp you when it's ready.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">We accept M-Pesa (Lipa na M-Pesa till), card payments, and cash on delivery. M-Pesa is the fastest — you'll see our till number at checkout.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What is your return policy?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">We offer a 7-day return policy. Items must be unused and in original packaging. WhatsApp us at +254 759 051 333 to arrange a return or exchange. See our <a href="/returns" class="text-yellow-700 font-semibold">Returns Policy</a> for details.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Are your products genuine?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Yes! All our electronics are genuine and come with warranty where applicable. Fashion items are brand new and quality-checked before dispatch.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How do I track my order?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Once dispatched, you'll receive a WhatsApp message with tracking details. You can also check your order status in your account under "Orders".</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do I need an account to order?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">You can order without an account, but creating one lets you track orders, save your address for faster checkout, earn loyalty points, and get exclusive offers. It's free — <a href="/login" class="text-yellow-700 font-semibold">sign up here</a>.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I order via WhatsApp?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">Absolutely! Click the green WhatsApp button on any product to order directly. Our team will confirm availability and arrange delivery.</div></div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How do I contact customer support?<i class="fas fa-chevron-down"></i></div><div class="faq-a"><div class="faq-a-inner">We're available 24/7 via WhatsApp (+254 759 051 333), phone call, or email (hello@nextwavetrends.co.ke). Visit our <a href="/contact" class="text-yellow-700 font-semibold">Contact page</a> for all options.</div></div></div>
+    </div>
+
+    <div class="mt-8 cute-grad-gold rounded-3xl p-6 text-center text-white">
+      <h2 class="text-xl font-extrabold mb-2">Still have questions?</h2>
+      <p class="opacity-90 mb-4 text-sm">We're here to help — reach out anytime.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="https://wa.me/254759051333" target="_blank" class="bg-green-600 text-white font-bold px-5 py-2.5 rounded-full"><i class="fab fa-whatsapp mr-2"></i>WhatsApp us</a>
+        <a href="tel:+254759051333" class="bg-white text-yellow-700 font-bold px-5 py-2.5 rounded-full"><i class="fas fa-phone mr-2"></i>Call us</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="px-4 pt-14 pb-28 md:pb-10"><div class="container mx-auto text-center text-white/60 text-sm">© 2026 Next Wave Trends</div></footer>
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg"></span></div>
+<nav class="bottom-nav md:hidden"><div>
+  <a href="/" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="/products" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="/cart" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+  <a href="/contact" class="bottom-nav-item active"><i class="fas fa-phone"></i><span>Contact</span></a>
+</div></nav>
+<script src="js/products.js"></script><script src="js/app.js"></script>
+<script>
+function toggleFaq(el){
+  var a = el.nextElementSibling;
+  el.classList.toggle('open');
+  a.classList.toggle('open');
+}
+</script>
+</body></html>

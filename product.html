@@ -93,6 +93,43 @@
 
     <div id="productDetail"></div>
 
+    <!-- Reviews section -->
+    <section class="mt-10" id="reviewsSection">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-extrabold"><i class="fas fa-star text-yellow-500"></i> Customer Reviews</h2>
+        <button onclick="document.getElementById('reviewForm').classList.toggle('hidden')" class="cute-btn cute-grad-gold text-white px-4 py-2 text-sm"><i class="fas fa-pen mr-1"></i> Write a review</button>
+      </div>
+
+      <!-- Review form -->
+      <div id="reviewForm" class="hidden cute-card p-5 mb-6">
+        <h3 class="font-bold mb-3">Share your experience</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sm font-semibold mb-1">Your name</label>
+            <input type="text" id="reviewName" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-yellow-500" placeholder="John M.">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1">Rating</label>
+            <div id="reviewStars" class="flex gap-1 text-2xl">
+              <i class="fas fa-star text-gray-300 cursor-pointer" data-star="1" onclick="selectStar(1)"></i>
+              <i class="fas fa-star text-gray-300 cursor-pointer" data-star="2" onclick="selectStar(2)"></i>
+              <i class="fas fa-star text-gray-300 cursor-pointer" data-star="3" onclick="selectStar(3)"></i>
+              <i class="fas fa-star text-gray-300 cursor-pointer" data-star="4" onclick="selectStar(4)"></i>
+              <i class="fas fa-star text-gray-300 cursor-pointer" data-star="5" onclick="selectStar(5)"></i>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-1">Your review</label>
+            <textarea id="reviewText" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-yellow-500" placeholder="Tell others what you think about this product..."></textarea>
+          </div>
+          <button onclick="submitReview()" class="cute-btn cute-grad-gold text-white px-6 py-2.5"><i class="fas fa-paper-plane mr-1"></i> Post Review</button>
+        </div>
+      </div>
+
+      <!-- Reviews list -->
+      <div id="reviewsList" class="space-y-4"></div>
+    </section>
+
     <!-- Related products -->
     <section class="mt-12">
       <h2 class="text-xl font-extrabold mb-4"><i class="fas fa-layer-group text-yellow-600"></i> You may also like</h2>
@@ -107,7 +144,7 @@
       <div class="flex gap-2 mt-4 text-lg"><a href="https://wa.me/254759051333" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-whatsapp"></i></a><a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-instagram"></i></a><a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-tiktok"></i></a><a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-facebook"></i></a></div>
     </div>
     <div><h4 class="font-bold mb-3">Shop</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="/products#electronics" class="hover:text-white">Electronics</a></li><li><a href="/products#fashion" class="hover:text-white">Fashion</a></li><li><a href="/products" class="hover:text-white">All products</a></li></ul></div>
-    <div><h4 class="font-bold mb-3">Help</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="/about" class="hover:text-white">About us</a></li><li><a href="/contact" class="hover:text-white">Contact</a></li><li><a href="#" class="hover:text-white">Returns</a></li><li><a href="#" class="hover:text-white">Delivery info</a></li></ul></div>
+    <div><h4 class="font-bold mb-3">Help</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="/about" class="hover:text-white">About us</a></li><li><a href="/contact" class="hover:text-white">Contact</a></li><li><a href="/returns" class="hover:text-white">Returns</a></li><li><a href="/delivery" class="hover:text-white">Delivery info</a></li></ul></div>
     <div><h4 class="font-bold mb-3">Reach us</h4><ul class="space-y-2 text-sm text-white/60"><li><i class="fas fa-phone w-5"></i>+254 759 051 333</li><li><i class="fas fa-envelope w-5"></i>hello@nextwavetrends.co.ke</li><li><i class="fas fa-location-dot w-5"></i>Nairobi, Kenya</li></ul></div>
   </div>
   <div class="container mx-auto mt-8 pt-5 border-t border-white/10 text-center text-white/50 text-sm">© 2026 Next Wave Trends · Made with <i class="fas fa-heart text-yellow-500"></i> in Kenya</div>
@@ -231,7 +268,56 @@
     }
   };
 
-  document.addEventListener('DOMContentLoaded', render);
+  // ---- Reviews ----
+  var selectedStar = 0;
+  function selectStar(n){
+    selectedStar = n;
+    document.querySelectorAll('#reviewStars i').forEach(function(s, i){
+      s.className = i < n ? 'fas fa-star text-yellow-500 cursor-pointer' : 'fas fa-star text-gray-300 cursor-pointer';
+    });
+  }
+  function getReviews(productId){
+    try { return JSON.parse(localStorage.getItem('nwt_reviews_' + productId) || '[]'); } catch(e){ return []; }
+  }
+  function saveReviews(productId, reviews){
+    localStorage.setItem('nwt_reviews_' + productId, JSON.stringify(reviews));
+  }
+  function renderReviews(){
+    var id = getParam('id');
+    var reviews = getReviews(id);
+    var list = document.getElementById('reviewsList');
+    if(!list) return;
+    if(reviews.length === 0){
+      list.innerHTML = '<div class="cute-card p-6 text-center text-gray-400"><i class="fas fa-comment-dots text-3xl mb-2"></i><p>No reviews yet. Be the first to review!</p></div>';
+      return;
+    }
+    list.innerHTML = reviews.map(function(r){
+      var stars = '';
+      for(var i=1; i<=5; i++){ stars += '<i class="fas fa-star '+(i<=r.rating?'text-yellow-400':'text-gray-300')+'" style="font-size:.8rem"></i>'; }
+      return '<div class="cute-card p-4"><div class="flex items-center gap-2 mb-2"><div class="w-9 h-9 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 font-bold text-sm">'+r.name.charAt(0).toUpperCase()+'</div><div><div class="font-semibold text-sm">'+r.name+'</div><div class="flex">'+stars+'</div></div></div><p class="text-gray-600 text-sm">'+r.text+'</p><div class="text-xs text-gray-400 mt-2">'+new Date(r.date).toLocaleDateString('en-KE',{year:'numeric',month:'short',day:'numeric'})+'</div></div>';
+    }).join('');
+  }
+  function submitReview(){
+    var name = document.getElementById('reviewName').value.trim();
+    var text = document.getElementById('reviewText').value.trim();
+    if(!name){ alert('Please enter your name'); return; }
+    if(!selectedStar){ alert('Please select a rating'); return; }
+    if(!text){ alert('Please write a review'); return; }
+    var id = getParam('id');
+    var reviews = getReviews(id);
+    reviews.unshift({ name: name, rating: selectedStar, text: text, date: Date.now() });
+    saveReviews(id, reviews);
+    document.getElementById('reviewName').value = '';
+    document.getElementById('reviewText').value = '';
+    selectStar(0);
+    document.getElementById('reviewForm').classList.add('hidden');
+    renderReviews();
+    if(window.ctw && window.ctw.toast) window.ctw.toast('Review posted! Thank you.');
+  }
+  window.selectStar = selectStar;
+  window.submitReview = submitReview;
+
+  document.addEventListener('DOMContentLoaded', function(){ render(); renderReviews(); });
 })();
 </script>
 </body></html>
