@@ -245,6 +245,12 @@
         </div>
         <button type="submit" class="auth-submit" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
 
+        <!-- Switch prompt — below Login button -->
+        <div class="auth-switch" style="margin-top:1rem;margin-bottom:0">
+          <span>Don't have an account?</span>
+          <a href="#" onclick="authUI.switchTab('signup');return false">Sign up</a>
+        </div>
+
         <!-- Help / Contact section (login) -->
         <div class="auth-help" style="margin-top:1.25rem">
           <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? We're here for you</div>
@@ -260,10 +266,6 @@
             <i class="fas fa-envelope"></i>
             <div><div class="label">Email us</div><div class="val">hello@nextwavetrends.co.ke</div></div>
           </a>
-          <button type="button" class="auth-help-row" onclick="authUI.switchTab('signup')" style="background:none;border:0;width:100%;cursor:pointer;border-bottom:0">
-            <i class="fas fa-user-plus"></i>
-            <div><div class="label">No account yet?</div><div class="val">Create one now — it's free</div></div>
-          </button>
         </div>
       </form>
 
@@ -331,7 +333,13 @@
 
         <button type="submit" class="auth-submit" id="signupBtn"><i class="fas fa-user-plus"></i> Create Account</button>
 
-        <!-- Help / Contact section — below Create Account -->
+        <!-- Switch prompt — below Create Account button -->
+        <div class="auth-switch" style="margin-top:1rem;margin-bottom:0">
+          <span>Already have an account?</span>
+          <a href="#" onclick="authUI.switchTab('login');return false">Login</a>
+        </div>
+
+        <!-- Help / Contact section — below switch prompt -->
         <div class="auth-help">
           <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? We're here for you</div>
           <a href="tel:+254759051333" class="auth-help-row">
@@ -406,11 +414,6 @@
         <button type="button" class="auth-otp-back" onclick="authUI.backFromOtp()"><i class="fas fa-arrow-left"></i> Back</button>
       </div>
 
-      <!-- Switch -->
-      <div class="auth-switch" id="switchPrompt">
-        <span id="switchText">Don't have an account?</span>
-        <a href="#" id="switchLink" onclick="authUI.switchTab('signup');return false">Sign up</a>
-      </div>
     </div>
   </div>
 </div>
@@ -449,13 +452,13 @@
     document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
     document.getElementById('forgotForm').classList.add('hidden');
     document.getElementById('otpSection').classList.add('hidden');
-    document.getElementById('switchPrompt').classList.remove('hidden');
+    
     document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
     document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
-    var prompt = document.getElementById('switchText');
-    var link = document.getElementById('switchLink');
+    
+    
     if(tab === 'login'){ prompt.textContent = "Don't have an account?"; link.textContent = 'Sign up'; }
-    else { prompt.textContent = 'Already have an account?'; link.textContent = 'Login'; }
+    
     var sub = document.getElementById('introSubtitle');
     if(sub){ sub.textContent = tab === 'login' ? 'Sign in with your phone or email' : 'Sign up with your email — we\'ll send a verification code'; }
     window.scrollTo({top:0, behavior:'smooth'});
@@ -536,7 +539,7 @@
     document.getElementById('signupForm').classList.add('hidden');
     document.getElementById('forgotForm').classList.remove('hidden');
     document.getElementById('otpSection').classList.add('hidden');
-    document.getElementById('switchPrompt').classList.add('hidden');
+    
     window.scrollTo({top:0, behavior:'smooth'});
   }
   function sendReset(e){
@@ -570,7 +573,7 @@
     document.getElementById('signupForm').classList.add('hidden');
     document.getElementById('forgotForm').classList.add('hidden');
     document.getElementById('otpSection').classList.remove('hidden');
-    document.getElementById('switchPrompt').classList.add('hidden');
+    
     renderOtpBoxes();
     startOtpCountdown();
     window.scrollTo({top:0, behavior:'smooth'});
