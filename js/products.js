@@ -83,3 +83,22 @@ window.CTW_PRODUCTS = [
     images:['https://images.unsplash.com/photo-1588854337245-48f73f9c1f73?auto=format&fit=crop&w=800&q=70'],
     desc:'Adjustable cotton cap, breathable, unisex, one size fits all.' }
 ];
+
+/* ===== Load real catalogue from /api/products (keeps the array above as an
+   instant-render + offline fallback). After fetch, re-render grids + cart so
+   admin changes (new products, price edits, stock toggles) show up live. ===== */
+(function () {
+  function refresh() {
+    document.dispatchEvent(new CustomEvent('ctw:products'));
+    if (window.ctw && window.ctw.renderAll) window.ctw.renderAll();
+    if (window.ctw && window.ctw.renderCart) window.ctw.renderCart();
+    if (window.ctw && window.ctw.updateBadges) window.ctw.updateBadges();
+  }
+  fetch('/api/products').then(function (r) { return r.json(); }).then(function (data) {
+    if (data && data.products && data.products.length) {
+      window.CTW_PRODUCTS = data.products;
+      window.ctwProductsReady = true;
+      refresh();
+    }
+  }).catch(function () { /* keep embedded seed — API unavailable */ });
+})();

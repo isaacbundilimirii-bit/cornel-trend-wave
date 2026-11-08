@@ -191,194 +191,105 @@
 </nav>
 
 <script src="js/products.js"></script>
+<script src="js/api.js"></script>
 <script src="js/app.js"></script>
 <script>
+// ===== Wishlist (API-backed) =====
 (function() {
   'use strict';
-  
-  // Wishlist functionality
-  const WISHLIST_KEY = 'ctw_wishlist';
-  
-  function getWishlist() {
-    return JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
-  }
-  
-  function saveWishlist(items) {
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(items));
-    updateWishlistUI();
-  }
-  
-  function addToWishlist(productId) {
-    const wishlist = getWishlist();
-    if (!wishlist.includes(productId)) {
-      wishlist.push(productId);
-      saveWishlist(wishlist);
-      toast('Added to wishlist');
-    }
-  }
-  
-  function removeFromWishlist(productId) {
-    let wishlist = getWishlist();
-    wishlist = wishlist.filter(id => id !== productId);
-    saveWishlist(wishlist);
-    toast('Removed from wishlist');
-  }
-  
-  function isInWishlist(productId) {
-    return getWishlist().includes(productId);
-  }
-  
-  function updateWishlistUI() {
-    const wishlist = getWishlist();
-    const count = wishlist.length;
-    
-    // Update count badge
-    document.querySelectorAll('[data-wishlist-count]').forEach(el => {
-      el.textContent = count;
-    });
-    
-    // Update wishlist page
-    renderWishlistItems();
-  }
-  
-  function renderWishlistItems() {
-    const container = document.getElementById('wishlistItems');
-    const countEl = document.getElementById('wishlistCount');
-    if (!container) return;
-    
-    const wishlist = getWishlist();
-    const products = window.CTW_PRODUCTS.filter(p => wishlist.includes(p.id));
-    
-    if (products.length === 0) {
-      container.innerHTML = `
-        <div class="wishlist-empty">
-          <i class="fas fa-heart"></i>
-          <h3>Your wishlist is empty</h3>
-          <p>Save your favorite products here to keep track of items you love.</p>
-          <a href="products.html" class="cute-btn cute-grad-gold text-white px-6 py-3">Browse Products</a>
-        </div>
-      `;
-      if (countEl) countEl.textContent = '0 items';
-      return;
-    }
-    
-    if (countEl) countEl.textContent = `${products.length} item${products.length !== 1 ? 's' : ''}`;
-    
-    container.innerHTML = products.map(p => `
-      <div class="wishlist-item" data-product-id="${p.id}">
-        <img src="${p.img}" alt="${p.name}" loading="lazy">
-        <div class="wishlist-item-content">
-          <div class="text-[10px] uppercase tracking-wide font-bold text-yellow-600 mb-1">${p.sub}</div>
-          <h3 class="font-bold text-sm mb-1">${p.name}</h3>
-          <div class="font-extrabold cute-grad-text mb-3">Ksh ${Number(p.price).toLocaleString('en-KE')}</div>
-          <div class="wishlist-item-actions">
-            <button class="add-btn" onclick="wishlist.addToCart('${p.id}')">
-              <i class="fas fa-plus mr-1"></i> Add to Cart
-            </button>
-            <button class="remove-btn" onclick="wishlist.remove('${p.id}')">
-              <i class="fas fa-trash mr-1"></i> Remove
-            </button>
-            <button class="move-btn" onclick="wishlist.moveToCart('${p.id}')">
-              <i class="fas fa-shopping-cart mr-1"></i> Move to Cart
-            </button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-  
-  function addToCart(productId) {
-    ctw.addToCart(productId);
-  }
-  
-  function moveToCart(productId) {
-    addToCart(productId);
-    removeFromWishlist(productId);
-    toast('Moved to cart');
-  }
-  
-  function loadRecentlyViewed() {
-    const container = document.getElementById('recentlyViewed');
-    if (!container) return;
-    
-    // Get recently viewed from localStorage
-    const recent = JSON.parse(localStorage.getItem('ctw_recent') || '[]');
-    const recentProducts = recent
-      .map(id => window.CTW_PRODUCTS.find(p => p.id === id))
-      .filter(p => p)
-      .slice(0, 4);
-    
-    if (recentProducts.length === 0) {
-      container.innerHTML = '<p class="text-gray-500 col-span-full text-center">No recently viewed products</p>';
-      return;
-    }
-    
-    container.innerHTML = recentProducts.map(p => `
-      <div class="prod-card cute-card">
-        <div class="img-wrap">
-          <button class="wish-btn ${isInWishlist(p.id) ? 'active' : ''}" onclick="wishlist.toggle('${p.id}')">
-            <i class="fas fa-heart"></i>
-          </button>
-          <img src="${p.img}" alt="${p.name}" loading="lazy">
-        </div>
-        <div class="p-4 flex flex-col flex-1">
-          <div class="text-[10px] uppercase tracking-wide font-bold text-yellow-600 mb-1">${p.sub}</div>
-          <h3 class="font-bold text-sm mb-1 line-clamp-1">${p.name}</h3>
-          <div class="font-extrabold cute-grad-text mt-auto mb-3">Ksh ${Number(p.price).toLocaleString('en-KE')}</div>
-          <button onclick="ctw.addToCart('${p.id}')" class="cute-btn cute-grad text-white text-xs py-2 w-full">
-            <i class="fas fa-plus mr-1"></i> Add to cart
-          </button>
-        </div>
-      </div>
-    `).join('');
-  }
-  
-  function toggle(productId) {
-    if (isInWishlist(productId)) {
-      removeFromWishlist(productId);
-    } else {
-      addToWishlist(productId);
-    }
-  }
-  
-  // Initialize
-  document.addEventListener('DOMContentLoaded', function() {
-    updateWishlistUI();
-    loadRecentlyViewed();
-    
-    // Check authentication
-    if (!ctw.isLoggedIn()) {
-      const container = document.getElementById('wishlistItems');
-      if (container) {
-        container.innerHTML = `
-          <div class="wishlist-empty">
-            <i class="fas fa-lock"></i>
-            <h3>Please login to view wishlist</h3>
-            <p>You need to be logged in to save products to your wishlist.</p>
-            <a href="auth.html" class="cute-btn cute-grad-gold text-white px-6 py-3">Login / Register</a>
-          </div>
-        `;
-      }
-    }
-  });
-  
-  function toast(msg) {
+  var api = window.api;
+
+  function toast(msg){
     var t = document.getElementById('toast');
-    if (!t) return;
+    if(!t) return;
     document.getElementById('toastMsg').textContent = msg;
     t.classList.add('show');
     clearTimeout(window._ctwToast);
-    window._ctwToast = setTimeout(function () { t.classList.remove('show'); }, 2200);
+    window._ctwToast = setTimeout(function(){ t.classList.remove('show'); }, 2200);
   }
-  
+
+  function renderWishlistItems(products){
+    var container = document.getElementById('wishlistItems');
+    var countEl = document.getElementById('wishlistCount');
+    if(!container) return;
+    if(!products || products.length === 0){
+      container.innerHTML =
+        '<div class="wishlist-empty"><i class="fas fa-heart"></i>' +
+        '<h3>Your wishlist is empty</h3>' +
+        '<p>Save your favorite products here to keep track of items you love.</p>' +
+        '<a href="products.html" class="cute-btn cute-grad-gold text-white px-6 py-3">Browse Products</a></div>';
+      if(countEl) countEl.textContent = '0 items';
+      return;
+    }
+    if(countEl) countEl.textContent = products.length + ' item' + (products.length !== 1 ? 's' : '');
+    container.innerHTML = products.map(function(p){
+      return '<div class="wishlist-item" data-product-id="' + p.id + '">' +
+        '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
+        '<div class="wishlist-item-content">' +
+          '<div class="text-[10px] uppercase tracking-wide font-bold text-yellow-600 mb-1">' + p.sub + '</div>' +
+          '<h3 class="font-bold text-sm mb-1">' + p.name + '</h3>' +
+          '<div class="font-extrabold cute-grad-text mb-3">Ksh ' + Number(p.price).toLocaleString('en-KE') + '</div>' +
+          '<div class="wishlist-item-actions">' +
+            '<button class="add-btn" onclick="wishlist.addToCart(\'' + p.id + '\')"><i class="fas fa-plus mr-1"></i> Add to Cart</button>' +
+            '<button class="remove-btn" onclick="wishlist.remove(\'' + p.id + '\')"><i class="fas fa-trash mr-1"></i> Remove</button>' +
+            '<button class="move-btn" onclick="wishlist.moveToCart(\'' + p.id + '\')"><i class="fas fa-shopping-cart mr-1"></i> Move to Cart</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function loadWishlist(){
+    if(!api.isLoggedIn()){
+      renderWishlistItems([]);
+      var container = document.getElementById('wishlistItems');
+      if(container){
+        container.innerHTML =
+          '<div class="wishlist-empty"><i class="fas fa-lock"></i>' +
+          '<h3>Please login to view wishlist</h3>' +
+          '<p>You need to be logged in to save products to your wishlist.</p>' +
+          '<a href="auth.html?redirect=wishlist.html" class="cute-btn cute-grad-gold text-white px-6 py-3">Login / Register</a></div>';
+      }
+      return;
+    }
+    api.get('/api/wishlist').then(function(d){
+      var products = (d && d.products) || [];
+      document.querySelectorAll('[data-wishlist-count]').forEach(function(el){ el.textContent = products.length; });
+      renderWishlistItems(products);
+    }).catch(function(e){
+      renderWishlistItems([]);
+      toast(e.message || 'Could not load wishlist');
+    });
+  }
+
+  function addToWishlist(productId){
+    api.post('/api/wishlist', { productId: productId }).then(function(){
+      toast('Added to wishlist');
+      loadWishlist();
+    }).catch(function(e){ toast(e.message || 'Could not add', true); });
+  }
+  function removeFromWishlist(productId){
+    api.del('/api/wishlist/' + encodeURIComponent(productId)).then(function(){
+      toast('Removed from wishlist');
+      loadWishlist();
+    }).catch(function(e){ toast(e.message || 'Could not remove', true); });
+  }
+  function toggle(productId){
+    // Optimistically check current set via a quick fetch
+    api.get('/api/wishlist').then(function(d){
+      var exists = ((d && d.products) || []).some(function(p){ return p.id === productId; });
+      if(exists) removeFromWishlist(productId); else addToWishlist(productId);
+    }).catch(function(){ addToWishlist(productId); });
+  }
+  function addToCart(productId){ if(window.ctw) window.ctw.addToCart(productId); }
+  function moveToCart(productId){ addToCart(productId); removeFromWishlist(productId); toast('Moved to cart'); }
+
+  document.addEventListener('DOMContentLoaded', loadWishlist);
+
   window.wishlist = {
-    add: addToWishlist,
-    remove: removeFromWishlist,
-    toggle: toggle,
-    addToCart: addToCart,
-    moveToCart: moveToCart,
-    get: getWishlist,
-    isIn: isInWishlist
+    add: addToWishlist, remove: removeFromWishlist, toggle: toggle,
+    addToCart: addToCart, moveToCart: moveToCart, reload: loadWishlist,
+    get: function(){ /* no-op; use API */ return []; }, isIn: function(){ return false; }
   };
 })();
 </script>

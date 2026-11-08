@@ -1,11 +1,26 @@
 {
   "name": "next-wave-trends",
-  "version": "1.0.0",
-  "description": "Next Wave Trends — electronics & fashion online shop",
+  "version": "2.0.0",
+  "description": "Next Wave Trends — electronics & fashion online shop (full-stack: Express + Postgres)",
+  "main": "server.js",
   "scripts": {
-    "build": "echo 'no build needed'",
-    "start": "node server.js"
+    "start": "node server.js",
+    "migrate": "node server/db.js migrate",
+    "seed": "node server/db.js seed",
+    "migrate:seed": "node server/db.js migrate:seed"
   },
-  "keywords": ["shop", "electronics", "fashion", "kenya"],
-  "author": "Next Wave Trends"
+  "keywords": ["shop", "electronics", "fashion", "kenya", "mpesa", "daraja"],
+  "author": "Next Wave Trends",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.15",
+    "pg": "^8.13.0"
+  }
 }

@@ -7,35 +7,25 @@
   function count() { return cart.reduce(function (s, i) { return s + i.qty; }, 0); }
   function money(n) { return 'Ksh ' + Number(n).toLocaleString('en-KE'); }
 
-  // ---- User Authentication (using auth.js module) ----
-  function getUser() { 
-    return window.auth ? window.auth.getCurrentUser() : JSON.parse(localStorage.getItem('ctw_user') || 'null');
+  // ---- User Authentication ----
+  // Token + cached user live in localStorage (ctw_token / ctw_user), set by js/auth.js on login.
+  // js/api.js (if loaded) provides api.isLoggedIn(); we fall back to localStorage otherwise.
+  function getUser() {
+    if (window.api && window.api.getUser) return window.api.getUser();
+    try { return JSON.parse(localStorage.getItem('ctw_user') || 'null'); } catch (e) { return null; }
   }
-  function isLoggedIn() { 
-    return window.auth ? window.auth.isLoggedIn() : (getUser() && getUser().loggedIn === true);
+  function isLoggedIn() {
+    if (window.api && window.api.isLoggedIn) return window.api.isLoggedIn();
+    return !!localStorage.getItem('ctw_token') && !!getUser();
   }
   function loginUser(data) {
-    if (window.auth && window.auth.loginUser) {
-      const result = window.auth.loginUser(data.phone, data.password);
-      if (result.success) {
-        updateUserUI();
-        return result.user;
-      }
-      return null;
-    } else {
-      // Fallback for compatibility
-      const user = { ...data, loggedIn: true };
-      localStorage.setItem('ctw_user', JSON.stringify(user));
-      updateUserUI();
-      return user;
-    }
+    // Kept for backwards-compatibility with any caller; real login happens in js/auth.js
+    if (window.auth && window.auth.login) return window.auth.login(data);
+    return null;
   }
   function logoutUser() {
-    if (window.auth && window.auth.logoutUser) {
-      window.auth.logoutUser();
-    } else {
-      localStorage.removeItem('ctw_user');
-    }
+    if (window.api) window.api.clearAuth();
+    else { localStorage.removeItem('ctw_token'); localStorage.removeItem('ctw_user'); }
     updateUserUI();
     toast('Logged out successfully');
   }
@@ -43,19 +33,29 @@
     var userLinks = document.querySelectorAll('[data-user-link]');
     var guestLinks = document.querySelectorAll('[data-guest-link]');
     var userNameEls = document.querySelectorAll('[data-user-name]');
-    
-    const user = getUser();
-    
-    if (isLoggedIn()) {
-      userLinks.forEach(el => el.classList.remove('hidden'));
-      guestLinks.forEach(el => el.classList.add('hidden'));
-      userNameEls.forEach(el => {
+
+    var user = getUser();
+    var loggedIn = isLoggedIn();
+
+    if (loggedIn) {
+      userLinks.forEach(function (el) { el.classList.remove('hidden'); });
+      guestLinks.forEach(function (el) { el.classList.add('hidden'); });
+      userNameEls.forEach(function (el) {
         if (user && user.name) el.textContent = user.name.split(' ')[0];
+        else el.textContent = 'Account';
       });
+      // Best-effort: refresh wishlist count badge in the header
+      if (window.api && window.api.getToken) {
+        window.api.get('/api/wishlist').then(function (d) {
+          var n = (d && d.products) ? d.products.length : 0;
+          document.querySelectorAll('[data-wishlist-count]').forEach(function (el) { el.textContent = n; });
+        }).catch(function () {});
+      }
     } else {
-      userLinks.forEach(el => el.classList.add('hidden'));
-      guestLinks.forEach(el => el.classList.remove('hidden'));
-      userNameEls.forEach(el => el.textContent = 'Account');
+      userLinks.forEach(function (el) { el.classList.add('hidden'); });
+      guestLinks.forEach(function (el) { el.classList.remove('hidden'); });
+      userNameEls.forEach(function (el) { el.textContent = 'Account'; });
+      document.querySelectorAll('[data-wishlist-count]').forEach(function (el) { el.textContent = '0'; });
     }
   }
 

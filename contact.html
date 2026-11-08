@@ -57,6 +57,32 @@
   <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
   <a href="contact.html" class="bottom-nav-item active"><i class="fas fa-phone"></i><span>Contact</span></a>
 </div></nav>
-<script src="js/products.js"></script><script src="js/app.js"></script>
-<script>window.ctw.sendMsg=function(e){e.preventDefault();document.getElementById('toastMsg').textContent='Message sent! We\'ll reply soon.';document.getElementById('toast').classList.add('show');e.target.reset();setTimeout(function(){document.getElementById('toast').classList.remove('show');},2500);return false;};</script>
+<script src="js/products.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+window.ctw.sendMsg = function(e){
+  e.preventDefault();
+  var form = e.target;
+  var inputs = form.querySelectorAll('input, textarea');
+  var name = inputs[0] ? inputs[0].value.trim() : '';
+  var contact = inputs[1] ? inputs[1].value.trim() : '';
+  var message = inputs[2] ? inputs[2].value.trim() : '';
+  if(!name || !contact || !message){ showMsg('Please fill all fields', true); return false; }
+  var isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+  var body = { name: name, email: isEmail ? contact : (contact + '@local'), phone: isEmail ? '' : contact, message: message };
+  fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ showMsg(d.message || 'Message sent! We will reply soon.', !d.ok); if(d.ok) form.reset(); })
+    .catch(function(){ showMsg('Could not send right now. Try WhatsApp instead.', true); });
+  return false;
+};
+function showMsg(msg, err){
+  var t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.querySelector('i').className = err ? 'fas fa-circle-exclamation text-red-500' : 'fas fa-check-circle text-yellow-500';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+</script>
 </body></html>

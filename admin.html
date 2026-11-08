@@ -113,7 +113,7 @@
     </table>
   </div>
 
-  <p class="text-center text-gray-400 text-xs mt-6"><i class="fas fa-info-circle"></i> Changes are saved on this device. To push to the live site, export and update <code>js/products.js</code>.</p>
+  <p class="text-center text-gray-400 text-xs mt-6"><i class="fas fa-info-circle"></i> Changes are saved to the database and appear on the live site immediately. Admin access requires an admin account.</p>
 </main>
 
 <!-- Add/Edit modal -->
@@ -195,31 +195,41 @@
 <div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Saved!</span></div>
 
 <script src="js/products.js"></script>
+<script src="js/api.js"></script>
 <script>
+// ===== Admin (API-backed). Requires admin JWT. =====
 (function(){
   'use strict';
-  // Load custom products from localStorage, merge with defaults
-  var custom = JSON.parse(localStorage.getItem('ctw_admin_products') || '[]');
-  var stock = JSON.parse(localStorage.getItem('ctw_admin_stock') || '{}');
+  var api = window.api;
+  var allProducts = [];
+  var currentFilter = 'all';
 
-  function getAllProducts(){
-    var base = window.CTW_PRODUCTS.slice();
-    custom.forEach(function(c){
-      var idx = base.findIndex(function(b){return b.id === c.id;});
-      if(idx >= 0) base[idx] = Object.assign({}, base[idx], c);
-      else base.push(c);
-    });
-    base.forEach(function(p){ if(stock[p.id] !== undefined) p.inStock = stock[p.id]; else p.inStock = true; });
-    return base;
+  function money(n){ return 'Ksh ' + Number(n).toLocaleString('en-KE'); }
+  function toast(msg){
+    var t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._adminToast);
+    window._adminToast = setTimeout(function(){ t.classList.remove('show'); }, 2000);
   }
 
-  function saveStock(){ localStorage.setItem('ctw_admin_stock', JSON.stringify(stock)); }
-  function saveCustom(){ localStorage.setItem('ctw_admin_products', JSON.stringify(custom)); }
+  // ---- Auth guard: bounce to login if not admin ----
+  async function guard(){
+    if(!api.isLoggedIn()){
+      window.location.href = 'auth.html?redirect=admin.html';
+      return false;
+    }
+    try {
+      // Hit an admin endpoint; 401/403 → not admin
+      await api.get('/api/admin/products');
+      return true;
+    } catch(e){
+      toast(e.status === 403 ? 'Admin account required' : 'Please login as admin', true);
+      setTimeout(function(){ window.location.href = 'auth.html?redirect=admin.html'; }, 1200);
+      return false;
+    }
+  }
 
-  function money(n){return 'Ksh ' + Number(n).toLocaleString('en-KE');}
-  function toast(msg){ var t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.classList.add('show'); clearTimeout(window._adminToast); window._adminToast=setTimeout(function(){t.classList.remove('show');},2000); }
-
-  var currentFilter = 'all';
   function setFilter(f){
     currentFilter = f;
     document.querySelectorAll('[data-filter]').forEach(function(b){
@@ -231,26 +241,22 @@
   }
 
   function render(){
-    var all = getAllProducts();
-    // Stats
-    var inStock = all.filter(function(p){return p.inStock !== false;}).length;
-    var outStock = all.length - inStock;
-    var elec = all.filter(function(p){return p.cat==='electronics';}).length;
-    var fash = all.filter(function(p){return p.cat==='fashion';}).length;
+    var inStock = allProducts.filter(function(p){ return p.inStock !== false; }).length;
+    var outStock = allProducts.length - inStock;
+    var elec = allProducts.filter(function(p){ return p.cat==='electronics'; }).length;
+    var fash = allProducts.filter(function(p){ return p.cat==='fashion'; }).length;
     document.getElementById('statsGrid').innerHTML =
-      '<div class="stat-card"><div class="stat-icon" style="background:#0f0f0f;color:#f0b000"><i class="fas fa-box"></i></div><div><div class="text-2xl font-extrabold">'+all.length+'</div><div class="text-xs text-gray-500">Total products</div></div></div>'+
+      '<div class="stat-card"><div class="stat-icon" style="background:#0f0f0f;color:#f0b000"><i class="fas fa-box"></i></div><div><div class="text-2xl font-extrabold">'+allProducts.length+'</div><div class="text-xs text-gray-500">Total products</div></div></div>'+
       '<div class="stat-card"><div class="stat-icon" style="background:#10b981"><i class="fas fa-check"></i></div><div><div class="text-2xl font-extrabold">'+inStock+'</div><div class="text-xs text-gray-500">In stock</div></div></div>'+
       '<div class="stat-card"><div class="stat-icon" style="background:#ef4444"><i class="fas fa-times"></i></div><div><div class="text-2xl font-extrabold">'+outStock+'</div><div class="text-xs text-gray-500">Out of stock</div></div></div>'+
       '<div class="stat-card"><div class="stat-icon" style="background:#f0b000;color:#0f0f0f"><i class="fas fa-tags"></i></div><div><div class="text-2xl font-extrabold">'+(elec+fash)+'</div><div class="text-xs text-gray-500">Categories</div></div></div>';
 
-    // Filter
-    var list = all;
-    if(currentFilter==='electronics') list = all.filter(function(p){return p.cat==='electronics';});
-    else if(currentFilter==='fashion') list = all.filter(function(p){return p.cat==='fashion';});
-    else if(currentFilter==='instock') list = all.filter(function(p){return p.inStock !== false;});
-    else if(currentFilter==='outofstock') list = all.filter(function(p){return p.inStock === false;});
+    var list = allProducts;
+    if(currentFilter==='electronics') list = allProducts.filter(function(p){ return p.cat==='electronics'; });
+    else if(currentFilter==='fashion') list = allProducts.filter(function(p){ return p.cat==='fashion'; });
+    else if(currentFilter==='instock') list = allProducts.filter(function(p){ return p.inStock !== false; });
+    else if(currentFilter==='outofstock') list = allProducts.filter(function(p){ return p.inStock === false; });
 
-    // Table
     var body = document.getElementById('productsBody');
     if(list.length === 0){ body.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-8">No products found</td></tr>'; return; }
     body.innerHTML = list.map(function(p){
@@ -268,13 +274,24 @@
     }).join('');
   }
 
-  function toggleStock(id){
-    var p = getAllProducts().find(function(x){return x.id===id;});
+  async function loadProducts(){
+    try {
+      var data = await api.get('/api/admin/products');
+      allProducts = (data && data.products) || [];
+      render();
+    } catch(e){
+      toast(e.message || 'Could not load products', true);
+    }
+  }
+
+  async function toggleStock(id){
+    var p = allProducts.find(function(x){ return x.id===id; });
     if(!p) return;
-    stock[id] = p.inStock === false;
-    saveStock();
-    render();
-    toast(p.inStock === false ? p.name + ' marked OUT of stock' : p.name + ' marked IN stock');
+    try {
+      await api.patch('/api/admin/products/' + encodeURIComponent(id) + '/stock', { inStock: p.inStock === false });
+      toast((p.inStock === false ? p.name + ' marked IN stock' : p.name + ' marked OUT of stock'));
+      await loadProducts();
+    } catch(e){ toast(e.message || 'Failed', true); }
   }
 
   function openAdd(){
@@ -288,7 +305,7 @@
   }
 
   function edit(id){
-    var p = getAllProducts().find(function(x){return x.id===id;});
+    var p = allProducts.find(function(x){ return x.id===id; });
     if(!p) return;
     document.getElementById('modalTitle').textContent = 'Edit product';
     document.getElementById('f_id').value = p.id;
@@ -306,7 +323,7 @@
     document.getElementById('modalOverlay').classList.add('active');
   }
 
-  function save(e){
+  async function save(e){
     e.preventDefault();
     var id = document.getElementById('f_id').value || ('p' + Date.now());
     var data = {
@@ -323,38 +340,38 @@
       badge: document.getElementById('f_badge').value || null,
       inStock: document.getElementById('f_inStock').checked
     };
-    var idx = custom.findIndex(function(c){return c.id === id;});
-    if(idx >= 0) custom[idx] = data; else custom.push(data);
-    saveCustom();
-    stock[id] = data.inStock;
-    saveStock();
-    closeModal();
-    render();
-    toast('Product saved successfully');
+    try {
+      await api.post('/api/admin/products', data);
+      closeModal();
+      await loadProducts();
+      toast('Product saved successfully');
+    } catch(err){ toast(err.message || 'Save failed', true); }
     return false;
   }
 
-  function remove(id){
+  async function remove(id){
     if(!confirm('Delete this product? This cannot be undone.')) return;
-    var p = getAllProducts().find(function(x){return x.id===id;});
-    custom = custom.filter(function(c){return c.id !== id;});
-    saveCustom();
-    delete stock[id]; saveStock();
-    render();
-    toast((p ? p.name : 'Product') + ' deleted');
+    try {
+      await api.del('/api/admin/products/' + encodeURIComponent(id));
+      await loadProducts();
+      toast('Product deleted');
+    } catch(e){ toast(e.message || 'Delete failed', true); }
   }
 
   function closeModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
 
-  // ---- M-Pesa payment settings ----
-  function loadPayment(){
-    var data = JSON.parse(localStorage.getItem('ctw_mpesa') || 'null');
-    if(data){
-      document.getElementById('mpesaType').value = data.type || 'till';
-      document.getElementById('mpesaNumber').value = data.number || '';
-      document.getElementById('mpesaName').value = data.name || '';
-      showPaymentPreview(data);
-    }
+  // ---- M-Pesa display settings (manual mode fallback shown at checkout) ----
+  async function loadPayment(){
+    try {
+      var data = await api.get('/api/admin/settings/mpesa');
+      var mpesa = data && data.mpesa;
+      if(mpesa && mpesa.number){
+        document.getElementById('mpesaType').value = mpesa.type || 'till';
+        document.getElementById('mpesaNumber').value = mpesa.number || '';
+        document.getElementById('mpesaName').value = mpesa.name || '';
+        showPaymentPreview(mpesa);
+      }
+    } catch(e){ /* ignore */ }
   }
   function showPaymentPreview(data){
     var preview = document.getElementById('mpesaPreview');
@@ -363,28 +380,34 @@
     var label = data.type === 'paybill' ? 'Paybill' : 'Till No.';
     preview.innerHTML = '<i class="fas fa-check-circle"></i> Checkout will show: <strong>' + label + ': ' + data.number + '</strong>' + (data.name ? ' (' + data.name + ')' : '');
   }
-  function savePayment(showToast){
+  async function savePayment(showToast){
     var data = {
       type: document.getElementById('mpesaType').value,
       number: document.getElementById('mpesaNumber').value.trim(),
       name: document.getElementById('mpesaName').value.trim()
     };
-    localStorage.setItem('ctw_mpesa', JSON.stringify(data));
-    showPaymentPreview(data);
-    if(showToast) toast('M-Pesa settings saved');
+    try {
+      await api.put('/api/admin/settings/mpesa', data);
+      showPaymentPreview(data);
+      if(showToast) toast('M-Pesa settings saved');
+    } catch(e){ toast(e.message || 'Save failed', true); }
   }
-  function clearPayment(){
-    localStorage.removeItem('ctw_mpesa');
-    document.getElementById('mpesaType').value = 'till';
-    document.getElementById('mpesaNumber').value = '';
-    document.getElementById('mpesaName').value = '';
-    document.getElementById('mpesaPreview').classList.add('hidden');
-    toast('M-Pesa settings cleared');
+  async function clearPayment(){
+    try {
+      await api.put('/api/admin/settings/mpesa', { type: 'till', number: '', name: '' });
+      document.getElementById('mpesaType').value = 'till';
+      document.getElementById('mpesaNumber').value = '';
+      document.getElementById('mpesaName').value = '';
+      document.getElementById('mpesaPreview').classList.add('hidden');
+      toast('M-Pesa settings cleared');
+    } catch(e){ toast(e.message || 'Failed', true); }
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    render();
-    loadPayment();
+  document.addEventListener('DOMContentLoaded', async function(){
+    var ok = await guard();
+    if(!ok) return;
+    await loadProducts();
+    await loadPayment();
     document.getElementById('modalOverlay').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
   });
 

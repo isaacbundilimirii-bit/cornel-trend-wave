@@ -422,6 +422,7 @@
 </nav>
 
 <script src="js/products.js"></script>
+<script src="js/api.js"></script>
 <script src="js/app.js"></script>
 <script src="js/orders.js"></script>
 <script>
@@ -504,188 +505,228 @@
   
   function processMPesa(e) {
     e.preventDefault();
-    
-    if (cart.length === 0) {
-      toast('Your cart is empty');
-      return false;
-    }
-    
-    const phone = document.getElementById('mpesaPhone').value;
-    const code = document.getElementById('mpesaCode').value.trim();
-    const { total } = calculateOrder();
-    
-    if(!code){ toast('Enter your M-Pesa confirmation code'); return false; }
-    
-    toast('Confirming your payment...');
-    
-    setTimeout(() => {
-      // Create order
-      const order = orders.createOrder(cart, total, 'Eastleigh 9th Street, Nairobi', 'MPesa');
-      
-      // Clear cart
-      localStorage.removeItem('ctw_cart');
-      cart = [];
-      
-      // Show success
-      const modalHTML = `
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div class="bg-white rounded-xl max-w-md w-full">
-            <div class="p-6 text-center">
-              <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
-                <i class="fas fa-check"></i>
-              </div>
-              <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
-              <p class="text-gray-600 mb-4">Your MPesa payment of Ksh ${Number(total).toLocaleString('en-KE')} has been processed.</p>
-              <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                <div class="font-semibold">Order ID: ${order.id}</div>
-                <div class="text-sm text-gray-500">You'll receive an SMS confirmation shortly</div>
-              </div>
-              <div class="flex gap-3">
-                <a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a>
-                <a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      
-      document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }, 2000);
-    
+    if (cart.length === 0) { toast('Your cart is empty'); return false; }
+    var phoneInput = document.getElementById('mpesaPhone').value.trim();
+    var { total } = calculateOrder();
+    if (!phoneInput) { toast('Enter your M-Pesa phone number'); return false; }
+
+    var btn = e.target.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending prompt…'; }
+
+    // 1) Create the order
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: cart,
+        total: total,
+        shippingAddress: 'Eastleigh 9th Street, Nairobi',
+        paymentMethod: 'MPesa',
+        phone: phoneInput
+      })
+    }).then(function(r){ return r.json(); }).then(function(data){
+      if (!data.ok) throw new Error(data.message || 'Could not create order');
+      var orderId = data.order.id;
+      // 2) Initiate STK push
+      return fetch('/api/payments/mpesa/stk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: orderId, phone: phoneInput })
+      }).then(function(r){ return r.json(); }).then(function(stk){
+        return { orderId: orderId, stk: stk };
+      });
+    }).then(function(result){
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> I\'ve Paid — Confirm Order'; }
+      if (result.stk.manual) {
+        // Fallback: manual till payment
+        toast('Pay to the till shown, then we confirm manually.');
+        showMpesaManualSuccess(result.orderId, total);
+        clearCartAfterOrder();
+        return;
+      }
+      if (!result.stk.ok && !result.stk.checkoutRequestId) {
+        toast(result.stk.message || 'M-Pesa push failed', true);
+        return;
+      }
+      // 3) Show "check your phone" + poll for payment status
+      showStkPending(result.orderId, total);
+      pollPaymentStatus(result.orderId, function(paid){
+        if (paid) {
+          clearCartAfterOrder();
+          showPaymentSuccess(result.orderId, total, 'MPesa');
+        } else {
+          showPaymentFailed(result.orderId);
+        }
+      });
+    }).catch(function(err){
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> I\'ve Paid — Confirm Order'; }
+      toast(err.message || 'Payment failed', true);
+    });
     return false;
+  }
+
+  function showStkPending(orderId, total){
+    var modalHTML =
+      '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="stkModal">' +
+        '<div class="bg-white rounded-xl max-w-md w-full p-6 text-center">' +
+          '<div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-mobile-screen-button"></i></div>' +
+          '<h3 class="text-xl font-bold mb-2">Check your phone</h3>' +
+          '<p class="text-gray-600 mb-4">Enter your M-Pesa PIN on the prompt sent to your phone.</p>' +
+          '<div class="bg-gray-50 rounded-lg p-4 mb-4">' +
+            '<div class="font-semibold">Order ID: ' + orderId + '</div>' +
+            '<div class="text-2xl font-bold cute-grad-text mt-1">Ksh ' + Number(total).toLocaleString('en-KE') + '</div>' +
+          '</div>' +
+          '<div class="flex items-center justify-center gap-2 text-sm text-gray-500"><i class="fas fa-spinner fa-spin"></i> Waiting for confirmation…</div>' +
+        '</div>' +
+      '</div>';
+    var old = document.getElementById('stkModal'); if (old) old.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  function pollPaymentStatus(orderId, done){
+    var attempts = 0;
+    var max = 40; // ~2 minutes at 3s intervals
+    var iv = setInterval(function(){
+      attempts++;
+      fetch('/api/payments/order/' + encodeURIComponent(orderId))
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          var status = data && data.payment && data.payment.status;
+          if (status === 'success') { clearInterval(iv); done(true); }
+          else if (status === 'failed') { clearInterval(iv); done(false); }
+        }).catch(function(){ /* ignore transient */ });
+      if (attempts >= max) { clearInterval(iv); done(false); }
+    }, 3000);
+  }
+
+  function showPaymentSuccess(orderId, total, method){
+    var m = document.getElementById('stkModal'); if (m) m.remove();
+    var modalHTML =
+      '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">' +
+        '<div class="bg-white rounded-xl max-w-md w-full"><div class="p-6 text-center">' +
+          '<div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-check"></i></div>' +
+          '<h3 class="text-xl font-bold mb-2">Payment Successful!</h3>' +
+          '<p class="text-gray-600 mb-4">Your ' + method + ' payment of Ksh ' + Number(total).toLocaleString('en-KE') + ' has been received.</p>' +
+          '<div class="bg-gray-50 rounded-lg p-4 mb-6"><div class="font-semibold">Order ID: ' + orderId + '</div><div class="text-sm text-gray-500">You\'ll receive a confirmation shortly.</div></div>' +
+          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+        '</div></div>' +
+      '</div>';
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+  function showPaymentFailed(orderId){
+    var m = document.getElementById('stkModal'); if (m) m.remove();
+    var modalHTML =
+      '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">' +
+        '<div class="bg-white rounded-xl max-w-md w-full"><div class="p-6 text-center">' +
+          '<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-times"></i></div>' +
+          '<h3 class="text-xl font-bold mb-2">Payment not completed</h3>' +
+          '<p class="text-gray-600 mb-4">We didn\'t receive the M-Pesa confirmation in time. Your order <strong>' + orderId + '</strong> is saved as pending.</p>' +
+          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="checkout.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Try Again</a></div>' +
+        '</div></div>' +
+      '</div>';
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+  function showMpesaManualSuccess(orderId, total){
+    var modalHTML =
+      '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">' +
+        '<div class="bg-white rounded-xl max-w-md w-full"><div class="p-6 text-center">' +
+          '<div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-clock"></i></div>' +
+          '<h3 class="text-xl font-bold mb-2">Order placed — pay to confirm</h3>' +
+          '<p class="text-gray-600 mb-4">Pay Ksh ' + Number(total).toLocaleString('en-KE') + ' to the till shown, then we confirm your order <strong>' + orderId + '</strong>.</p>' +
+          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+        '</div></div>' +
+      '</div>';
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+  function clearCartAfterOrder(){
+    localStorage.removeItem('ctw_cart');
+    cart = [];
+    if (window.ctw && window.ctw.updateBadges) window.ctw.updateBadges();
   }
   
   function processCard(e) {
     e.preventDefault();
-    
-    if (cart.length === 0) {
-      toast('Your cart is empty');
-      return false;
-    }
-    
-    const cardNumber = document.getElementById('cardNumber').value;
-    const { total } = calculateOrder();
-    
-    // Validate card number (basic)
-    if (cardNumber.replace(/\s/g, '').length < 16) {
-      toast('Please enter a valid card number');
-      return false;
-    }
-    
-    toast('Processing card payment...');
-    
-    setTimeout(() => {
-      // Create order
-      const order = orders.createOrder(cart, total, 'Eastleigh 9th Street, Nairobi', 'Card');
-      
-      // Clear cart
-      localStorage.removeItem('ctw_cart');
-      cart = [];
-      
-      // Show success
-      const modalHTML = `
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div class="bg-white rounded-xl max-w-md w-full">
-            <div class="p-6 text-center">
-              <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
-                <i class="fas fa-check"></i>
-              </div>
-              <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
-              <p class="text-gray-600 mb-4">Your card payment of Ksh ${Number(total).toLocaleString('en-KE')} has been processed.</p>
-              <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                <div class="font-semibold">Order ID: ${order.id}</div>
-                <div class="text-sm text-gray-500">Transaction ID: TXN-${Date.now().toString().slice(-8)}</div>
-              </div>
-              <div class="flex gap-3">
-                <a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a>
-                <a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-      
+    if (cart.length === 0) { toast('Your cart is empty'); return false; }
+    var cardNumber = document.getElementById('cardNumber').value;
+    var { total } = calculateOrder();
+    if (cardNumber.replace(/\s/g, '').length < 16) { toast('Please enter a valid card number'); return false; }
+    var btn = e.target.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing…'; }
+
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart, total: total, shippingAddress: 'Eastleigh 9th Street, Nairobi', paymentMethod: 'Card' })
+    }).then(function(r){ return r.json(); }).then(function(data){
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="far fa-credit-card mr-2"></i> Pay Ksh <span id="cardAmount">' + Number(total).toLocaleString('en-KE') + '</span>'; }
+      if (!data.ok) throw new Error(data.message || 'Could not place order');
+      clearCartAfterOrder();
+      var modalHTML =
+        '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-xl max-w-md w-full"><div class="p-6 text-center">' +
+          '<div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-clock"></i></div>' +
+          '<h3 class="text-xl font-bold mb-2">Order placed — card pending</h3>' +
+          '<p class="text-gray-600 mb-4">Your card payment of Ksh ' + Number(total).toLocaleString('en-KE') + ' will be confirmed manually.</p>' +
+          '<div class="bg-gray-50 rounded-lg p-4 mb-6"><div class="font-semibold">Order ID: ' + data.order.id + '</div></div>' +
+          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+        '</div></div></div>';
       document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }, 2000);
-    
+    }).catch(function(err){
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="far fa-credit-card mr-2"></i> Pay Ksh <span id="cardAmount">' + Number(total).toLocaleString('en-KE') + '</span>'; }
+      toast(err.message || 'Payment failed', true);
+    });
     return false;
   }
   
   function processCOD(e) {
     e.preventDefault();
-    
-    if (cart.length === 0) {
-      toast('Your cart is empty');
-      return false;
-    }
-    
-    const address = document.getElementById('codAddress').value;
-    const { total } = calculateOrder();
-    
-    if (!address.trim()) {
-      toast('Please enter delivery address');
-      return false;
-    }
-    
-    // Create order
-    const order = orders.createOrder(cart, total, address, 'Cash on Delivery');
-    
-    // Clear cart
-    localStorage.removeItem('ctw_cart');
-    cart = [];
-    
-    // Show success
-    const modalHTML = `
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-md w-full">
-          <div class="p-6 text-center">
-            <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
-              <i class="fas fa-truck"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Order Placed Successfully!</h3>
-            <p class="text-gray-600 mb-4">Your order will be delivered to:</p>
-            <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-              <div class="font-semibold">${address}</div>
-              <div class="text-sm text-gray-500 mt-2">Amount to pay on delivery: Ksh ${Number(total).toLocaleString('en-KE')}</div>
-            </div>
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
-              <div class="font-semibold text-yellow-800">What happens next?</div>
-              <ul class="text-sm text-yellow-700 mt-2 space-y-1">
-                <li>• We'll call you within 24 hours to confirm delivery</li>
-                <li>• Delivery in 2-3 business days</li>
-                <li>• Have exact change ready for the delivery person</li>
-                <li>• You can inspect items before paying</li>
-              </ul>
-            </div>
-            <div class="flex gap-3">
-              <a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">Track Order</a>
-              <a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+    if (cart.length === 0) { toast('Your cart is empty'); return false; }
+    var address = document.getElementById('codAddress').value.trim();
+    var { total } = calculateOrder();
+    if (!address) { toast('Please enter delivery address'); return false; }
+
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart, total: total, shippingAddress: address, paymentMethod: 'Cash on Delivery' })
+    }).then(function(r){ return r.json(); }).then(function(data){
+      if (!data.ok) throw new Error(data.message || 'Could not place order');
+      clearCartAfterOrder();
+      var modalHTML =
+        '<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"><div class="bg-white rounded-xl max-w-md w-full"><div class="p-6 text-center">' +
+          '<div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-truck"></i></div>' +
+          '<h3 class="text-xl font-bold mb-2">Order Placed Successfully!</h3>' +
+          '<p class="text-gray-600 mb-4">Your order <strong>' + data.order.id + '</strong> will be delivered to:</p>' +
+          '<div class="bg-gray-50 rounded-lg p-4 mb-4 text-left"><div class="font-semibold">' + address + '</div><div class="text-sm text-gray-500 mt-2">Amount to pay on delivery: Ksh ' + Number(total).toLocaleString('en-KE') + '</div></div>' +
+          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">Track Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+        '</div></div></div>';
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }).catch(function(err){ toast(err.message || 'Could not place order', true); });
     return false;
   }
   
-  // Load M-Pesa settings from admin
+  // Load M-Pesa display settings from the API (admin-set till/paybill for manual mode)
   function loadMpesaSettings(){
-    var data = JSON.parse(localStorage.getItem('ctw_mpesa') || 'null');
-    var tillBox = document.getElementById('mpesaTillBox');
-    var noTillBox = document.getElementById('mpesaNoTillBox');
-    if(data && data.number){
-      tillBox.classList.remove('hidden');
-      noTillBox.classList.add('hidden');
-      document.getElementById('mpesaTillLabel').textContent = data.type === 'paybill' ? 'Paybill Number' : 'Lipa na M-Pesa Till';
-      document.getElementById('mpesaTillNumber').textContent = data.number;
-      document.getElementById('mpesaTillName').textContent = data.name || '';
-    } else {
-      tillBox.classList.add('hidden');
-      noTillBox.classList.remove('hidden');
-    }
+    fetch('/api/admin/settings/mpesa').then(function(r){ return r.json(); }).then(function(data){
+      var mpesa = data && data.mpesa;
+      var tillBox = document.getElementById('mpesaTillBox');
+      var noTillBox = document.getElementById('mpesaNoTillBox');
+      if(mpesa && mpesa.number){
+        tillBox.classList.remove('hidden');
+        noTillBox.classList.add('hidden');
+        document.getElementById('mpesaTillLabel').textContent = mpesa.type === 'paybill' ? 'Paybill Number' : 'Lipa na M-Pesa Till';
+        document.getElementById('mpesaTillNumber').textContent = mpesa.number;
+        document.getElementById('mpesaTillName').textContent = mpesa.name || '';
+      } else {
+        tillBox.classList.add('hidden');
+        noTillBox.classList.remove('hidden');
+      }
+    }).catch(function(){
+      // API unavailable — keep boxes hidden
+      var tillBox = document.getElementById('mpesaTillBox');
+      var noTillBox = document.getElementById('mpesaNoTillBox');
+      if (tillBox) tillBox.classList.add('hidden');
+      if (noTillBox) noTillBox.classList.remove('hidden');
+    });
   }
 
   // Initialize
