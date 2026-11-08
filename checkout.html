@@ -160,88 +160,59 @@
         <!-- MPesa Payment Form -->
         <div class="payment-form active" id="mpesaForm">
           <div class="cute-card p-6 md:p-8">
-            <h2 class="text-xl font-bold mb-4">M-Pesa Payment</h2>
-            <div id="mpesaTillBox" class="mb-5 hidden">
-              <div class="bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                <div class="flex items-center gap-2 mb-2">
-                  <i class="fas fa-mobile-screen text-green-600 text-xl"></i>
-                  <span class="font-bold text-green-800" id="mpesaTillLabel">Lipa na M-Pesa Till</span>
-                </div>
-                <div class="text-3xl font-extrabold text-green-700 tracking-wide" id="mpesaTillNumber">—</div>
-                <div class="text-sm text-green-700 mt-1" id="mpesaTillName"></div>
-              </div>
+            <!-- Step indicator -->
+            <div class="flex items-center gap-2 mb-6 text-xs font-bold">
+              <div class="flex items-center gap-1.5" id="step1Indicator"><span class="w-6 h-6 rounded-full bg-yellow-500 text-black flex items-center justify-center text-xs">1</span> Delivery</div>
+              <div class="w-8 h-px bg-gray-300"></div>
+              <div class="flex items-center gap-1.5 opacity-40" id="step2Indicator"><span class="w-6 h-6 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs">2</span> M-Pesa</div>
+              <div class="w-8 h-px bg-gray-300"></div>
+              <div class="flex items-center gap-1.5 opacity-40" id="step3Indicator"><span class="w-6 h-6 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs">3</span> Confirm</div>
             </div>
-            <div id="mpesaNoTillBox" class="mb-5 hidden">
-              <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-800">
-                <i class="fas fa-circle-info"></i> No M-Pesa till set yet. The shop owner will confirm payment via WhatsApp.
+
+            <!-- Step 1: Delivery or Pickup -->
+            <div id="mpesaStep1">
+              <h2 class="text-xl font-bold mb-2">Delivery or Pickup?</h2>
+              <p class="text-gray-500 text-sm mb-5">Choose how you want to receive your order.</p>
+              <div class="space-y-3 mb-5">
+                <div class="delivery-option cursor-pointer border-2 border-gray-200 rounded-xl p-4 transition hover:border-yellow-400" id="deliveryOpt" onclick="checkout.selectDelivery('delivery')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center text-yellow-600 text-xl"><i class="fas fa-truck-fast"></i></div>
+                    <div class="flex-1"><div class="font-bold">Home Delivery</div><div class="text-sm text-gray-500">Same-day Nairobi, 1-2 days countrywide</div></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center" id="deliveryRadio"><i class="fas fa-check text-xs hidden"></i></div>
+                  </div>
+                  <div id="deliveryFields" class="hidden mt-4 pt-4 border-t border-gray-100 space-y-3">
+                    <input type="text" id="deliveryName" placeholder="Your name" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 text-sm">
+                    <input type="tel" id="deliveryPhone" placeholder="Phone (07XX XXX XXX)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 text-sm">
+                    <textarea id="deliveryAddress" rows="2" placeholder="Delivery address (street, area, landmark)" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 text-sm"></textarea>
+                  </div>
+                </div>
+                <div class="delivery-option cursor-pointer border-2 border-gray-200 rounded-xl p-4 transition hover:border-yellow-400" id="pickupOpt" onclick="checkout.selectDelivery('pickup')">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600 text-xl"><i class="fas fa-store"></i></div>
+                    <div class="flex-1"><div class="font-bold">Free Pickup</div><div class="text-sm text-gray-500">Collect at our Nairobi shop, no delivery fee</div></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center" id="pickupRadio"><i class="fas fa-check text-xs hidden"></i></div>
+                  </div>
+                </div>
               </div>
+              <button type="button" onclick="checkout.goToStep2()" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold"><i class="fas fa-arrow-right mr-2"></i> Continue to Payment</button>
             </div>
-            <p class="text-gray-600 mb-4">Pay to the till above, then enter the M-Pesa confirmation code you receive.</p>
-            
-            <form onsubmit="return checkout.processMPesa(event)">
-              <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Your M-Pesa phone number</label>
-                <div class="flex">
-                  <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+254</span>
-                  <input type="tel" id="mpesaPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="759 051 333">
-                </div>
-              </div>
-              
-              <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">M-Pesa confirmation code</label>
-                <input type="text" id="mpesaCode" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500" placeholder="e.g. QG7H8X9K2L" required>
-                <p class="text-xs text-gray-500 mt-1">Enter the code from the SMS you received after paying</p>
-              </div>
-              
-              <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Amount to Pay</label>
-                <div class="text-2xl font-bold cute-grad-text" id="mpesaAmount">Ksh 0</div>
-              </div>
-              
-              <button type="submit" class="cute-btn cute-grad-gold text-white w-full py-3 font-bold">
-                <i class="fas fa-check-circle mr-2"></i> I've Paid — Confirm Order
-              </button>
-            </form>
-            
-            <div class="mpesa-steps mt-6">
-              <h3 class="font-bold mb-3">How to pay:</h3>
-              <div class="mpesa-step">
-                <div class="mpesa-step-number">1</div>
-                <div>
-                  <div class="font-semibold">Go to M-Pesa → Lipa na M-Pesa</div>
-                  <div class="text-sm text-gray-600">Send money to the till/paybill number shown above</div>
-                </div>
-              </div>
-              <div class="mpesa-step">
-                <div class="mpesa-step-number">2</div>
-                <div>
-                  <div class="font-semibold">Enter the amount</div>
-                  <div class="text-sm text-gray-600">Pay the exact amount shown above</div>
-                </div>
-              </div>
-              <div class="mpesa-step">
-                <div class="mpesa-step-number">3</div>
-                <div>
-                  <div class="font-semibold">Enter your M-Pesa PIN</div>
-                  <div class="text-sm text-gray-600">Complete the transaction on your phone</div>
-                </div>
-              </div>
-              <div class="mpesa-step">
-                <div class="mpesa-step-number">4</div>
-                <div>
-                  <div class="font-semibold">Enter the confirmation code</div>
-                  <div class="text-sm text-gray-600">Copy the code from the SMS and paste it above</div>
-                </div>
-              </div>
+
+            <!-- Step 2: M-Pesa Phone Number -->
+            <div id="mpesaStep2" class="hidden">
+              <h2 class="text-xl font-bold mb-2">M-Pesa Payment</h2>
+              <p class="text-gray-500 text-sm mb-4">Enter your M-Pesa number. We'll send a payment prompt to your phone.</p>
+              <div id="mpesaTillBox" class="mb-4 hidden"><div class="bg-green-50 border-2 border-green-200 rounded-xl p-4"><div class="flex items-center gap-2 mb-1"><i class="fas fa-mobile-screen text-green-600 text-xl"></i><span class="font-bold text-green-800" id="mpesaTillLabel">Lipa na M-Pesa Till</span></div><div class="text-2xl font-extrabold text-green-700" id="mpesaTillNumber">-</div><div class="text-sm text-green-700 mt-1" id="mpesaTillName"></div></div></div>
+              <div id="mpesaNoTillBox" class="mb-4 hidden"><div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-800"><i class="fas fa-circle-info"></i> Enter your M-Pesa number below to receive a payment prompt.</div></div>
+              <form onsubmit="return checkout.processMPesa(event)">
+                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Your M-Pesa Phone Number</label><div class="flex"><span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">+254</span><input type="tel" id="mpesaPhone" required class="flex-1 px-3 py-2.5 border border-gray-300 rounded-r-lg outline-none focus:border-yellow-500 text-sm" placeholder="712 345 678"></div></div>
+                <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-1">Amount to Pay</label><div class="text-2xl font-bold cute-grad-text" id="mpesaAmount">Ksh 0</div></div>
+                <div class="flex gap-3"><button type="button" onclick="checkout.backToStep1()" class="px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-600 font-semibold text-sm"><i class="fas fa-arrow-left mr-1"></i> Back</button><button type="submit" class="cute-btn cute-grad-gold text-white flex-1 py-3 font-bold" id="mpesaPayBtn"><i class="fas fa-mobile-screen mr-2"></i> Pay with M-Pesa</button></div>
+              </form>
+              <div class="mt-5 text-xs text-gray-400"><i class="fas fa-shield-halved mr-1"></i> Your M-Pesa PIN is never shared with us. Payment is processed securely by Safaricom.</div>
             </div>
-          </div>
-        </div>
-                <div>
-                  <div class="font-semibold">Get confirmation</div>
-                  <div class="text-sm text-gray-600">You'll receive an SMS and order confirmation</div>
-                </div>
-              </div>
-            </div>
+
+            <!-- Step 3: Payment Processing (shown dynamically by JS) -->
+            <div id="mpesaStep3" class="hidden text-center py-8"></div>
           </div>
         </div>
 
