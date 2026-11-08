@@ -432,6 +432,57 @@
   // Checkout functionality
   let selectedPayment = 'mpesa';
   let cart = JSON.parse(localStorage.getItem('ctw_cart') || '[]');
+  let selectedDelivery = null; // 'delivery' or 'pickup'
+  let currentStep = 1;
+
+  // ---- Delivery/Pickup selection ----
+  function selectDelivery(type) {
+    selectedDelivery = type;
+    document.querySelectorAll('.delivery-option').forEach(function(el){ el.classList.remove('border-yellow-400'); el.classList.add('border-gray-200'); });
+    if(type === 'delivery'){
+      document.getElementById('deliveryOpt').classList.remove('border-gray-200');
+      document.getElementById('deliveryOpt').classList.add('border-yellow-400');
+      document.getElementById('deliveryFields').classList.remove('hidden');
+      document.getElementById('pickupRadio').querySelector('i').classList.add('hidden');
+      document.getElementById('deliveryRadio').querySelector('i').classList.remove('hidden');
+    } else {
+      document.getElementById('pickupOpt').classList.remove('border-gray-200');
+      document.getElementById('pickupOpt').classList.add('border-yellow-400');
+      document.getElementById('deliveryFields').classList.add('hidden');
+      document.getElementById('deliveryRadio').querySelector('i').classList.add('hidden');
+      document.getElementById('pickupRadio').querySelector('i').classList.remove('hidden');
+    }
+  }
+
+  function goToStep2() {
+    if(!selectedDelivery){ toast('Please select delivery or pickup'); return; }
+    if(selectedDelivery === 'delivery'){
+      var name = document.getElementById('deliveryName').value.trim();
+      var phone = document.getElementById('deliveryPhone').value.trim();
+      var addr = document.getElementById('deliveryAddress').value.trim();
+      if(!name){ toast('Please enter your name'); return; }
+      if(!phone){ toast('Please enter your phone number'); return; }
+      if(!addr){ toast('Please enter your delivery address'); return; }
+    }
+    // Show step 2
+    document.getElementById('mpesaStep1').classList.add('hidden');
+    document.getElementById('mpesaStep2').classList.remove('hidden');
+    document.getElementById('step1Indicator').classList.add('opacity-40');
+    document.getElementById('step2Indicator').classList.remove('opacity-40');
+    // Update step indicators
+    var s1 = document.querySelector('#step1Indicator span:first-child');
+    if(s1){ s1.className = 'w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs'; s1.innerHTML = '<i class="fas fa-check" style="font-size:.6rem"></i>'; }
+    var s2 = document.querySelector('#step2Indicator span:first-child');
+    if(s2){ s2.className = 'w-6 h-6 rounded-full bg-yellow-500 text-black flex items-center justify-center text-xs'; s2.textContent = '2'; }
+    currentStep = 2;
+  }
+
+  function backToStep1() {
+    document.getElementById('mpesaStep1').classList.remove('hidden');
+    document.getElementById('mpesaStep2').classList.add('hidden');
+    document.getElementById('mpesaStep3').classList.add('hidden');
+    currentStep = 1;
+  }
   
   function selectPayment(method) {
     selectedPayment = method;
@@ -510,8 +561,17 @@
     var { total } = calculateOrder();
     if (!phoneInput) { toast('Enter your M-Pesa phone number'); return false; }
 
-    var btn = e.target.querySelector('button[type="submit"]');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending prompt…'; }
+    var btn = document.getElementById('mpesaPayBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...'; }
+
+    // Build shipping address based on delivery type
+    var shippingAddr = 'Pickup at Nairobi shop';
+    if (selectedDelivery === 'delivery') {
+      shippingAddr = (document.getElementById('deliveryName').value.trim() || '') + ' - ' + (document.getElementById('deliveryAddress').value.trim() || '') + ' (Tel: ' + (document.getElementById('deliveryPhone').value.trim() || phoneInput) + ')';
+    }
+
+    // Show "Looking good..." loading state
+    showStep3Loading();
 
     // 1) Create the order
     fetch('/api/orders', {
@@ -520,13 +580,17 @@
       body: JSON.stringify({
         items: cart,
         total: total,
-        shippingAddress: 'Eastleigh 9th Street, Nairobi',
+        shippingAddress: shippingAddr,
         paymentMethod: 'MPesa',
         phone: phoneInput
       })
     }).then(function(r){ return r.json(); }).then(function(data){
       if (!data.ok) throw new Error(data.message || 'Could not create order');
       var orderId = data.order.id;
+
+      // Show "Please do not refresh" state
+      showStep3Waiting(orderId, total);
+
       // 2) Initiate STK push
       return fetch('/api/payments/mpesa/stk', {
         method: 'POST',
@@ -536,33 +600,153 @@
         return { orderId: orderId, stk: stk };
       });
     }).then(function(result){
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> I\'ve Paid — Confirm Order'; }
-      if (result.stk.manual) {
+      if (result.stk && result.stk.manual) {
         // Fallback: manual till payment
-        toast('Pay to the till shown, then we confirm manually.');
-        showMpesaManualSuccess(result.orderId, total);
+        showStep3ManualTill(result.orderId, total);
         clearCartAfterOrder();
         return;
       }
-      if (!result.stk.ok && !result.stk.checkoutRequestId) {
-        toast(result.stk.message || 'M-Pesa push failed', true);
+      if (!result.stk || (!result.stk.ok && !result.stk.checkoutRequestId)) {
+        showStep3Failed(result.orderId, result.stk ? result.stk.message : 'M-Pesa push failed');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-mobile-screen mr-2"></i> Pay with M-Pesa'; }
         return;
       }
-      // 3) Show "check your phone" + poll for payment status
-      showStkPending(result.orderId, total);
+      // 3) Poll for payment status — "please do not refresh" already showing
       pollPaymentStatus(result.orderId, function(paid){
         if (paid) {
           clearCartAfterOrder();
-          showPaymentSuccess(result.orderId, total, 'MPesa');
+          showStep3Success(result.orderId, total);
         } else {
-          showPaymentFailed(result.orderId);
+          showStep3Failed(result.orderId, 'We didn\'t receive the M-Pesa confirmation in time.');
         }
       });
     }).catch(function(err){
-      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> I\'ve Paid — Confirm Order'; }
-      toast(err.message || 'Payment failed', true);
+      showStep3Error(err.message || 'Payment failed');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-mobile-screen mr-2"></i> Pay with M-Pesa'; }
     });
     return false;
+  }
+
+  // ---- Step 3: Loading states ----
+  function showStep3Loading() {
+    document.getElementById('mpesaStep1').classList.add('hidden');
+    document.getElementById('mpesaStep2').classList.add('hidden');
+    var step3 = document.getElementById('mpesaStep3');
+    step3.classList.remove('hidden');
+    step3.innerHTML =
+      '<div class="text-center py-8">' +
+        '<div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<i class="fas fa-spinner fa-spin text-2xl text-yellow-600"></i>' +
+        '</div>' +
+        '<h3 class="text-xl font-bold mb-2">Looking good...</h3>' +
+        '<p class="text-gray-500 text-sm">Preparing your M-Pesa payment. Please wait a moment.</p>' +
+      '</div>';
+    // Update step indicators
+    var s2 = document.querySelector('#step2Indicator span:first-child');
+    if(s2){ s2.className = 'w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs'; s2.innerHTML = '<i class="fas fa-check" style="font-size:.6rem"></i>'; }
+    var s3 = document.querySelector('#step3Indicator span:first-child');
+    if(s3){ s3.className = 'w-6 h-6 rounded-full bg-yellow-500 text-black flex items-center justify-center text-xs'; s3.textContent = '3'; }
+    document.getElementById('step3Indicator').classList.remove('opacity-40');
+  }
+
+  function showStep3Waiting(orderId, total) {
+    var step3 = document.getElementById('mpesaStep3');
+    step3.innerHTML =
+      '<div class="text-center py-8">' +
+        '<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<i class="fas fa-mobile-screen text-2xl text-green-600"></i>' +
+        '</div>' +
+        '<h3 class="text-xl font-bold mb-2">Check your phone</h3>' +
+        '<p class="text-gray-600 mb-4">Enter your M-Pesa PIN on the prompt sent to your phone.</p>' +
+        '<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">' +
+          '<div class="flex items-center gap-2 text-yellow-800">' +
+            '<i class="fas fa-exclamation-triangle"></i>' +
+            '<span class="font-bold">Please DO NOT refresh or close this page</span>' +
+          '</div>' +
+          '<p class="text-xs text-yellow-700 mt-1">We\'re waiting for your M-Pesa confirmation...</p>' +
+        '</div>' +
+        '<div class="bg-gray-50 rounded-lg p-4">' +
+          '<div class="font-semibold text-sm">Order: ' + orderId.slice(0, 12) + '</div>' +
+          '<div class="text-2xl font-bold cute-grad-text mt-1">Ksh ' + Number(total).toLocaleString('en-KE') + '</div>' +
+        '</div>' +
+        '<div class="flex items-center justify-center gap-2 text-sm text-gray-500 mt-4">' +
+          '<i class="fas fa-spinner fa-spin"></i> Waiting for confirmation...' +
+        '</div>' +
+      '</div>';
+  }
+
+  function showStep3Success(orderId, total) {
+    var step3 = document.getElementById('mpesaStep3');
+    step3.innerHTML =
+      '<div class="text-center py-8">' +
+        '<div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<i class="fas fa-check text-3xl text-green-600"></i>' +
+        '</div>' +
+        '<h3 class="text-2xl font-bold mb-2">Thank you for your payment!</h3>' +
+        '<p class="text-gray-600 mb-4">Your M-Pesa payment of <strong>Ksh ' + Number(total).toLocaleString('en-KE') + '</strong> has been received.</p>' +
+        '<div class="bg-gray-50 rounded-lg p-4 mb-6">' +
+          '<div class="font-semibold text-sm">Order ID: ' + orderId + '</div>' +
+          '<div class="text-sm text-gray-500 mt-1">You\'ll receive a confirmation on WhatsApp shortly.</div>' +
+        '</div>' +
+        '<div class="flex gap-3">' +
+          '<a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3"><i class="fas fa-clipboard-list mr-2"></i>View Orders</a>' +
+          '<a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3"><i class="fas fa-bag-shopping mr-2"></i>Continue Shopping</a>' +
+        '</div>' +
+      '</div>';
+    var s3 = document.querySelector('#step3Indicator span:first-child');
+    if(s3){ s3.className = 'w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs'; s3.innerHTML = '<i class="fas fa-check" style="font-size:.6rem"></i>'; }
+  }
+
+  function showStep3Failed(orderId, message) {
+    var step3 = document.getElementById('mpesaStep3');
+    step3.innerHTML =
+      '<div class="text-center py-8">' +
+        '<div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<i class="fas fa-times text-3xl text-red-600"></i>' +
+        '</div>' +
+        '<h3 class="text-2xl font-bold mb-2">Payment Failed</h3>' +
+        '<p class="text-gray-600 mb-4">' + (message || 'We didn\'t receive the M-Pesa payment.') + '</p>' +
+        '<div class="bg-gray-50 rounded-lg p-4 mb-6">' +
+          '<div class="font-semibold text-sm">Order ID: ' + orderId + '</div>' +
+          '<div class="text-sm text-gray-500 mt-1">Your order is saved as pending. You can retry payment.</div>' +
+        '</div>' +
+        '<div class="flex gap-3">' +
+          '<button onclick="checkout.backToStep1()" class="cute-btn cute-grad-gold text-white flex-1 py-3"><i class="fas fa-redo mr-2"></i>Try Again</button>' +
+          '<a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3"><i class="fas fa-house mr-2"></i>Home</a>' +
+        '</div>' +
+      '</div>';
+    var s3 = document.querySelector('#step3Indicator span:first-child');
+    if(s3){ s3.className = 'w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs'; s3.innerHTML = '<i class="fas fa-times" style="font-size:.6rem"></i>'; }
+  }
+
+  function showStep3Error(message) {
+    var step3 = document.getElementById('mpesaStep3');
+    step3.innerHTML =
+      '<div class="text-center py-8">' +
+        '<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<i class="fas fa-exclamation text-2xl text-red-600"></i>' +
+        '</div>' +
+        '<h3 class="text-xl font-bold mb-2">Something went wrong</h3>' +
+        '<p class="text-gray-600 mb-4">' + (message || 'Payment failed. Please try again.') + '</p>' +
+        '<button onclick="checkout.backToStep1()" class="cute-btn cute-grad-gold text-white px-6 py-3"><i class="fas fa-arrow-left mr-2"></i>Try Again</button>' +
+      '</div>';
+  }
+
+  function showStep3ManualTill(orderId, total) {
+    var step3 = document.getElementById('mpesaStep3');
+    step3.innerHTML =
+      '<div class="text-center py-8">' +
+        '<div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<i class="fas fa-clock text-2xl text-yellow-600"></i>' +
+        '</div>' +
+        '<h3 class="text-xl font-bold mb-2">Order placed!</h3>' +
+        '<p class="text-gray-600 mb-4">Pay <strong>Ksh ' + Number(total).toLocaleString('en-KE') + '</strong> to our till, then we\'ll confirm your order.</p>' +
+        '<div class="bg-gray-50 rounded-lg p-4 mb-6"><div class="font-semibold text-sm">Order ID: ' + orderId + '</div></div>' +
+        '<div class="flex gap-3">' +
+          '<a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Orders</a>' +
+          '<a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a>' +
+        '</div>' +
+      '</div>';
   }
 
   function showStkPending(orderId, total){
@@ -783,6 +967,9 @@
   
   window.checkout = {
     selectPayment: selectPayment,
+    selectDelivery: selectDelivery,
+    goToStep2: goToStep2,
+    backToStep1: backToStep1,
     processMPesa: processMPesa,
     processCard: processCard,
     processCOD: processCOD,
