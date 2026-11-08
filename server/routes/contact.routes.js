@@ -3,8 +3,7 @@ const express = require('express');
 const { query } = require('../db');
 const { asyncHandler, errorHandler } = require('../middleware/error');
 const { ok, fail } = require('../utils/helpers');
-const email = require('../services/email.service');
-const config = require('../config');
+const emailTemplates = require('../services/email.templates');
 
 const router = express.Router();
 
@@ -18,14 +17,9 @@ router.post('/', asyncHandler(async (req, res) => {
     [name.trim(), userEmail.trim(), phone || null, message.trim()]
   );
 
-  // Email the shop (no-op if SMTP not configured)
-  if (config.smtp.contactNotify) {
-    await email.sendMail({
-      to: config.smtp.contactNotify,
-      subject: 'New contact message from ' + name,
-      text: `Name: ${name}\nEmail: ${userEmail}\nPhone: ${phone || '—'}\n\n${message}`,
-    });
-  }
+  // Email the shop (fire-and-forget; no-op if SMTP/Resend not configured)
+  emailTemplates.sendContactNotification({ name, email: userEmail, phone, message })
+    .catch(function (e) { console.error('[contact] notify email failed:', e && e.message); });
 
   return ok(res, { id: r.rows[0].id, message: 'Message sent! We will reply soon.' });
 }));

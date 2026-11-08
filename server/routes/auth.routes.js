@@ -4,6 +4,7 @@ const svc = require('../services/auth.service');
 const { requireAuth } = require('../middleware/auth');
 const { asyncHandler, errorHandler } = require('../middleware/error');
 const { ok, fail } = require('../utils/helpers');
+const emailTemplates = require('../services/email.templates');
 
 const router = express.Router();
 
@@ -39,11 +40,17 @@ router.post('/otp/verify', asyncHandler(async (req, res) => {
   const v = await svc.verifyOtp({ phone, code, purpose: purpose || 'verify' });
   if (!v.ok) return fail(res, v.message);
 
-  // For signup verification, log the user in (issue token)
+  // For signup verification, log the user in (issue token) + send welcome email
   if ((purpose || 'verify') === 'verify') {
     const user = await svc.findUserByPhone(phone);
     if (user) {
       const { signToken } = require('../middleware/auth');
+      // Fire-and-forget welcome email (don't block signup on email infra)
+      emailTemplates.sendWelcome({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      }).catch(function (e) { console.error('[auth] welcome email failed:', e && e.message); });
       return ok(res, { token: signToken(user), user: svc.publicUser(user), message: 'Phone verified!' });
     }
   }

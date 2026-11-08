@@ -61,6 +61,16 @@ module.exports = {
     contactNotify: env.CONTACT_NOTIFY_EMAIL || '',
   },
 
+  resend: {
+    apiKey: env.RESEND_API_KEY || '',
+    // Must be a verified sender on your Resend account.
+    // For testing without a verified domain, use Resend's shared onboarding address.
+    from: env.RESEND_FROM || 'Next Wave Trends <onboarding@resend.dev>',
+  },
+
   // Same-origin API base for the frontend
   apiBase: '/api',
+
+  // Public site URL used in email links. Set PUBLIC_SITE_URL in production.
+  publicSiteUrl: env.PUBLIC_SITE_URL || 'http://localhost:8090',
 };
