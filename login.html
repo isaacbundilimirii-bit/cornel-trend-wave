@@ -244,6 +244,27 @@
           <button type="button" class="auth-link" onclick="authUI.showForgot()">Forgot password?</button>
         </div>
         <button type="submit" class="auth-submit" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+
+        <!-- Help / Contact section (login) -->
+        <div class="auth-help" style="margin-top:1.25rem">
+          <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? We're here for you</div>
+          <a href="tel:+254759051333" class="auth-help-row">
+            <i class="fas fa-phone"></i>
+            <div><div class="label">Call us</div><div class="val">+254 759 051 333</div></div>
+          </a>
+          <a href="https://wa.me/254759051333?text=Hello%20Next%20Wave%20Trends%2C%20I%20need%20help%20logging%20in" target="_blank" class="auth-help-row">
+            <i class="fab fa-whatsapp"></i>
+            <div><div class="label">WhatsApp us</div><div class="val">+254 759 051 333</div></div>
+          </a>
+          <a href="mailto:hello@nextwavetrends.co.ke" class="auth-help-row">
+            <i class="fas fa-envelope"></i>
+            <div><div class="label">Email us</div><div class="val">hello@nextwavetrends.co.ke</div></div>
+          </a>
+          <button type="button" class="auth-help-row" onclick="authUI.switchTab('signup')" style="background:none;border:0;width:100%;cursor:pointer;border-bottom:0">
+            <i class="fas fa-user-plus"></i>
+            <div><div class="label">No account yet?</div><div class="val">Create one now — it's free</div></div>
+          </button>
+        </div>
       </form>
 
       <!-- Signup form -->
@@ -310,19 +331,23 @@
 
         <!-- Help / Contact section -->
         <div class="auth-help">
-          <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? Contact us</div>
+          <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? We're here for you</div>
           <a href="tel:+254759051333" class="auth-help-row">
             <i class="fas fa-phone"></i>
             <div><div class="label">Call us</div><div class="val">+254 759 051 333</div></div>
           </a>
-          <a href="https://wa.me/254759051333?text=Hello%20Next%20Wave%20Trends%2C%20I%20need%20help%20with%20my%20account" target="_blank" class="auth-help-row">
+          <a href="https://wa.me/254759051333?text=Hello%20Next%20Wave%20Trends%2C%20I%20need%20help%20creating%20my%20account" target="_blank" class="auth-help-row">
             <i class="fab fa-whatsapp"></i>
-            <div><div class="label">WhatsApp</div><div class="val">+254 759 051 333</div></div>
+            <div><div class="label">WhatsApp us</div><div class="val">+254 759 051 333</div></div>
           </a>
           <a href="mailto:hello@nextwavetrends.co.ke" class="auth-help-row">
             <i class="fas fa-envelope"></i>
-            <div><div class="label">Email</div><div class="val">hello@nextwavetrends.co.ke</div></div>
+            <div><div class="label">Email us</div><div class="val">hello@nextwavetrends.co.ke</div></div>
           </a>
+          <button type="button" class="auth-help-row" onclick="authUI.switchTab('signup')" style="background:none;border:0;width:100%;cursor:pointer;border-bottom:0">
+            <i class="fas fa-user-plus"></i>
+            <div><div class="label">No account yet?</div><div class="val">Create one now — it's free</div></div>
+          </button>
         </div>
 
         <button type="submit" class="auth-submit" id="signupBtn"><i class="fas fa-user-plus"></i> Create Account</button>

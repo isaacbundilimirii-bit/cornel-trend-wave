@@ -34,8 +34,11 @@
       var data = await api.post('/api/auth/register', {
         name: p.name, phone: phone, email: p.email, password: p.password
       });
-      return { ok: true, user: data.user, email: data.email, demoCode: data.demoCode, message: data.message };
-    } catch (e) { return { ok: false, message: e.message }; }
+      if (!data) return { ok: false, message: 'No response from server. Is the backend running?' };
+      return { ok: true, user: data.user || null, email: data.email || p.email, demoCode: data.demoCode || null, message: data.message || 'Verification code sent to your email.' };
+    } catch (e) {
+      return { ok: false, message: e.message || 'Could not create account. Please try again.' };
+    }
   }
 
   // (Re)send OTP. `identifier` may be an email or phone.
@@ -43,8 +46,9 @@
     if (!identifier) return { ok: false, message: 'Phone or email is required' };
     try {
       var data = await api.post('/api/auth/otp/send', { identifier: identifier, purpose: purpose || 'verify' });
-      return { ok: true, demoCode: data.demoCode, email: data.email, phone: data.phone, message: data.message };
-    } catch (e) { return { ok: false, message: e.message }; }
+      if (!data) return { ok: false, message: 'No response from server.' };
+      return { ok: true, demoCode: data.demoCode || null, email: data.email || null, phone: data.phone || null, message: data.message || 'Code sent.' };
+    } catch (e) { return { ok: false, message: e.message || 'Could not send code.' }; }
   }
 
   // Verify OTP. For 'verify' purpose the server does NOT return a token — the
@@ -55,8 +59,9 @@
       var data = await api.post('/api/auth/otp/verify', {
         identifier: p.identifier, code: p.code, purpose: p.purpose || 'verify'
       });
-      return { ok: true, message: data.message };
-    } catch (e) { return { ok: false, message: e.message }; }
+      if (!data) return { ok: false, message: 'No response from server.' };
+      return { ok: true, message: data.message || 'Verified.' };
+    } catch (e) { return { ok: false, message: e.message || 'Could not verify.' }; }
   }
 
   // Login accepts phone OR email. On success, stores the JWT session.
@@ -64,6 +69,8 @@
     if (!p.identifier) return { ok: false, message: 'Phone or email is required' };
     try {
       var data = await api.post('/api/auth/login', { identifier: p.identifier, password: p.password });
+      if (!data) return { ok: false, message: 'No response from server. Is the backend running?' };
+      if (!data.token || !data.user) return { ok: false, message: 'Login failed. Please check your credentials.' };
       api.setToken(data.token);
       api.setUser(data.user);
       return { ok: true, user: data.user };
@@ -76,7 +83,7 @@
           message: e.message
         };
       }
-      return { ok: false, message: e.message };
+      return { ok: false, message: e.message || 'Login failed. Please try again.' };
     }
   }
 
@@ -99,8 +106,9 @@
     if (!identifier) return { ok: false, message: 'Email is required' };
     try {
       var data = await api.post('/api/auth/reset/request', { email: identifier });
-      return { ok: true, demoCode: data.demoCode, email: data.email, message: data.message };
-    } catch (e) { return { ok: false, message: e.message }; }
+      if (!data) return { ok: false, message: 'No response from server.' };
+      return { ok: true, demoCode: data.demoCode || null, email: data.email || identifier, message: data.message || 'Reset code sent.' };
+    } catch (e) { return { ok: false, message: e.message || 'Could not send reset code.' }; }
   }
 
   // Reset confirm: verify OTP + set new password in one call.
@@ -110,8 +118,9 @@
       var data = await api.post('/api/auth/reset/confirm', {
         email: p.identifier, code: p.code, newPassword: p.newPassword
       });
-      return { ok: true, message: data.message };
-    } catch (e) { return { ok: false, message: e.message }; }
+      if (!data) return { ok: false, message: 'No response from server.' };
+      return { ok: true, message: data.message || 'Password updated.' };
+    } catch (e) { return { ok: false, message: e.message || 'Could not reset password.' }; }
   }
 
   window.auth = {
