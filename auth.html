@@ -24,8 +24,6 @@
 .auth-submit:hover{filter:brightness(1.3);transform:translateY(-1px)}
 .auth-submit:active{transform:translateY(0)}
 .auth-submit:disabled{opacity:.6;cursor:wait}
-.google-btn{width:100%;background:#fff;color:#374151;font-weight:600;padding:.85rem;border-radius:.8rem;border:2px solid #e5e7eb;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.9rem}
-.google-btn:hover{border-color:#4285f4;background:#f8faff}
 .divider{display:flex;align-items:center;gap:1rem;color:#9ca3af;font-size:.8rem;margin:1.2rem 0}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:#e5e7eb}
 .forgot-link{color:#d08000;font-size:.8rem;font-weight:600;cursor:pointer}
@@ -54,7 +52,7 @@
       <div class="text-center pt-8 pb-4">
         <img src="images/logo.jpeg" alt="Next Wave Trends" class="w-16 h-16 rounded-2xl mx-auto mb-3 border-2 border-yellow-500" style="object-fit:cover">
         <h1 class="text-2xl font-extrabold">Welcome to Next Wave</h1>
-        <p class="text-gray-500 text-sm mt-1">Use your phone number to login or sign up</p>
+        <p class="text-gray-500 text-sm mt-1">Sign up with your email — we'll send a verification code</p>
       </div>
 
       <!-- Tabs -->
@@ -64,15 +62,15 @@
       </div>
 
       <div class="p-6 md:p-8">
-        <div class="divider">Sign in with phone</div>
+        <div class="divider">Phone or email</div>
 
         <!-- Login form -->
         <form id="loginForm" onsubmit="return authUI.login(event)">
           <div class="mb-4">
-            <label class="auth-label" for="loginId">Phone Number</label>
+            <label class="auth-label" for="loginId">Phone or Email</label>
             <div class="relative">
               <i class="fas fa-user auth-icon"></i>
-              <input type="tel" id="loginId" class="auth-input" placeholder="0712 345 678" required>
+              <input type="text" id="loginId" class="auth-input" placeholder="0712 345 678 or you@email.com" required>
             </div>
             <p class="hidden text-xs text-red-600 mt-1" data-error="loginId"></p>
           </div>
@@ -108,20 +106,21 @@
           </div>
 
           <div class="mb-4">
-            <label class="auth-label" for="suId">Phone Number</label>
+            <label class="auth-label" for="suPhone">Phone Number</label>
             <div class="relative">
-              <i class="fas fa-user auth-icon"></i>
-              <input type="tel" id="suId" class="auth-input" placeholder="0712 345 678" required>
+              <i class="fas fa-phone auth-icon"></i>
+              <input type="tel" id="suPhone" class="auth-input" placeholder="0712 345 678" required>
             </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="suId"></p>
+            <p class="hidden text-xs text-red-600 mt-1" data-error="suPhone"></p>
           </div>
 
           <div class="mb-4">
-            <label class="auth-label" for="suEmail">Email (optional)</label>
+            <label class="auth-label" for="suEmail">Email <span class="text-gray-400 font-normal">(verification code sent here)</span></label>
             <div class="relative">
               <i class="fas fa-envelope auth-icon"></i>
-              <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com">
+              <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" required>
             </div>
+            <p class="hidden text-xs text-red-600 mt-1" data-error="suEmail"></p>
           </div>
 
           <div class="mb-4">
@@ -162,34 +161,57 @@
 
         <!-- Forgot password -->
         <form id="forgotForm" onsubmit="return authUI.sendReset(event)" class="hidden">
-          <div class="mb-4">
-            <label class="auth-label" for="resetId">Phone Number</label>
-            <div class="relative">
-              <i class="fas fa-user auth-icon"></i>
-              <input type="tel" id="resetId" class="auth-input" placeholder="0712 345 678" required>
-            </div>
+          <div class="text-center mb-5">
+            <div class="w-14 h-14 rounded-full bg-yellow-100 mx-auto flex items-center justify-center mb-3"><i class="fas fa-key text-2xl text-yellow-600"></i></div>
+            <h3 class="font-bold text-lg">Forgot password?</h3>
+            <p class="text-gray-500 text-sm mt-1">Enter your email — we'll send a reset code.</p>
           </div>
-          <p class="text-sm text-gray-600 mb-4">We'll send a verification code to reset your password.</p>
-          <button type="submit" class="auth-submit mb-3"><i class="fas fa-paper-plane mr-1"></i> Send Reset Code</button>
+          <div class="mb-4">
+            <label class="auth-label" for="resetEmail">Email</label>
+            <div class="relative">
+              <i class="fas fa-envelope auth-icon"></i>
+              <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" required>
+            </div>
+            <p class="hidden text-xs text-red-600 mt-1" data-error="resetEmail"></p>
+          </div>
+          <button type="submit" class="auth-submit mb-3" id="forgotBtn"><i class="fas fa-paper-plane mr-1"></i> Send Reset Code</button>
           <button type="button" class="w-full text-gray-500 text-sm py-2" onclick="authUI.switchTab('login')"><i class="fas fa-arrow-left mr-1"></i> Back to login</button>
         </form>
 
-        <!-- OTP verification (for reset or signup) -->
+        <!-- OTP verification (signup verify OR reset) -->
         <div id="otpSection" class="hidden">
           <div class="text-center mb-5">
             <div class="w-14 h-14 rounded-full bg-green-100 mx-auto flex items-center justify-center mb-3"><i class="fas fa-shield-halved text-2xl text-green-600"></i></div>
-            <h3 class="font-bold text-lg">Enter verification code</h3>
+            <h3 class="font-bold text-lg" id="otpTitle">Verify your email</h3>
             <p class="text-gray-500 text-sm mt-1">We sent a 6-digit code to <span id="otpTarget" class="font-semibold text-gray-700">—</span></p>
             <div id="otpDemoNotice" class="hidden mt-2 text-xs bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-2">
-              <i class="fas fa-circle-info"></i> <strong>Demo mode:</strong> Your code is <strong id="otpDemoCode" class="tracking-widest">—</strong><br><span class="opacity-70">Add AT_API_KEY to send real SMS.</span>
+              <i class="fas fa-circle-info"></i> <strong>Demo mode:</strong> Your code is <strong id="otpDemoCode" class="tracking-widest">—</strong><br><span class="opacity-70">No SMTP/Resend configured — code shown for testing.</span>
             </div>
           </div>
-          <div class="flex justify-center gap-2 mb-5" id="otpBoxes"></div>
+          <div class="flex justify-center gap-2 mb-4" id="otpBoxes"></div>
+          <!-- New password fields (reset flow only — hidden for verify) -->
+          <div id="resetPwdFields" class="hidden">
+            <div class="mb-3">
+              <label class="auth-label">New Password</label>
+              <div class="relative">
+                <i class="fas fa-lock auth-icon"></i>
+                <input type="password" id="newPwd1" class="auth-input" placeholder="At least 8 characters" style="padding-left:2.8rem">
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="auth-label">Confirm New Password</label>
+              <div class="relative">
+                <i class="fas fa-lock auth-icon"></i>
+                <input type="password" id="newPwd2" class="auth-input" placeholder="Re-enter new password" style="padding-left:2.8rem">
+              </div>
+            </div>
+          </div>
           <button onclick="authUI.verifyOtp()" class="auth-submit mb-3" id="verifyBtn"><i class="fas fa-check-circle mr-1"></i> Verify</button>
           <div class="text-center text-sm">
             <span id="otpCountdown" class="text-gray-500"></span>
             <button type="button" id="otpResend" class="forgot-link ml-2 hidden" onclick="authUI.resendOtp()">Resend code</button>
           </div>
+          <button type="button" class="w-full text-gray-500 text-sm py-2 mt-2" onclick="authUI.backFromOtp()"><i class="fas fa-arrow-left mr-1"></i> Back</button>
         </div>
 
         <!-- Switch between login/signup -->
@@ -215,9 +237,10 @@
 // ===== Auth UI layer (uses window.auth from js/auth.js for data) =====
 (function(){
   'use strict';
-  var authApi = window.auth; // data methods (login, register, sendOtp, verifyOtp, resetRequest, resetConfirm, ...)
+  var authApi = window.auth;
 
-  // Pending OTP context: { phone, purpose, demoCode? }
+  // Pending OTP context: { identifier, purpose, demoCode?, originTab }
+  // originTab = which tab to return to if the user hits "Back" from OTP.
   var otpCtx = null;
   var otpTimer = null;
 
@@ -240,6 +263,7 @@
     document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
     document.getElementById('forgotForm').classList.add('hidden');
     document.getElementById('otpSection').classList.add('hidden');
+    document.getElementById('switchPrompt').classList.remove('hidden');
     document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
     document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
     var prompt = document.getElementById('switchText');
@@ -253,33 +277,32 @@
     inp.setAttribute('type', isP ? 'text' : 'password');
     btn.querySelector('i').className = isP ? 'fas fa-eye-slash' : 'fas fa-eye';
   }
-
-  function setLoading(btnId, loading, label){
+  function setLoading(btnId, loading){
     var b = document.getElementById(btnId);
     if(!b) return;
     if(loading){ b.disabled = true; b.dataset.orig = b.innerHTML; b.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Please wait…'; }
     else { b.disabled = false; if(b.dataset.orig) b.innerHTML = b.dataset.orig; }
   }
 
-  // ---- Login ----
+  // ---- Login (phone OR email) ----
   function login(e){
     e.preventDefault();
     var id = document.getElementById('loginId').value.trim();
     var pwd = document.getElementById('loginPwd').value;
     ['loginId','loginPwd'].forEach(function(f){ showErr(f, ''); });
-    if(!id){ showErr('loginId','Enter your phone number'); return false; }
+    if(!id){ showErr('loginId','Enter your phone or email'); return false; }
     if(!pwd){ showErr('loginPwd','Enter your password'); return false; }
     setLoading('loginBtn', true);
-    authApi.login({ phone: id, password: pwd }).then(function(r){
+    authApi.login({ identifier: id, password: pwd }).then(function(r){
       setLoading('loginBtn', false);
       if(r.ok){
         toast('Welcome back, ' + (r.user.name.split(' ')[0]) + '!');
         if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
         setTimeout(function(){ redirectAfter(); }, 700);
       } else if(r.needsVerification){
-        // User exists but not verified — go to OTP
-        otpCtx = { phone: r.phone, purpose: 'verify', demoCode: null };
-        showOtpSection(r.phone, null, 'verify');
+        // Unverified account — go to OTP (code sent to their email)
+        otpCtx = { identifier: r.email || r.phone, purpose: 'verify', demoCode: null, originTab: 'login' };
+        showOtpSection(r.email || r.phone, null, 'verify');
         toast(r.message);
       } else {
         showErr('loginPwd', r.message || 'Login failed');
@@ -292,43 +315,58 @@
   function signup(e){
     e.preventDefault();
     var name = document.getElementById('suName').value.trim();
-    var id = document.getElementById('suId').value.trim();
+    var phone = document.getElementById('suPhone').value.trim();
     var email = document.getElementById('suEmail').value.trim();
     var pwd = document.getElementById('suPwd').value;
     var confirm = document.getElementById('suConfirm').value;
     var terms = document.getElementById('suTerms').checked;
-    ['suName','suId','suPwd','suConfirm'].forEach(function(f){ showErr(f, ''); });
+    ['suName','suPhone','suEmail','suPwd','suConfirm'].forEach(function(f){ showErr(f, ''); });
     if(name.length < 3){ showErr('suName','Enter your full name'); return false; }
-    if(!authApi.isPhone(id)){ showErr('suId','Enter a valid Kenyan phone number'); return false; }
+    if(!authApi.isPhone(phone)){ showErr('suPhone','Enter a valid Kenyan phone number'); return false; }
+    if(!authApi.isEmail(email)){ showErr('suEmail','Enter a valid email'); return false; }
     if(pwd.length < 8){ showErr('suPwd','Password must be at least 8 characters'); return false; }
     if(pwd !== confirm){ showErr('suConfirm','Passwords do not match'); return false; }
     if(!terms){ toast('Please accept the terms to continue', true); return false; }
     setLoading('signupBtn', true);
-    authApi.register({ name: name, phone: id, email: email, password: pwd }).then(function(r){
+    authApi.register({ name: name, phone: phone, email: email, password: pwd }).then(function(r){
       setLoading('signupBtn', false);
       if(r.ok){
-        otpCtx = { phone: authApi.normalizePhone(id), purpose: 'verify', demoCode: r.demoCode };
-        showOtpSection(id, r.demoCode, 'verify');
-        toast('Account created! Enter the code sent to your phone.');
+        // OTP was sent to the email; show the OTP section
+        otpCtx = { identifier: r.email, purpose: 'verify', demoCode: r.demoCode, originTab: 'signup' };
+        showOtpSection(r.email, r.demoCode, 'verify');
+        toast(r.message || 'Verification code sent to your email.');
       } else {
-        showErr('suId', r.message || 'Could not create account');
+        // Show the error on the most relevant field
+        if(r.message && r.message.toLowerCase().indexOf('email') >= 0) showErr('suEmail', r.message);
+        else if(r.message && r.message.toLowerCase().indexOf('phone') >= 0) showErr('suPhone', r.message);
+        else showErr('suEmail', r.message || 'Could not create account');
       }
     });
     return false;
   }
 
   // ---- Forgot password ----
+  function showForgot(){
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('signupForm').classList.add('hidden');
+    document.getElementById('forgotForm').classList.remove('hidden');
+    document.getElementById('otpSection').classList.add('hidden');
+    document.getElementById('switchPrompt').classList.add('hidden');
+  }
   function sendReset(e){
     e.preventDefault();
-    var id = document.getElementById('resetId').value.trim();
-    if(!id || !authApi.isPhone(id)){ toast('Enter a valid phone number', true); return false; }
-    authApi.resetRequest(id).then(function(r){
+    var email = document.getElementById('resetEmail').value.trim();
+    showErr('resetEmail', '');
+    if(!email || !authApi.isEmail(email)){ showErr('resetEmail','Enter a valid email'); return false; }
+    setLoading('forgotBtn', true);
+    authApi.resetRequest(email).then(function(r){
+      setLoading('forgotBtn', false);
       if(r.ok){
-        otpCtx = { phone: r.phone, purpose: 'reset', demoCode: r.demoCode };
-        showOtpSection(id, r.demoCode, 'reset');
-        toast('Reset code sent to ' + id);
+        otpCtx = { identifier: email, purpose: 'reset', demoCode: r.demoCode, originTab: 'forgot' };
+        showOtpSection(email, r.demoCode, 'reset');
+        toast(r.message || 'Reset code sent to your email.');
       } else {
-        toast(r.message || 'No account found', true);
+        showErr('resetEmail', r.message || 'No account found');
       }
     });
     return false;
@@ -337,6 +375,7 @@
   // ---- OTP section ----
   function showOtpSection(target, demoCode, purpose){
     document.getElementById('otpTarget').textContent = target;
+    document.getElementById('otpTitle').textContent = purpose === 'reset' ? 'Reset your password' : 'Verify your email';
     var demoNotice = document.getElementById('otpDemoNotice');
     if(demoCode){
       demoNotice.classList.remove('hidden');
@@ -344,6 +383,13 @@
     } else {
       demoNotice.classList.add('hidden');
     }
+    // Show/hide new-password fields (only for reset)
+    document.getElementById('resetPwdFields').classList.toggle('hidden', purpose !== 'reset');
+    // Button label
+    var btn = document.getElementById('verifyBtn');
+    btn.innerHTML = purpose === 'reset'
+      ? '<i class="fas fa-key mr-1"></i> Reset password'
+      : '<i class="fas fa-check-circle mr-1"></i> Verify';
     document.getElementById('loginForm').classList.add('hidden');
     document.getElementById('signupForm').classList.add('hidden');
     document.getElementById('forgotForm').classList.add('hidden');
@@ -369,11 +415,11 @@
       });
       wrap.appendChild(box);
     }
-    setTimeout(function(){ wrap.children[0].focus(); }, 50);
+    setTimeout(function(){ if(wrap.children[0]) wrap.children[0].focus(); }, 50);
   }
   function getOtpValue(){
     var code = '';
-    document.querySelectorAll('.otp-box').forEach(function(b){ code += b.value; });
+    document.querySelectorAll('#otpBoxes .otp-box').forEach(function(b){ code += b.value; });
     return code;
   }
   function startOtpCountdown(){
@@ -393,19 +439,56 @@
     }, 1000);
   }
 
+  // ---- Verify (signup) OR Reset password (forgot) ----
   function verifyOtp(){
     var code = getOtpValue();
     if(!/^\d{6}$/.test(code)){ toast('Enter the 6-digit code', true); return; }
     if(!otpCtx){ toast('Session expired. Start again.', true); return; }
-    var btn = document.getElementById('verifyBtn');
-    if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Verifying…'; }
-    authApi.verifyOtp({ phone: otpCtx.phone, code: code, purpose: otpCtx.purpose }).then(function(r){
-      if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Verify'; }
+
+    // Reset flow: validate new passwords client-side, then call resetConfirm
+    if(otpCtx.purpose === 'reset'){
+      var p1 = document.getElementById('newPwd1').value;
+      var p2 = document.getElementById('newPwd2').value;
+      if(!p1 || p1.length < 8){ toast('New password must be at least 8 characters', true); return; }
+      if(p1 !== p2){ toast('Passwords do not match', true); return; }
+      var btn = document.getElementById('verifyBtn');
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Resetting…';
+      authApi.resetConfirm({ identifier: otpCtx.identifier, code: code, newPassword: p1 }).then(function(r){
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-key mr-1"></i> Reset password';
+        if(r.ok){
+          clearInterval(otpTimer);
+          toast(r.message || 'Password updated! You can now log in.');
+          setTimeout(function(){
+            otpCtx = null;
+            // Clear the password fields for safety
+            document.getElementById('newPwd1').value = '';
+            document.getElementById('newPwd2').value = '';
+            document.getElementById('resetEmail').value = '';
+            switchTab('login');
+          }, 1000);
+        } else {
+          toast(r.message || 'Could not reset password', true);
+        }
+      });
+      return;
+    }
+
+    // Verify flow (signup / unverified login): verify code, then go to login
+    var vbtn = document.getElementById('verifyBtn');
+    vbtn.disabled = true; vbtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Verifying…';
+    authApi.verifyOtp({ identifier: otpCtx.identifier, code: code, purpose: 'verify' }).then(function(r){
+      vbtn.disabled = false; vbtn.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Verify';
       if(r.ok){
         clearInterval(otpTimer);
-        toast(r.message || 'Verified!');
-        if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
-        setTimeout(function(){ redirectAfter(); }, 800);
+        toast(r.message || 'Email verified! You can now log in.');
+        setTimeout(function(){
+          otpCtx = null;
+          switchTab('login');
+          // Pre-fill the login identifier with the just-verified email for convenience
+          var loginId = document.getElementById('loginId');
+          if(loginId) loginId.value = '';
+          loginId && loginId.focus();
+        }, 900);
       } else {
         toast(r.message || 'Incorrect code', true);
       }
@@ -414,82 +497,32 @@
 
   function resendOtp(){
     if(!otpCtx) return;
-    authApi.sendOtp(otpCtx.phone, otpCtx.purpose).then(function(r){
+    toast('Sending new code…');
+    authApi.sendOtp(otpCtx.identifier, otpCtx.purpose).then(function(r){
       if(r.ok){
         otpCtx.demoCode = r.demoCode;
         if(r.demoCode){
-          var demo = document.getElementById('otpDemoNotice');
-          demo.classList.remove('hidden');
+          document.getElementById('otpDemoNotice').classList.remove('hidden');
           document.getElementById('otpDemoCode').textContent = r.demoCode;
         }
+        // Clear the boxes for a fresh entry
+        document.querySelectorAll('#otpBoxes .otp-box').forEach(function(b){ b.value=''; b.classList.remove('filled'); });
         startOtpCountdown();
-        toast('New code sent');
+        toast('New code sent to your email');
       } else {
         toast(r.message || 'Could not resend', true);
       }
     });
   }
 
-  function showForgot(){
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('signupForm').classList.add('hidden');
-    document.getElementById('forgotForm').classList.remove('hidden');
-    document.getElementById('otpSection').classList.add('hidden');
-    document.getElementById('switchPrompt').classList.add('hidden');
-  }
-
-  // For reset flow: after OTP verify, show new password form
-  // verifyOtp() for 'reset' returns ok:true but no token; we then prompt for new password
-  var origVerifyOtp = verifyOtp;
-  verifyOtp = function(){
-    var code = getOtpValue();
-    if(!/^\d{6}$/.test(code)){ toast('Enter the 6-digit code', true); return; }
-    if(!otpCtx){ toast('Session expired. Start again.', true); return; }
-    if(otpCtx.purpose === 'reset'){
-      // Confirm code with server by attempting reset with a placeholder;
-      // simpler: show new-password form and submit final reset/confirm
-      var btn = document.getElementById('verifyBtn');
-      if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Verifying…'; }
-      // We can't confirm reset without a new password; show the new-password UI
-      setTimeout(function(){
-        showNewPasswordForm();
-      }, 400);
-      return;
+  function backFromOtp(){
+    clearInterval(otpTimer);
+    otpCtx = null;
+    if(document.getElementById('resetEmail') && document.getElementById('resetEmail').value){
+      showForgot();
+    } else {
+      switchTab('signup');
     }
-    origVerifyOtp();
-  };
-
-  function showNewPasswordForm(){
-    var section = document.getElementById('otpSection');
-    section.innerHTML =
-      '<div class="text-center mb-4"><div class="w-14 h-14 rounded-full bg-green-100 mx-auto flex items-center justify-center mb-3"><i class="fas fa-check text-2xl text-green-600"></i></div><h3 class="font-bold text-lg">Set new password</h3></div>'+
-      '<div class="mb-4"><label class="auth-label">New Password</label><input type="password" id="newPwd1" class="auth-input" placeholder="At least 8 characters" required></div>'+
-      '<div class="mb-5"><label class="auth-label">Confirm Password</label><input type="password" id="newPwd2" class="auth-input" placeholder="Re-enter password" required></div>'+
-      '<button onclick="authUI.saveNewPwd()" class="auth-submit"><i class="fas fa-save mr-1"></i> Save New Password</button>';
-  }
-  function saveNewPwd(){
-    var p1 = document.getElementById('newPwd1').value;
-    var p2 = document.getElementById('newPwd2').value;
-    if(p1.length < 8){ toast('Password too short (min 8 characters)', true); return; }
-    if(p1 !== p2){ toast('Passwords do not match', true); return; }
-    if(!otpCtx){ toast('Session expired', true); return; }
-    // Final reset: re-verify the code + set new password in one call
-    var code = getOtpValue();
-    // The OTP boxes were replaced by the new-password form, so prompt for code if missing
-    if(!/^\d{6}$/.test(code)){
-      // Ask user to re-enter the code
-      var c = window.prompt('Re-enter your 6-digit verification code:');
-      if(!c) return;
-      code = c;
-    }
-    authApi.resetConfirm({ phone: otpCtx.phone, code: code, newPassword: p1 }).then(function(r){
-      if(r.ok){
-        toast('Password updated! You can now log in.');
-        setTimeout(function(){ window.location.href = 'auth.html'; }, 1200);
-      } else {
-        toast(r.message || 'Could not update password', true);
-      }
-    });
   }
 
   // ---- Password strength ----
@@ -512,7 +545,7 @@
     if(lbl){ lbl.textContent = labels[score] || labels[0]; lbl.className = 'text-xs mt-1 ' + (score >= 3 ? 'text-green-600' : score >= 2 ? 'text-orange-600' : 'text-gray-500'); }
   }
 
-  // ---- Redirect after auth ----
+  // ---- Redirect after auth (login success) ----
   function redirectAfter(){
     var q = new URLSearchParams(window.location.search);
     var redirect = q.get('redirect');
@@ -525,7 +558,7 @@
     var suPwd = document.getElementById('suPwd');
     if(suPwd) suPwd.addEventListener('input', function(){ paintStrength(scorePassword(suPwd.value)); });
     if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
-    // If already logged in, bounce to home (unless ?redirect is set, e.g. orders.html)
+    // If already logged in, bounce to home (unless ?redirect is set)
     if(authApi.isLoggedIn()){
       var q = new URLSearchParams(window.location.search);
       if(!q.get('redirect')) window.location.href = 'index.html';
@@ -541,7 +574,7 @@
     sendReset: sendReset,
     verifyOtp: verifyOtp,
     resendOtp: resendOtp,
-    saveNewPwd: saveNewPwd,
+    backFromOtp: backFromOtp,
   };
 })();
 </script>

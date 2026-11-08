@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS users (
   verified BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+-- Email must be unique when present (verification is email-based)
+CREATE UNIQUE INDEX IF NOT EXISTS users_email_uniq ON users(lower(email)) WHERE email IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS otps (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,7 +1,8 @@
-/* ===== Next Wave Trends — Auth module (API-backed) =====
+/* ===== Next Wave Trends — Auth module (API-backed, email OTP) =====
  * Loaded on auth.html. Uses window.api to call /api/auth/*.
- * On success, stores token + user in localStorage (ctw_token / ctw_user) so
- * app.js on other pages can read the cached session.
+ * Verification is email-based: signup sends an OTP to the user's email; after
+ * verifying, the user is redirected to login (no auto-login).
+ * On login, stores token + user in localStorage (ctw_token / ctw_user).
  */
 (function () {
   'use strict';
@@ -23,52 +24,57 @@
   function getCurrentUser() { return api.getUser(); }
   function isLoggedIn() { return api.isLoggedIn(); }
 
-  // Returns {ok, user?, message?}. On success, stores session.
+  // Returns {ok, user?, email?, demoCode?, message?}. Does NOT log in — the
+  // user verifies their email then logs in.
   async function register(p) {
     var phone = normalizePhone(p.phone);
     if (!phone) return { ok: false, message: 'Enter a valid Kenyan phone number (e.g. 0712 345 678)' };
+    if (!p.email || !isEmail(p.email)) return { ok: false, message: 'Enter a valid email — your code is sent there' };
     try {
       var data = await api.post('/api/auth/register', {
-        name: p.name, phone: phone, email: p.email || null, password: p.password
+        name: p.name, phone: phone, email: p.email, password: p.password
       });
-      return { ok: true, user: data.user, demoCode: data.demoCode, message: data.message };
+      return { ok: true, user: data.user, email: data.email, demoCode: data.demoCode, message: data.message };
     } catch (e) { return { ok: false, message: e.message }; }
   }
 
-  async function sendOtp(phone, purpose) {
-    phone = normalizePhone(phone);
-    if (!phone) return { ok: false, message: 'Invalid phone number' };
+  // (Re)send OTP. `identifier` may be an email or phone.
+  async function sendOtp(identifier, purpose) {
+    if (!identifier) return { ok: false, message: 'Phone or email is required' };
     try {
-      var data = await api.post('/api/auth/otp/send', { phone: phone, purpose: purpose || 'verify' });
-      return { ok: true, demoCode: data.demoCode, phone: data.phone, message: data.message };
+      var data = await api.post('/api/auth/otp/send', { identifier: identifier, purpose: purpose || 'verify' });
+      return { ok: true, demoCode: data.demoCode, email: data.email, phone: data.phone, message: data.message };
     } catch (e) { return { ok: false, message: e.message }; }
   }
 
-  // For 'verify' purpose, server also returns a token (logs the user in)
+  // Verify OTP. For 'verify' purpose the server does NOT return a token — the
+  // user is redirected to login. For 'reset' purpose it just confirms the code.
   async function verifyOtp(p) {
-    var phone = normalizePhone(p.phone);
-    if (!phone) return { ok: false, message: 'Invalid phone number' };
+    if (!p.identifier) return { ok: false, message: 'Phone or email is required' };
     try {
       var data = await api.post('/api/auth/otp/verify', {
-        phone: phone, code: p.code, purpose: p.purpose || 'verify'
+        identifier: p.identifier, code: p.code, purpose: p.purpose || 'verify'
       });
-      if (data.token) { api.setToken(data.token); api.setUser(data.user); }
-      return { ok: true, token: data.token, user: data.user, message: data.message };
+      return { ok: true, message: data.message };
     } catch (e) { return { ok: false, message: e.message }; }
   }
 
+  // Login accepts phone OR email. On success, stores the JWT session.
   async function login(p) {
-    var phone = normalizePhone(p.phone);
-    if (!phone) return { ok: false, message: 'Enter a valid phone number' };
+    if (!p.identifier) return { ok: false, message: 'Phone or email is required' };
     try {
-      var data = await api.post('/api/auth/login', { phone: phone, password: p.password });
+      var data = await api.post('/api/auth/login', { identifier: p.identifier, password: p.password });
       api.setToken(data.token);
       api.setUser(data.user);
       return { ok: true, user: data.user };
     } catch (e) {
       // needsVerification is a soft-fail; tell caller to go to OTP
       if (e && e.data && e.data.needsVerification) {
-        return { ok: false, needsVerification: true, phone: e.data.phone, message: e.message };
+        return {
+          ok: false, needsVerification: true,
+          email: e.data.email, phone: e.data.phone,
+          message: e.message
+        };
       }
       return { ok: false, message: e.message };
     }
@@ -87,21 +93,22 @@
 
   function logout() { api.clearAuth(); }
 
-  async function resetRequest(phone) {
-    phone = normalizePhone(phone);
-    if (!phone) return { ok: false, message: 'Enter a valid phone number' };
+  // Forgot password: send reset OTP to the user's email. `identifier` is the
+  // email (or phone) they typed.
+  async function resetRequest(identifier) {
+    if (!identifier) return { ok: false, message: 'Email is required' };
     try {
-      var data = await api.post('/api/auth/reset/request', { phone: phone });
-      return { ok: true, demoCode: data.demoCode, phone: data.phone, message: data.message };
+      var data = await api.post('/api/auth/reset/request', { email: identifier });
+      return { ok: true, demoCode: data.demoCode, email: data.email, message: data.message };
     } catch (e) { return { ok: false, message: e.message }; }
   }
 
+  // Reset confirm: verify OTP + set new password in one call.
   async function resetConfirm(p) {
-    var phone = normalizePhone(p.phone);
-    if (!phone) return { ok: false, message: 'Invalid phone number' };
+    if (!p.identifier) return { ok: false, message: 'Email is required' };
     try {
       var data = await api.post('/api/auth/reset/confirm', {
-        phone: phone, code: p.code, newPassword: p.newPassword
+        email: p.identifier, code: p.code, newPassword: p.newPassword
       });
       return { ok: true, message: data.message };
     } catch (e) { return { ok: false, message: e.message }; }
