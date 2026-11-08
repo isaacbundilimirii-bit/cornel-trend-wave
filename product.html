@@ -40,53 +40,53 @@
   <div id="topBar" class="header-section top-bar text-xs py-1.5"><div class="container mx-auto px-4 text-center"><i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-bolt ml-2 mr-1"></i> Flash Sale up to 40% off</div></div>
   <div id="logoSection" class="header-section py-3 md:py-2.5"><div class="container mx-auto px-4">
     <div class="flex items-center gap-3 md:gap-5">
-      <a href="index.html" class="flex items-center gap-2.5 flex-shrink-0"><img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy"><span class="brand-name">Next Wave<span class="accent">Trends</span></span></a>
+      <a href="/" class="flex items-center gap-2.5 flex-shrink-0"><img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy"><span class="brand-name">Next Wave<span class="accent">Trends</span></span></a>
       <div class="flex-1 hidden md:block"><form class="big-search" onsubmit="return ctw.search(event)"><input type="text" id="searchInput" placeholder="Search products, brands and categories..."><button type="submit"><i class="fas fa-search"></i> Search</button></form></div>
       <div class="flex items-center gap-3 md:gap-4 ml-auto">
-        <a href="auth.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600"><i class="far fa-user"></i> Account</a>
-        <a href="wishlist.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600"><i class="far fa-heart"></i> Wishlist</a>
-        <a href="cart.html" class="relative text-xl text-gray-800"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span></a>
+        <a href="/login" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600"><i class="far fa-user"></i> Account</a>
+        <a href="/wishlist" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600"><i class="far fa-heart"></i> Wishlist</a>
+        <a href="/cart" class="relative text-xl text-gray-800"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span></a>
         <button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button>
       </div>
     </div>
     <div class="md:hidden mt-3"><form class="big-search" onsubmit="return ctw.search(event)"><input type="text" placeholder="Search products..."><button type="submit"><i class="fas fa-search"></i> <span class="hidden sm:inline">Search</span></button></form></div>
   </div></div>
   <div id="mainNav" class="header-section cat-nav hidden md:block"><div class="container mx-auto px-4"><div class="cat-nav-inner">
-    <a href="products.html" class="active"><i class="fas fa-th"></i> All</a>
-    <a href="products.html#phones"><i class="fas fa-mobile-screen"></i> Phones</a>
-    <a href="products.html#audio"><i class="fas fa-headphones"></i> Audio</a>
-    <a href="products.html#accessories"><i class="fas fa-plug"></i> Accessories</a>
-    <a href="products.html#tops"><i class="fas fa-shirt"></i> Tops</a>
-    <a href="products.html#bottoms"><i class="fas fa-person"></i> Bottoms</a>
-    <a href="products.html#shoes"><i class="fas fa-shoe-prints"></i> Shoes</a>
-    <a href="products.html#dresses"><i class="fas fa-vest"></i> Dresses</a>
-    <a href="about.html"><i class="fas fa-circle-info"></i> About</a>
-    <a href="contact.html"><i class="fas fa-phone"></i> Contact</a>
+    <a href="/products" class="active"><i class="fas fa-th"></i> All</a>
+    <a href="/products#phones"><i class="fas fa-mobile-screen"></i> Phones</a>
+    <a href="/products#audio"><i class="fas fa-headphones"></i> Audio</a>
+    <a href="/products#accessories"><i class="fas fa-plug"></i> Accessories</a>
+    <a href="/products#tops"><i class="fas fa-shirt"></i> Tops</a>
+    <a href="/products#bottoms"><i class="fas fa-person"></i> Bottoms</a>
+    <a href="/products#shoes"><i class="fas fa-shoe-prints"></i> Shoes</a>
+    <a href="/products#dresses"><i class="fas fa-vest"></i> Dresses</a>
+    <a href="/about"><i class="fas fa-circle-info"></i> About</a>
+    <a href="/contact"><i class="fas fa-phone"></i> Contact</a>
   </div></div></div>
 </div>
 <div id="menuOverlay" class="mobile-menu-overlay"></div>
 <aside id="mobileMenu" class="mobile-menu p-6"><div class="flex items-center justify-between mb-6"><div class="flex items-center gap-3"><img src="images/logo.jpeg" alt="CTW" class="logo-img"><span class="font-extrabold">Next Wave Trends</span></div><button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button></div>
 <nav class="flex flex-col gap-1 text-base font-semibold">
-  <a href="index.html" class="py-2.5 text-gray-700 pl-3">Home</a>
-  <a href="products.html" class="py-2.5 text-gray-700 pl-3">All Products</a>
-  <a href="products.html#electronics" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-bolt w-5"></i>Electronics</a>
-  <a href="products.html#fashion" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-shirt w-5"></i>Fashion</a>
-  <a href="about.html" class="py-2.5 text-gray-700 pl-3">About</a>
-  <a href="contact.html" class="py-2.5 text-gray-700 pl-3">Contact</a>
-  <a href="auth.html" class="py-2.5 text-gray-700 pl-3" data-guest-link><i class="fas fa-user w-5"></i>My Account</a>
-  <a href="wishlist.html" class="py-2.5 text-gray-700 pl-3 hidden" data-user-link><i class="fas fa-heart w-5"></i>Wishlist</a>
-  <a href="orders.html" class="py-2.5 text-gray-700 pl-3 hidden" data-user-link><i class="fas fa-box w-5"></i>Orders</a>
+  <a href="/" class="py-2.5 text-gray-700 pl-3">Home</a>
+  <a href="/products" class="py-2.5 text-gray-700 pl-3">All Products</a>
+  <a href="/products#electronics" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-bolt w-5"></i>Electronics</a>
+  <a href="/products#fashion" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-shirt w-5"></i>Fashion</a>
+  <a href="/about" class="py-2.5 text-gray-700 pl-3">About</a>
+  <a href="/contact" class="py-2.5 text-gray-700 pl-3">Contact</a>
+  <a href="/login" class="py-2.5 text-gray-700 pl-3" data-guest-link><i class="fas fa-user w-5"></i>My Account</a>
+  <a href="/wishlist" class="py-2.5 text-gray-700 pl-3 hidden" data-user-link><i class="fas fa-heart w-5"></i>Wishlist</a>
+  <a href="/orders" class="py-2.5 text-gray-700 pl-3 hidden" data-user-link><i class="fas fa-box w-5"></i>Orders</a>
   <a href="#" class="py-2.5 text-red-600 pl-3 hidden" data-user-link data-logout><i class="fas fa-sign-out-alt w-5"></i>Logout</a>
 </nav>
-<div class="mt-6 pt-6 border-t grid grid-cols-2 gap-2"><a href="auth.html" class="cute-btn border-2 border-yellow-300 py-2 text-center text-yellow-700 text-sm">Login</a><a href="auth.html" class="cute-btn cute-grad-gold text-white py-2 text-center text-sm">Sign up</a></div>
+<div class="mt-6 pt-6 border-t grid grid-cols-2 gap-2"><a href="/login" class="cute-btn border-2 border-yellow-300 py-2 text-center text-yellow-700 text-sm">Login</a><a href="/login" class="cute-btn cute-grad-gold text-white py-2 text-center text-sm">Sign up</a></div>
 </aside>
 
 <main class="fade-in pt-32 pb-20 px-4" style="width:100%;max-width:100%;overflow-x:hidden">
   <div class="container mx-auto max-w-5xl">
     <!-- Breadcrumb -->
     <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
-      <a href="index.html" class="hover:text-yellow-600">Home</a> <i class="fas fa-chevron-right text-xs"></i>
-      <a href="products.html" class="hover:text-yellow-600">Shop</a> <i class="fas fa-chevron-right text-xs"></i>
+      <a href="/" class="hover:text-yellow-600">Home</a> <i class="fas fa-chevron-right text-xs"></i>
+      <a href="/products" class="hover:text-yellow-600">Shop</a> <i class="fas fa-chevron-right text-xs"></i>
       <span id="crumbCat" class="hover:text-yellow-600">Category</span> <i class="fas fa-chevron-right text-xs"></i>
       <span id="crumbName" class="text-gray-800 font-semibold truncate max-w-[180px]">Product</span>
     </nav>
@@ -106,8 +106,8 @@
     <div><div class="flex items-center gap-3 mb-4"><img src="images/logo.jpeg" alt="CTW" class="logo-img"><span class="font-extrabold text-lg text-white">Next Wave Trends</span></div><p class="text-white/60 text-sm">Trendy electronics & fashion, delivered with love across Kenya.</p>
       <div class="flex gap-2 mt-4 text-lg"><a href="https://wa.me/254759051333" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-whatsapp"></i></a><a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-instagram"></i></a><a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-tiktok"></i></a><a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-facebook"></i></a></div>
     </div>
-    <div><h4 class="font-bold mb-3">Shop</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="products.html#electronics" class="hover:text-white">Electronics</a></li><li><a href="products.html#fashion" class="hover:text-white">Fashion</a></li><li><a href="products.html" class="hover:text-white">All products</a></li></ul></div>
-    <div><h4 class="font-bold mb-3">Help</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="about.html" class="hover:text-white">About us</a></li><li><a href="contact.html" class="hover:text-white">Contact</a></li><li><a href="#" class="hover:text-white">Returns</a></li><li><a href="#" class="hover:text-white">Delivery info</a></li></ul></div>
+    <div><h4 class="font-bold mb-3">Shop</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="/products#electronics" class="hover:text-white">Electronics</a></li><li><a href="/products#fashion" class="hover:text-white">Fashion</a></li><li><a href="/products" class="hover:text-white">All products</a></li></ul></div>
+    <div><h4 class="font-bold mb-3">Help</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="/about" class="hover:text-white">About us</a></li><li><a href="/contact" class="hover:text-white">Contact</a></li><li><a href="#" class="hover:text-white">Returns</a></li><li><a href="#" class="hover:text-white">Delivery info</a></li></ul></div>
     <div><h4 class="font-bold mb-3">Reach us</h4><ul class="space-y-2 text-sm text-white/60"><li><i class="fas fa-phone w-5"></i>+254 759 051 333</li><li><i class="fas fa-envelope w-5"></i>hello@nextwavetrends.co.ke</li><li><i class="fas fa-location-dot w-5"></i>Nairobi, Kenya</li></ul></div>
   </div>
   <div class="container mx-auto mt-8 pt-5 border-t border-white/10 text-center text-white/50 text-sm">© 2026 Next Wave Trends · Made with <i class="fas fa-heart text-yellow-500"></i> in Kenya</div>
@@ -115,10 +115,10 @@
 
 <div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Added!</span></div>
 <nav class="bottom-nav md:hidden"><div>
-  <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
-  <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
-  <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
-  <a href="contact.html" class="bottom-nav-item"><i class="fas fa-phone"></i><span>Contact</span></a>
+  <a href="/" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="/products" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="/cart" class="bottom-nav-item relative"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+  <a href="/contact" class="bottom-nav-item"><i class="fas fa-phone"></i><span>Contact</span></a>
 </div></nav>
 
 <script src="js/products.js"></script>
@@ -136,7 +136,7 @@
     var p = window.CTW_PRODUCTS.find(function(x){return x.id===id;});
     var wrap = document.getElementById('productDetail');
     if(!p){
-      wrap.innerHTML = '<div class="cute-card p-10 text-center"><i class="fas fa-box-open text-5xl text-yellow-500 mb-3"></i><h2 class="text-xl font-bold mb-2">Product not found</h2><p class="text-gray-500 mb-4">This product may have been removed.</p><a href="products.html" class="cute-btn cute-grad-gold text-white px-6 py-2.5">Back to shop</a></div>';
+      wrap.innerHTML = '<div class="cute-card p-10 text-center"><i class="fas fa-box-open text-5xl text-yellow-500 mb-3"></i><h2 class="text-xl font-bold mb-2">Product not found</h2><p class="text-gray-500 mb-4">This product may have been removed.</p><a href="/products" class="cute-btn cute-grad-gold text-white px-6 py-2.5">Back to shop</a></div>';
       return;
     }
     document.title = p.name + ' - Next Wave Trends';
@@ -149,7 +149,7 @@
 
     // Breadcrumb
     document.getElementById('crumbCat').textContent = p.sub;
-    document.getElementById('crumbCat').href = 'products.html#' + p.sub.toLowerCase();
+    document.getElementById('crumbCat').href = '/products#' + p.sub.toLowerCase();
     document.getElementById('crumbName').textContent = p.name;
 
     var gallery = images.map(function(src,i){
@@ -227,7 +227,7 @@
       var p = window.CTW_PRODUCTS.find(function(x){return x.id===id;});
       if(!p) return;
       for(var i=0;i<qty;i++){ window.ctw.addToCart(id); }
-      window.location.href = 'checkout.html';
+      window.location.href = '/checkout';
     }
   };
 

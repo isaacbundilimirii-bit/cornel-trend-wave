@@ -99,7 +99,7 @@
     var total = document.getElementById('cartTotal');
     if (!wrap) return;
     if (cart.length === 0) {
-      wrap.innerHTML = '<div class="text-center text-gray-400 py-16"><i class="fas fa-shopping-basket text-5xl mb-3"></i><p>Your cart is empty</p><a href="products.html" class="inline-block mt-4 cute-btn cute-grad text-white px-5 py-2">Start shopping</a></div>';
+      wrap.innerHTML = '<div class="text-center text-gray-400 py-16"><i class="fas fa-shopping-basket text-5xl mb-3"></i><p>Your cart is empty</p><a href="/products" class="inline-block mt-4 cute-btn cute-grad text-white px-5 py-2">Start shopping</a></div>';
       if (total) total.textContent = 'Ksh 0';
       return;
     }
@@ -130,7 +130,7 @@
       ? '<button onclick="ctw.addToCart(\'' + p.id + '\')" class="add-btn flex-1" title="Add to cart"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>'
       : '<button disabled class="add-btn flex-1 opacity-50 cursor-not-allowed" title="Out of stock">Sold out</button>';
     return '<div class="prod-card cute-card' + (inStock ? '' : ' opacity-75') + '">' +
-      '<a href="product.html?id=' + p.id + '" class="block relative">' +
+      '<a href="/product?id=' + p.id + '" class="block relative">' +
         '<div class="img-wrap relative">' +
           badge + soldOverlay +
           '<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button>' +
@@ -171,7 +171,7 @@
       return; 
     } 
     // Redirect to checkout page
-    window.location.href = 'checkout.html';
+    window.location.href = '/checkout';
   }
 
   function subscribe(e) { e.preventDefault(); toast('Thanks! Your 10% code is on the way'); return false; }
@@ -191,7 +191,7 @@
       allInputs.forEach(function(inp){ if(!q) q = inp.value.trim(); });
     }
     if (!q) { toast('Type something to search'); return false; }
-    window.location.href = 'search.html?q=' + encodeURIComponent(q);
+    window.location.href = '/search?q=' + encodeURIComponent(q);
     return false;
   }
 
@@ -205,8 +205,24 @@
     renderAll();
     renderCart();
     updateUserUI();
-    
-    var cartLink = document.querySelector('a[href="cart.html"]');
+
+    // Validate the session token in the background. If the JWT is still valid,
+    // the user stays logged in across refreshes and browser restarts. If it's
+    // expired/invalid, we clear the stale session so the UI is honest.
+    // This is fire-and-forget — the UI already renders from localStorage first
+    // (instant), then corrects itself if the token is bad.
+    if (window.api && window.api.getToken && window.api.getToken()) {
+      window.api.get('/api/auth/me').then(function () {
+        // Token still valid — make sure UI reflects logged-in state
+        updateUserUI();
+      }).catch(function () {
+        // Token expired/invalid — clear stale session
+        if (window.api.clearAuth) window.api.clearAuth();
+        updateUserUI();
+      });
+    }
+
+    var cartLink = document.querySelector('a[href="/cart"]');
     if (cartLink && window.innerWidth >= 768) { /* keep link on desktop */ }
     var overlay = document.getElementById('cartOverlay');
     if (overlay) overlay.addEventListener('click', closeCart);
@@ -220,7 +236,7 @@
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         logoutUser();
-        setTimeout(() => window.location.href = 'index.html', 500);
+        setTimeout(() => window.location.href = '/', 500);
       });
     });
   });

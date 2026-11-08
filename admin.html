@@ -36,13 +36,13 @@
 <!-- Simple header -->
 <header class="bg-white border-b-2 border-yellow-500 sticky top-0 z-40">
   <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2.5">
+    <a href="/" class="flex items-center gap-2.5">
       <img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" style="width:36px;height:36px">
       <span class="brand-name" style="font-size:.85rem">Next Wave<span class="accent">Trends</span></span>
     </a>
     <div class="flex items-center gap-3">
       <span class="text-xs font-bold text-yellow-700 bg-yellow-100 px-2.5 py-1 rounded-full"><i class="fas fa-lock mr-1"></i> Admin</span>
-      <a href="index.html" class="text-sm text-gray-600 hover:text-yellow-600"><i class="fas fa-store mr-1"></i> View shop</a>
+      <a href="/" class="text-sm text-gray-600 hover:text-yellow-600"><i class="fas fa-store mr-1"></i> View shop</a>
     </div>
   </div>
 </header>
@@ -216,7 +216,7 @@
   // ---- Auth guard: bounce to login if not admin ----
   async function guard(){
     if(!api.isLoggedIn()){
-      window.location.href = 'auth.html?redirect=admin.html';
+      window.location.href = '/login?redirect=/admin';
       return false;
     }
     try {
@@ -225,7 +225,7 @@
       return true;
     } catch(e){
       toast(e.status === 403 ? 'Admin account required' : 'Please login as admin', true);
-      setTimeout(function(){ window.location.href = 'auth.html?redirect=admin.html'; }, 1200);
+      setTimeout(function(){ window.location.href = '/login?redirect=/admin'; }, 1200);
       return false;
     }
   }

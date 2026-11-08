@@ -76,7 +76,7 @@
     return data.order;
   }
 
-  // ---- Renderers (kept compatible with old orders.html) ----
+  // ---- Renderers (kept compatible with old /orders) ----
   function renderOrdersList(containerId, filterStatus) {
     var container = document.getElementById(containerId);
     if (!container) return;
@@ -92,7 +92,7 @@
             '<div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-box-open text-gray-400 text-3xl"></i></div>' +
             '<h3 class="text-xl font-bold mb-2">No orders found</h3>' +
             '<p class="text-gray-500 mb-6">' + (filterStatus ? "You don't have any " + filterStatus + " orders" : "You haven't placed any orders yet") + '</p>' +
-            '<a href="products.html" class="cute-btn cute-grad-gold text-white px-6 py-3">Start Shopping</a>' +
+            '<a href="/products" class="cute-btn cute-grad-gold text-white px-6 py-3">Start Shopping</a>' +
           '</div>';
         return;
       }
@@ -143,13 +143,13 @@
           '</div>';
       }).join('');
     }).catch(function (e) {
-      container.innerHTML = '<div class="text-center py-8 text-red-500"><i class="fas fa-triangle-exclamation"></i><p class="mt-2">' + (e.message || 'Failed to load orders') + '</p><p class="text-sm text-gray-500 mt-1"><a href="auth.html" class="text-yellow-700">Login</a> if you haven\'t.</p></div>';
+      container.innerHTML = '<div class="text-center py-8 text-red-500"><i class="fas fa-triangle-exclamation"></i><p class="mt-2">' + (e.message || 'Failed to load orders') + '</p><p class="text-sm text-gray-500 mt-1"><a href="/login" class="text-yellow-700">Login</a> if you haven\'t.</p></div>';
     });
   }
 
   async function initOrdersPage() {
     if (!api.isLoggedIn()) {
-      window.location.href = 'auth.html?redirect=orders.html';
+      window.location.href = '/login?redirect=/orders';
       return;
     }
     renderOrdersList('ordersList');

@@ -45,7 +45,7 @@ app.use('/api/admin', require('./routes/admin.routes'));
 
 // ----- Block sensitive paths from static serving -----
 const ROOT = path.join(__dirname, '..');
-const BLOCKED = ['/server/', '/server.js', '/package.json', '/package-lock.json', '/render.yaml', '/.env', '/.env.example', '/.gitignore', '/node_modules/', '/STEP_BY_STEP.md'];
+const BLOCKED = ['/server/', '/server.js', '/package.json', '/package-lock.json', '/render.yaml', '/.env', '/.env.example', '/.gitignore', '/node_modules/', '/STEP_BY_STEP.md', '/BACKEND.md', '/README.md'];
 app.use((req, res, next) => {
   const p = req.path;
   for (const b of BLOCKED) {
@@ -53,6 +53,17 @@ app.use((req, res, next) => {
     if (b.endsWith('/') && p.startsWith(b)) return res.status(404).end();
   }
   next();
+});
+
+// ----- Redirect *.html → clean URL (e.g. /login.html → /login) -----
+// Keeps old bookmarks working and enforces clean URLs in the address bar.
+app.use((req, res, next) => {
+  if (req.method === 'GET' && /\.html$/i.test(req.path) && !req.path.startsWith('/api/')) {
+    const clean = req.path.replace(/\.html$/i, '');
+    const qs = req.url.slice(req.path.length); // preserve ?query
+    return res.redirect(301, clean === '/index' ? '/' + qs : clean + qs);
+  }
+  return next();
 });
 
 // ----- Static frontend (HTML/CSS/JS/images at project root) -----

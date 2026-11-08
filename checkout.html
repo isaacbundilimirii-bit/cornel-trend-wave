@@ -44,7 +44,7 @@
   <div id="logoSection" class="header-section py-3 md:py-2.5">
     <div class="container mx-auto px-4">
       <div class="flex items-center gap-3 md:gap-5">
-        <a href="index.html" class="flex items-center gap-2.5 flex-shrink-0">
+        <a href="/" class="flex items-center gap-2.5 flex-shrink-0">
           <img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy">
         </a>
         <div class="flex-1 hidden md:block">
@@ -54,15 +54,15 @@
           </form>
         </div>
         <div class="flex items-center gap-3 md:gap-4 ml-auto">
-          <a href="auth.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
+          <a href="/login" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
             <i class="far fa-user"></i> 
             <span data-user-name>Account</span>
           </a>
-          <a href="wishlist.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
+          <a href="/wishlist" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
             <i class="fas fa-heart"></i> 
             <span data-wishlist-count>0</span>
           </a>
-          <a href="cart.html" class="relative text-xl text-gray-800">
+          <a href="/cart" class="relative text-xl text-gray-800">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-badge hidden" data-cart-badge>0</span>
           </a>
@@ -81,15 +81,15 @@
   <div id="mainNav" class="header-section cat-nav py-2.5 hidden md:block">
     <div class="container mx-auto px-4">
       <nav class="cat-nav-inner">
-        <a href="index.html" class="active"><i class="fas fa-house"></i> Home</a>
-        <a href="products.html"><i class="fas fa-bag-shopping"></i> Shop</a>
-        <a href="products.html#electronics"><i class="fas fa-bolt"></i> Electronics</a>
-        <a href="products.html#fashion"><i class="fas fa-shirt"></i> Fashion</a>
-        <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
-        <a href="contact.html"><i class="fas fa-phone"></i> Contact</a>
-        <a href="auth.html" data-guest-link><i class="fas fa-user"></i> My Account</a>
-        <a href="wishlist.html" data-user-link class="hidden"><i class="fas fa-heart"></i> Wishlist</a>
-        <a href="orders.html" data-user-link class="hidden"><i class="fas fa-box"></i> Orders</a>
+        <a href="/" class="active"><i class="fas fa-house"></i> Home</a>
+        <a href="/products"><i class="fas fa-bag-shopping"></i> Shop</a>
+        <a href="/products#electronics"><i class="fas fa-bolt"></i> Electronics</a>
+        <a href="/products#fashion"><i class="fas fa-shirt"></i> Fashion</a>
+        <a href="/about"><i class="fas fa-info-circle"></i> About</a>
+        <a href="/contact"><i class="fas fa-phone"></i> Contact</a>
+        <a href="/login" data-guest-link><i class="fas fa-user"></i> My Account</a>
+        <a href="/wishlist" data-user-link class="hidden"><i class="fas fa-heart"></i> Wishlist</a>
+        <a href="/orders" data-user-link class="hidden"><i class="fas fa-box"></i> Orders</a>
         <a href="#" data-user-link class="hidden" data-logout><i class="fas fa-sign-out-alt"></i> Logout</a>
       </nav>
     </div>
@@ -106,15 +106,15 @@
     <button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button>
   </div>
   <nav class="flex flex-col gap-2 text-lg font-semibold">
-    <a href="index.html" class="py-2">Home</a>
-    <a href="products.html" class="py-2">Shop</a>
-    <a href="products.html#electronics" class="py-2">Electronics</a>
-    <a href="products.html#fashion" class="py-2">Fashion</a>
-    <a href="about.html" class="py-2">About</a>
-    <a href="contact.html" class="py-2">Contact</a>
-    <a href="auth.html" class="py-2 text-yellow-700" data-guest-link>My Account</a>
-    <a href="wishlist.html" class="py-2 hidden" data-user-link>Wishlist</a>
-    <a href="orders.html" class="py-2 hidden" data-user-link>Orders</a>
+    <a href="/" class="py-2">Home</a>
+    <a href="/products" class="py-2">Shop</a>
+    <a href="/products#electronics" class="py-2">Electronics</a>
+    <a href="/products#fashion" class="py-2">Fashion</a>
+    <a href="/about" class="py-2">About</a>
+    <a href="/contact" class="py-2">Contact</a>
+    <a href="/login" class="py-2 text-yellow-700" data-guest-link>My Account</a>
+    <a href="/wishlist" class="py-2 hidden" data-user-link>Wishlist</a>
+    <a href="/orders" class="py-2 hidden" data-user-link>Orders</a>
     <a href="#" class="py-2 hidden text-red-600" data-user-link data-logout>Logout</a>
   </nav>
 </aside>
@@ -385,17 +385,17 @@
     <div>
       <h4 class="font-bold mb-4">Shop</h4>
       <ul class="space-y-2 text-sm text-white/60">
-        <li><a href="products.html#electronics" class="hover:text-white">Electronics</a></li>
-        <li><a href="products.html#fashion" class="hover:text-white">Fashion</a></li>
-        <li><a href="products.html" class="hover:text-white">All products</a></li>
+        <li><a href="/products#electronics" class="hover:text-white">Electronics</a></li>
+        <li><a href="/products#fashion" class="hover:text-white">Fashion</a></li>
+        <li><a href="/products" class="hover:text-white">All products</a></li>
       </ul>
     </div>
     <div>
       <h4 class="font-bold mb-4">Company</h4>
       <ul class="space-y-2 text-sm text-white/60">
-        <li><a href="about.html" class="hover:text-white">About</a></li>
-        <li><a href="contact.html" class="hover:text-white">Contact</a></li>
-        <li><a href="auth.html" class="hover:text-white">My Account</a></li>
+        <li><a href="/about" class="hover:text-white">About</a></li>
+        <li><a href="/contact" class="hover:text-white">Contact</a></li>
+        <li><a href="/login" class="hover:text-white">My Account</a></li>
       </ul>
     </div>
     <div>
@@ -414,10 +414,10 @@
 
 <nav class="bottom-nav md:hidden">
   <div>
-    <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
-    <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
-    <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
-    <a href="checkout.html" class="bottom-nav-item active"><i class="fas fa-shopping-cart"></i><span>Checkout</span></a>
+    <a href="/" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+    <a href="/products" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+    <a href="/cart" class="bottom-nav-item relative"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+    <a href="/checkout" class="bottom-nav-item active"><i class="fas fa-shopping-cart"></i><span>Checkout</span></a>
   </div>
 </nav>
 
@@ -608,7 +608,7 @@
           '<h3 class="text-xl font-bold mb-2">Payment Successful!</h3>' +
           '<p class="text-gray-600 mb-4">Your ' + method + ' payment of Ksh ' + Number(total).toLocaleString('en-KE') + ' has been received.</p>' +
           '<div class="bg-gray-50 rounded-lg p-4 mb-6"><div class="font-semibold">Order ID: ' + orderId + '</div><div class="text-sm text-gray-500">You\'ll receive a confirmation shortly.</div></div>' +
-          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+          '<div class="flex gap-3"><a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
         '</div></div>' +
       '</div>';
     document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -621,7 +621,7 @@
           '<div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-times"></i></div>' +
           '<h3 class="text-xl font-bold mb-2">Payment not completed</h3>' +
           '<p class="text-gray-600 mb-4">We didn\'t receive the M-Pesa confirmation in time. Your order <strong>' + orderId + '</strong> is saved as pending.</p>' +
-          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="checkout.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Try Again</a></div>' +
+          '<div class="flex gap-3"><a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="/checkout" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Try Again</a></div>' +
         '</div></div>' +
       '</div>';
     document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -633,7 +633,7 @@
           '<div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-clock"></i></div>' +
           '<h3 class="text-xl font-bold mb-2">Order placed — pay to confirm</h3>' +
           '<p class="text-gray-600 mb-4">Pay Ksh ' + Number(total).toLocaleString('en-KE') + ' to the till shown, then we confirm your order <strong>' + orderId + '</strong>.</p>' +
-          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+          '<div class="flex gap-3"><a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
         '</div></div>' +
       '</div>';
     document.body.insertAdjacentHTML('beforeend', modalHTML);
@@ -667,7 +667,7 @@
           '<h3 class="text-xl font-bold mb-2">Order placed — card pending</h3>' +
           '<p class="text-gray-600 mb-4">Your card payment of Ksh ' + Number(total).toLocaleString('en-KE') + ' will be confirmed manually.</p>' +
           '<div class="bg-gray-50 rounded-lg p-4 mb-6"><div class="font-semibold">Order ID: ' + data.order.id + '</div></div>' +
-          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+          '<div class="flex gap-3"><a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3">View Order</a><a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
         '</div></div></div>';
       document.body.insertAdjacentHTML('beforeend', modalHTML);
     }).catch(function(err){
@@ -697,7 +697,7 @@
           '<h3 class="text-xl font-bold mb-2">Order Placed Successfully!</h3>' +
           '<p class="text-gray-600 mb-4">Your order <strong>' + data.order.id + '</strong> will be delivered to:</p>' +
           '<div class="bg-gray-50 rounded-lg p-4 mb-4 text-left"><div class="font-semibold">' + address + '</div><div class="text-sm text-gray-500 mt-2">Amount to pay on delivery: Ksh ' + Number(total).toLocaleString('en-KE') + '</div></div>' +
-          '<div class="flex gap-3"><a href="orders.html" class="cute-btn cute-grad-gold text-white flex-1 py-3">Track Order</a><a href="index.html" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
+          '<div class="flex gap-3"><a href="/orders" class="cute-btn cute-grad-gold text-white flex-1 py-3">Track Order</a><a href="/" class="cute-btn border-2 border-yellow-300 text-yellow-700 flex-1 py-3">Continue Shopping</a></div>' +
         '</div></div></div>';
       document.body.insertAdjacentHTML('beforeend', modalHTML);
     }).catch(function(err){ toast(err.message || 'Could not place order', true); });
@@ -739,7 +739,7 @@
     if (cart.length === 0) {
       toast('Your cart is empty. Redirecting to shop...');
       setTimeout(() => {
-        window.location.href = 'products.html';
+        window.location.href = '/products';
       }, 1500);
     }
     

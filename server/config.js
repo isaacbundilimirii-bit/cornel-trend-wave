@@ -14,7 +14,7 @@ module.exports = {
 
   jwt: {
     secret: env.JWT_SECRET || 'dev-secret-change-me',
-    expiresIn: env.JWT_EXPIRES_IN || '7d',
+    expiresIn: env.JWT_EXPIRES_IN || '30d',
   },
 
   admin: {

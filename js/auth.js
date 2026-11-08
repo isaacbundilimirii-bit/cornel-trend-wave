@@ -1,5 +1,5 @@
 /* ===== Next Wave Trends — Auth module (API-backed, email OTP) =====
- * Loaded on auth.html. Uses window.api to call /api/auth/*.
+ * Loaded on /login. Uses window.api to call /api/auth/*.
  * Verification is email-based: signup sends an OTP to the user's email; after
  * verifying, the user is redirected to login (no auto-login).
  * On login, stores token + user in localStorage (ctw_token / ctw_user).

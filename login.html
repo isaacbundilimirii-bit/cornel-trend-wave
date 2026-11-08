@@ -185,11 +185,11 @@
 <!-- Compact header -->
 <header class="auth-header">
   <div class="auth-header-inner">
-    <a href="index.html" class="ah-brand">
+    <a href="/" class="ah-brand">
       <img src="images/logo.jpeg" alt="Next Wave Trends" class="ah-logo">
       <span class="ah-name">Next Wave<small>Trends</small></span>
     </a>
-    <a href="index.html"><i class="fas fa-store"></i> Shop</a>
+    <a href="/"><i class="fas fa-store"></i> Shop</a>
   </div>
 </header>
 
@@ -539,6 +539,7 @@
       box.type = 'text'; box.maxLength = 1; box.className = 'otp-box';
       box.dataset.idx = i;
       box.setAttribute('inputmode','numeric'); box.setAttribute('pattern','[0-9]*');
+      box.setAttribute('autocomplete','one-time-code'); // iOS reads SMS OTP automatically
       box.addEventListener('input', function(e){
         e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
         if(e.target.value) e.target.classList.add('filled'); else e.target.classList.remove('filled');
@@ -546,6 +547,21 @@
       });
       box.addEventListener('keydown', function(e){
         if(e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling && e.target.previousElementSibling.tagName === 'INPUT') e.target.previousElementSibling.focus();
+      });
+      // Paste support: pasting anywhere fills all 6 boxes from the pasted text
+      box.addEventListener('paste', function(e){
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text') || '';
+        var digits = pasted.replace(/\D/g,'').slice(0,6);
+        if(!digits) return;
+        var boxes = wrap.querySelectorAll('.otp-box');
+        for(var j=0;j<boxes.length;j++){
+          if(j < digits.length){ boxes[j].value = digits[j]; boxes[j].classList.add('filled'); }
+          else { boxes[j].value = ''; boxes[j].classList.remove('filled'); }
+        }
+        // Focus the box after the last filled digit (or the last box)
+        var focusIdx = Math.min(digits.length, boxes.length - 1);
+        if(boxes[focusIdx]) boxes[focusIdx].focus();
       });
       wrap.appendChild(box);
     }
@@ -556,18 +572,28 @@
     document.querySelectorAll('#otpBoxes .otp-box').forEach(function(b){ code += b.value; });
     return code;
   }
+  // Format seconds as a friendly countdown: "expires in 9:45" or "expires in 45s"
+  function fmtCountdown(s){
+    if(s > 60){
+      var m = Math.floor(s / 60);
+      var sec = s % 60;
+      return 'expires in ' + m + ':' + (sec < 10 ? '0' + sec : sec);
+    }
+    return 'expires in ' + s + 's';
+  }
   function startOtpCountdown(){
-    var s = 600;
+    var s = 600; // 10 minutes matches server TTL
     var cd = document.getElementById('otpCountdown');
     var resend = document.getElementById('otpResend');
     resend.classList.add('hidden');
     clearInterval(otpTimer);
+    if(cd) cd.textContent = fmtCountdown(s);
     otpTimer = setInterval(function(){
       s--;
-      if(cd) cd.textContent = 'Code expires in ' + s + 's';
+      if(cd) cd.textContent = fmtCountdown(s);
       if(s <= 0){
         clearInterval(otpTimer);
-        if(cd) cd.textContent = 'Code expired';
+        if(cd) cd.textContent = 'Code expired — tap resend';
         resend.classList.remove('hidden');
       }
     }, 1000);
@@ -688,7 +714,7 @@
     if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
     if(authApi.isLoggedIn()){
       var q = new URLSearchParams(window.location.search);
-      if(!q.get('redirect')) window.location.href = 'index.html';
+      if(!q.get('redirect')) window.location.href = '/';
     }
   });
 
