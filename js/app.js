@@ -161,6 +161,55 @@
     renderGrid('fashionGrid', function (p) { return p.cat === 'fashion'; });
   }
 
+  // ---- Recently viewed ----
+  function trackViewed(id) {
+    var viewed = JSON.parse(localStorage.getItem('nwt_viewed') || '[]');
+    viewed = viewed.filter(function(x){ return x !== id; });
+    viewed.unshift(id);
+    if (viewed.length > 10) viewed = viewed.slice(0, 10);
+    localStorage.setItem('nwt_viewed', JSON.stringify(viewed));
+  }
+  function renderRecentlyViewed() {
+    var wrap = document.getElementById('recentlyViewedGrid');
+    if (!wrap) return;
+    var viewed = JSON.parse(localStorage.getItem('nwt_viewed') || '[]');
+    if (viewed.length === 0) { wrap.closest('section').style.display = 'none'; return; }
+    var items = viewed.map(function(id){ return window.CTW_PRODUCTS.find(function(p){ return p.id === id; }); }).filter(Boolean);
+    wrap.innerHTML = items.slice(0, 8).map(function(p){ return productCard(p); }).join('');
+  }
+
+  // ---- Search autocomplete ----
+  function initSearchAutocomplete() {
+    var inputs = document.querySelectorAll('.big-search input');
+    inputs.forEach(function(input) {
+      var form = input.closest('form');
+      if (!form) return;
+      var dropdown = document.createElement('div');
+      dropdown.className = 'search-dropdown';
+      dropdown.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #f0b000;border-radius:0 0 .8rem .8rem;box-shadow:0 8px 20px -8px rgba(0,0,0,.2);z-index:100;display:none;max-height:300px;overflow-y:auto';
+      form.style.position = 'relative';
+      form.appendChild(dropdown);
+      input.addEventListener('input', function() {
+        var q = input.value.trim().toLowerCase();
+        if (!q || q.length < 2) { dropdown.style.display = 'none'; return; }
+        var matches = window.CTW_PRODUCTS.filter(function(p) {
+          return p.name.toLowerCase().indexOf(q) !== -1 || (p.sub || '').toLowerCase().indexOf(q) !== -1;
+        }).slice(0, 5);
+        if (matches.length === 0) { dropdown.style.display = 'none'; return; }
+        dropdown.innerHTML = matches.map(function(p) {
+          return '<a href="/product?id=' + p.id + '" style="display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;text-decoration:none;color:#333;border-bottom:1px solid #f5f5f5;font-size:.82rem">' +
+              '<img src="' + p.img + '" style="width:32px;height:32px;border-radius:.3rem;object-fit:cover">' +
+              '<div><div style="font-weight:600">' + p.name + '</div><div style="color:#999;font-size:.7rem">Ksh ' + Number(p.price).toLocaleString() + '</div></div>' +
+              '</a>';
+        }).join('');
+        dropdown.style.display = 'block';
+      });
+      document.addEventListener('click', function(e) {
+        if (!form.contains(e.target)) dropdown.style.display = 'none';
+      });
+    });
+  }
+
   // ---- Cart drawer ----
   function openCart() { document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); document.body.style.overflow = 'hidden'; }
   function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); document.body.style.overflow = ''; }
@@ -231,6 +280,10 @@
     var mo = document.getElementById('menuOverlay'); if (mo) mo.addEventListener('click', closeMenu);
     var cc = document.getElementById('cartClose'); if (cc) cc.addEventListener('click', closeCart);
     
+    // Recently viewed + search autocomplete
+    renderRecentlyViewed();
+    initSearchAutocomplete();
+    
     // Logout button handler
     document.querySelectorAll('[data-logout]').forEach(btn => {
       btn.addEventListener('click', function(e) {
@@ -252,6 +305,8 @@
     card: productCard,
     getUser: getUser,
     isLoggedIn: isLoggedIn,
-    logoutUser: logoutUser
+    logoutUser: logoutUser,
+    trackViewed: trackViewed,
+    renderRecentlyViewed: renderRecentlyViewed
   };
 })();

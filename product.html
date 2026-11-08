@@ -177,6 +177,7 @@
       return;
     }
     document.title = p.name + ' - Next Wave Trends';
+    if(window.ctw && window.ctw.trackViewed) window.ctw.trackViewed(id);
     var images = p.images && p.images.length ? p.images : [p.img];
     var disc = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
     var oldPrice = p.oldPrice ? '<span class="text-gray-400 line-through text-lg ml-2">'+money(p.oldPrice)+'</span>' : '';
