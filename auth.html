@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
 <title>Login / Sign Up - Next Wave Trends</title>
 <meta name="description" content="Login or create an account at Next Wave Trends">
 <link rel="icon" href="images/logo.jpeg">
@@ -12,222 +12,350 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="css/styles.css">
 <style>
-.auth-card{background:#fff;border-radius:1.5rem;box-shadow:0 20px 50px -20px rgba(0,0,0,.2);overflow:hidden}
-.auth-tab{flex:1;padding:1rem;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;border-bottom:3px solid transparent;color:#9ca3af}
-.auth-tab.active{color:#0f0f0f;border-bottom-color:#f0b000;background:linear-gradient(180deg,transparent,#fffbeb)}
-.auth-input{width:100%;padding:.9rem 1rem .9rem 2.8rem;border:2px solid #e5e7eb;border-radius:.8rem;font-size:.95rem;outline:none;transition:border .2s,box-shadow .2s}
-.auth-input:focus{border-color:#f0b000;box-shadow:0 0 0 4px rgba(240,176,0,.15)}
-.auth-input.error{border-color:#ef4444;box-shadow:0 0 0 4px rgba(239,68,68,.12)}
-.auth-label{display:block;font-size:.8rem;font-weight:600;color:#374151;margin-bottom:.4rem}
-.auth-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:1rem;pointer-events:none}
-.auth-submit{width:100%;background:linear-gradient(120deg,#0f0f0f,#2a2a2a);color:#f0b000;font-weight:800;padding:.9rem;border-radius:.8rem;border:0;cursor:pointer;transition:transform .15s,filter .2s;font-size:.95rem}
-.auth-submit:hover{filter:brightness(1.3);transform:translateY(-1px)}
-.auth-submit:active{transform:translateY(0)}
+/* ===== Auth page — brand-only palette: black + gold ===== */
+:root{
+  --brand:#0f0f0f;
+  --gold:#f0b000;
+  --gold-dark:#d08000;
+  --cream:#fffbeb;
+  --line:#ececec;
+  --muted:#8a8a8a;
+  --ink:#1a1a1a;
+}
+
+/* Page background — subtle warm cream, not orange */
+.auth-bg{
+  min-height:100vh;
+  min-height:100dvh;
+  background:#fafaf7;
+  display:flex;
+  flex-direction:column;
+}
+@media(min-width:768px){
+  .auth-bg{ background:linear-gradient(160deg,#fafaf7 0%,#fffbeb 100%); align-items:center; justify-content:center; padding:2rem 1rem; }
+}
+
+/* Compact header — black bar, gold border (matches site) */
+.auth-header{
+  background:var(--brand);
+  border-bottom:2px solid var(--gold);
+  padding:max(env(safe-area-inset-top,0),.75rem) 1rem;
+}
+.auth-header-inner{
+  max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+}
+.auth-header a{color:var(--gold);font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.3rem;text-decoration:none}
+.auth-header .ah-brand{display:flex;align-items:center;gap:.5rem}
+.auth-header .ah-logo{width:28px;height:28px;border-radius:7px;object-fit:cover;border:1.5px solid var(--gold)}
+.auth-header .ah-name{font-weight:800;font-size:.85rem;color:#fff;letter-spacing:-.01em;line-height:1}
+.auth-header .ah-name small{display:block;font-size:.55rem;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:1px}
+
+/* Card */
+.auth-card{
+  background:#fff;
+  width:100%;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  /* On mobile: no rounded corners (full-bleed), no shadow — looks native */
+}
+@media(min-width:768px){
+  .auth-card{
+    flex:none;
+    max-width:420px;
+    border-radius:1.25rem;
+    box-shadow:0 20px 60px -24px rgba(0,0,0,.18);
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+}
+
+/* Logo + intro */
+.auth-intro{padding:1.75rem 1.25rem 1rem;text-align:center}
+@media(min-width:768px){ .auth-intro{padding:2rem 1.5rem 1rem} }
+.auth-logo{width:56px;height:56px;border-radius:14px;object-fit:cover;border:2px solid var(--gold);box-shadow:0 6px 16px -6px rgba(240,176,0,.4);margin:0 auto .75rem;display:block}
+.auth-title{font-weight:800;font-size:1.35rem;color:var(--ink);letter-spacing:-.02em;line-height:1.1;margin:0}
+.auth-subtitle{color:var(--muted);font-size:.82rem;margin-top:.4rem}
+
+/* Tabs */
+.auth-tabs{display:flex;border-bottom:2px solid var(--line)}
+.auth-tab{flex:1;padding:.85rem;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;transition:color .2s,border-color .2s;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit;font-size:.9rem;margin-bottom:-2px}
+.auth-tab.active{color:var(--brand);border-bottom-color:var(--gold)}
+.auth-tab:active{color:var(--gold-dark)}
+
+/* Body */
+.auth-body{padding:1.25rem 1.25rem 1.5rem;flex:1}
+@media(min-width:768px){ .auth-body{padding:1.5rem} }
+
+.auth-divider{display:flex;align-items:center;gap:.75rem;color:var(--muted);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin:0 0 1.1rem}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* Inputs */
+.auth-field{margin-bottom:1rem;position:relative}
+.auth-label{display:block;font-size:.76rem;font-weight:600;color:#4b4b4b;margin-bottom:.35rem}
+.auth-input-wrap{position:relative}
+.auth-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:#b0b0b0;font-size:.95rem;pointer-events:none}
+.auth-input{
+  width:100%;padding:.85rem 1rem .85rem 2.7rem;border:1.5px solid var(--line);border-radius:.7rem;
+  font-size:.95rem;font-family:inherit;color:var(--ink);background:#fff;outline:none;
+  transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;
+}
+.auth-input::placeholder{color:#b5b5b5}
+.auth-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,176,0,.15)}
+.auth-input.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+.auth-input-with-btn{padding-right:2.8rem}
+.auth-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:0;color:#b0b0b0;cursor:pointer;padding:.4rem;font-size:1rem}
+.auth-eye:hover{color:var(--gold-dark)}
+.auth-err{display:none;font-size:.72rem;color:#ef4444;margin-top:.3rem;font-weight:500}
+.auth-err.show{display:block}
+
+/* Primary button — solid black, gold text (matches site search button) */
+.auth-submit{
+  width:100%;background:var(--brand);color:var(--gold);font-weight:800;font-size:.95rem;
+  padding:.9rem;border:0;border-radius:.7rem;cursor:pointer;font-family:inherit;
+  transition:filter .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:.4rem;
+}
+.auth-submit:hover{filter:brightness(1.2)}
+.auth-submit:active{transform:scale(.99)}
 .auth-submit:disabled{opacity:.6;cursor:wait}
-.divider{display:flex;align-items:center;gap:1rem;color:#9ca3af;font-size:.8rem;margin:1.2rem 0}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:#e5e7eb}
-.forgot-link{color:#d08000;font-size:.8rem;font-weight:600;cursor:pointer}
-.forgot-link:hover{text-decoration:underline}
-.otp-box{width:40px;height:48px;text-align:center;font-size:1.4rem;font-weight:800;border:2px solid #e5e7eb;border-radius:.6rem;outline:none;transition:border .2s}
-.otp-box:focus{border-color:#f0b000}
-.otp-box.filled{border-color:#10b981;background:#f0fdf4}
+
+/* Links */
+.auth-link{color:var(--gold-dark);font-size:.8rem;font-weight:600;cursor:pointer;background:none;border:0;padding:0;font-family:inherit}
+.auth-link:hover{text-decoration:underline}
+
+/* Switch prompt at bottom */
+.auth-switch{text-align:center;margin-top:1.5rem;font-size:.85rem;color:var(--muted)}
+.auth-switch a{color:var(--gold-dark);font-weight:700;text-decoration:none;margin-left:.3rem}
+.auth-switch a:hover{text-decoration:underline}
+
+/* Forgot intro block */
+.auth-block-intro{text-align:center;margin-bottom:1.25rem}
+.auth-block-intro .abi-icon{width:48px;height:48px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;color:var(--gold-dark);font-size:1.3rem;border:1.5px solid rgba(240,176,0,.3)}
+.auth-block-intro h3{font-weight:700;font-size:1.05rem;color:var(--ink);margin:0}
+.auth-block-intro p{color:var(--muted);font-size:.8rem;margin-top:.3rem}
+
+/* OTP section */
+.auth-otp-head{text-align:center;margin-bottom:1.1rem}
+.auth-otp-icon{width:52px;height:52px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;color:var(--gold-dark);font-size:1.4rem;border:1.5px solid rgba(240,176,0,.35)}
+.auth-otp-head h3{font-weight:700;font-size:1.1rem;color:var(--ink);margin:0}
+.auth-otp-head p{color:var(--muted);font-size:.82rem;margin-top:.3rem}
+.auth-otp-target{color:var(--ink);font-weight:600}
+
+/* OTP boxes — brand gold, not green */
+.auth-otp-boxes{display:flex;justify-content:center;gap:.5rem;margin-bottom:1.1rem}
+.otp-box{
+  width:44px;height:52px;text-align:center;font-size:1.4rem;font-weight:800;
+  border:1.5px solid var(--line);border-radius:.6rem;outline:none;color:var(--ink);
+  font-family:inherit;transition:border-color .15s,background .15s;-webkit-appearance:none;
+}
+.otp-box:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,176,0,.15)}
+.otp-box.filled{border-color:var(--gold);background:var(--cream);color:var(--brand)}
+@media(min-width:400px){ .otp-box{width:46px;height:54px} }
+@media(min-width:768px){ .otp-box{width:48px;height:56px} }
+
+/* Demo notice */
+.auth-demo{margin-top:.75rem;background:var(--cream);border:1px solid rgba(240,176,0,.4);border-radius:.6rem;padding:.6rem .75rem;font-size:.75rem;color:var(--gold-dark);text-align:center}
+.auth-demo strong{color:var(--brand)}
+.auth-demo .code{font-family:monospace,monospace;font-size:1rem;letter-spacing:.3em;font-weight:800;color:var(--brand)}
+
+/* OTP footer */
+.auth-otp-foot{text-align:center;font-size:.8rem;margin-top:.7rem}
+.auth-otp-count{color:var(--muted)}
+.auth-otp-back{display:block;width:100%;text-align:center;color:var(--muted);font-size:.8rem;padding:.6rem;margin-top:.5rem;background:none;border:0;font-family:inherit;cursor:pointer}
+.auth-otp-back:hover{color:var(--gold-dark)}
+
+/* Toast — reuse site toast but ensure it's above the auth card */
+.toast{bottom:calc(90px + env(safe-area-inset-bottom,0))}
+@media(min-width:768px){ .toast{bottom:2rem} }
+
+/* Terms checkbox */
+.auth-terms{display:flex;align-items:flex-start;gap:.5rem;font-size:.8rem;color:#6b6b6b;margin-bottom:1.1rem}
+.auth-terms input{margin-top:.15rem;width:16px;height:16px;accent-color:var(--gold);flex-shrink:0}
+.auth-terms a{color:var(--gold-dark);font-weight:600;text-decoration:none}
+.auth-terms a:hover{text-decoration:underline}
+
+/* Strength meter — brand gold tones */
+.strength-bars{display:flex;gap:.25rem;margin-top:.5rem}
+.strength-bars > div{height:4px;flex:1;border-radius:9999px;background:#e5e5e5;transition:background .2s}
+.strength-label{font-size:.72rem;margin-top:.3rem;color:var(--muted)}
 </style>
 </head>
-<body class="bg-gray-50">
-<!-- Header -->
-<header class="bg-white border-b-2 border-yellow-500 sticky top-0 z-40">
-  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3">
-      <img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy">
-      <span class="brand-name hidden sm:block">Next Wave<span class="accent">Trends</span></span>
+<body class="auth-bg">
+
+<!-- Compact header -->
+<header class="auth-header">
+  <div class="auth-header-inner">
+    <a href="index.html" class="ah-brand">
+      <img src="images/logo.jpeg" alt="Next Wave Trends" class="ah-logo">
+      <span class="ah-name">Next Wave<small>Trends</small></span>
     </a>
-    <a href="index.html" class="text-sm text-gray-600 hover:text-yellow-600"><i class="fas fa-store mr-1"></i> Back to shop</a>
+    <a href="index.html"><i class="fas fa-store"></i> Shop</a>
   </div>
 </header>
 
-<main class="min-h-screen flex items-center justify-center py-12 px-4 bg-gradient-to-br from-yellow-50 to-orange-100">
-  <div class="max-w-md w-full">
-    <div class="auth-card">
-      <!-- Logo + title -->
-      <div class="text-center pt-8 pb-4">
-        <img src="images/logo.jpeg" alt="Next Wave Trends" class="w-16 h-16 rounded-2xl mx-auto mb-3 border-2 border-yellow-500" style="object-fit:cover">
-        <h1 class="text-2xl font-extrabold">Welcome to Next Wave</h1>
-        <p class="text-gray-500 text-sm mt-1">Sign up with your email — we'll send a verification code</p>
-      </div>
+<!-- Card -->
+<div class="auth-card">
+  <!-- Intro -->
+  <div class="auth-intro">
+    <img src="images/logo.jpeg" alt="Next Wave Trends" class="auth-logo">
+    <h1 class="auth-title">Welcome to Next Wave</h1>
+    <p class="auth-subtitle" id="introSubtitle">Sign up with your email — we'll send a verification code</p>
+  </div>
 
-      <!-- Tabs -->
-      <div class="flex border-b-2 border-gray-100">
-        <div class="auth-tab active" id="tabLogin" onclick="authUI.switchTab('login')">Login</div>
-        <div class="auth-tab" id="tabSignup" onclick="authUI.switchTab('signup')">Sign Up</div>
-      </div>
+  <!-- Tabs -->
+  <div class="auth-tabs">
+    <button class="auth-tab active" id="tabLogin" onclick="authUI.switchTab('login')">Login</button>
+    <button class="auth-tab" id="tabSignup" onclick="authUI.switchTab('signup')">Sign Up</button>
+  </div>
 
-      <div class="p-6 md:p-8">
-        <div class="divider">Phone or email</div>
+  <div class="auth-body">
+    <div class="auth-divider">Phone or email</div>
 
-        <!-- Login form -->
-        <form id="loginForm" onsubmit="return authUI.login(event)">
-          <div class="mb-4">
-            <label class="auth-label" for="loginId">Phone or Email</label>
-            <div class="relative">
-              <i class="fas fa-user auth-icon"></i>
-              <input type="text" id="loginId" class="auth-input" placeholder="0712 345 678 or you@email.com" required>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="loginId"></p>
-          </div>
-
-          <div class="mb-3">
-            <label class="auth-label" for="loginPwd">Password</label>
-            <div class="relative">
-              <i class="fas fa-lock auth-icon"></i>
-              <input type="password" id="loginPwd" class="auth-input" placeholder="Enter your password" required style="padding-right:2.8rem">
-              <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="authUI.togglePwd('loginPwd', this)"><i class="fas fa-eye"></i></button>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="loginPwd"></p>
-          </div>
-
-          <div class="flex justify-end mb-5">
-            <span class="forgot-link" onclick="authUI.showForgot()">Forgot password?</span>
-          </div>
-
-          <button type="submit" class="auth-submit" id="loginBtn">
-            <i class="fas fa-arrow-right-to-bracket mr-1"></i> Login
-          </button>
-        </form>
-
-        <!-- Signup form -->
-        <form id="signupForm" onsubmit="return authUI.signup(event)" class="hidden">
-          <div class="mb-4">
-            <label class="auth-label" for="suName">Full Name</label>
-            <div class="relative">
-              <i class="fas fa-id-card auth-icon"></i>
-              <input type="text" id="suName" class="auth-input" placeholder="John Mwangi" required>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="suName"></p>
-          </div>
-
-          <div class="mb-4">
-            <label class="auth-label" for="suPhone">Phone Number</label>
-            <div class="relative">
-              <i class="fas fa-phone auth-icon"></i>
-              <input type="tel" id="suPhone" class="auth-input" placeholder="0712 345 678" required>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="suPhone"></p>
-          </div>
-
-          <div class="mb-4">
-            <label class="auth-label" for="suEmail">Email <span class="text-gray-400 font-normal">(verification code sent here)</span></label>
-            <div class="relative">
-              <i class="fas fa-envelope auth-icon"></i>
-              <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" required>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="suEmail"></p>
-          </div>
-
-          <div class="mb-4">
-            <label class="auth-label" for="suPwd">Password</label>
-            <div class="relative">
-              <i class="fas fa-lock auth-icon"></i>
-              <input type="password" id="suPwd" class="auth-input" placeholder="At least 8 characters" required style="padding-right:2.8rem">
-              <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="authUI.togglePwd('suPwd', this)"><i class="fas fa-eye"></i></button>
-            </div>
-            <div class="mt-2 flex gap-1">
-              <div class="h-1.5 flex-1 bg-gray-200 rounded-full transition-all" data-strength="1"></div>
-              <div class="h-1.5 flex-1 bg-gray-200 rounded-full transition-all" data-strength="2"></div>
-              <div class="h-1.5 flex-1 bg-gray-200 rounded-full transition-all" data-strength="3"></div>
-              <div class="h-1.5 flex-1 bg-gray-200 rounded-full transition-all" data-strength="4"></div>
-            </div>
-            <p class="text-xs text-gray-500 mt-1" id="strengthLabel">Enter a password</p>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="suPwd"></p>
-          </div>
-
-          <div class="mb-5">
-            <label class="auth-label" for="suConfirm">Confirm Password</label>
-            <div class="relative">
-              <i class="fas fa-lock auth-icon"></i>
-              <input type="password" id="suConfirm" class="auth-input" placeholder="Re-enter password" required>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="suConfirm"></p>
-          </div>
-
-          <label class="flex items-start gap-2 text-sm text-gray-600 mb-5">
-            <input type="checkbox" id="suTerms" class="mt-1 w-4 h-4 accent-yellow-600" required>
-            <span>I agree to the <a href="#" class="text-yellow-700 font-semibold">Terms</a> and <a href="#" class="text-yellow-700 font-semibold">Privacy Policy</a></span>
-          </label>
-
-          <button type="submit" class="auth-submit" id="signupBtn">
-            <i class="fas fa-user-plus mr-1"></i> Create Account
-          </button>
-        </form>
-
-        <!-- Forgot password -->
-        <form id="forgotForm" onsubmit="return authUI.sendReset(event)" class="hidden">
-          <div class="text-center mb-5">
-            <div class="w-14 h-14 rounded-full bg-yellow-100 mx-auto flex items-center justify-center mb-3"><i class="fas fa-key text-2xl text-yellow-600"></i></div>
-            <h3 class="font-bold text-lg">Forgot password?</h3>
-            <p class="text-gray-500 text-sm mt-1">Enter your email — we'll send a reset code.</p>
-          </div>
-          <div class="mb-4">
-            <label class="auth-label" for="resetEmail">Email</label>
-            <div class="relative">
-              <i class="fas fa-envelope auth-icon"></i>
-              <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" required>
-            </div>
-            <p class="hidden text-xs text-red-600 mt-1" data-error="resetEmail"></p>
-          </div>
-          <button type="submit" class="auth-submit mb-3" id="forgotBtn"><i class="fas fa-paper-plane mr-1"></i> Send Reset Code</button>
-          <button type="button" class="w-full text-gray-500 text-sm py-2" onclick="authUI.switchTab('login')"><i class="fas fa-arrow-left mr-1"></i> Back to login</button>
-        </form>
-
-        <!-- OTP verification (signup verify OR reset) -->
-        <div id="otpSection" class="hidden">
-          <div class="text-center mb-5">
-            <div class="w-14 h-14 rounded-full bg-green-100 mx-auto flex items-center justify-center mb-3"><i class="fas fa-shield-halved text-2xl text-green-600"></i></div>
-            <h3 class="font-bold text-lg" id="otpTitle">Verify your email</h3>
-            <p class="text-gray-500 text-sm mt-1">We sent a 6-digit code to <span id="otpTarget" class="font-semibold text-gray-700">—</span></p>
-            <div id="otpDemoNotice" class="hidden mt-2 text-xs bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-2">
-              <i class="fas fa-circle-info"></i> <strong>Demo mode:</strong> Your code is <strong id="otpDemoCode" class="tracking-widest">—</strong><br><span class="opacity-70">No SMTP/Resend configured — code shown for testing.</span>
-            </div>
-          </div>
-          <div class="flex justify-center gap-2 mb-4" id="otpBoxes"></div>
-          <!-- New password fields (reset flow only — hidden for verify) -->
-          <div id="resetPwdFields" class="hidden">
-            <div class="mb-3">
-              <label class="auth-label">New Password</label>
-              <div class="relative">
-                <i class="fas fa-lock auth-icon"></i>
-                <input type="password" id="newPwd1" class="auth-input" placeholder="At least 8 characters" style="padding-left:2.8rem">
-              </div>
-            </div>
-            <div class="mb-4">
-              <label class="auth-label">Confirm New Password</label>
-              <div class="relative">
-                <i class="fas fa-lock auth-icon"></i>
-                <input type="password" id="newPwd2" class="auth-input" placeholder="Re-enter new password" style="padding-left:2.8rem">
-              </div>
-            </div>
-          </div>
-          <button onclick="authUI.verifyOtp()" class="auth-submit mb-3" id="verifyBtn"><i class="fas fa-check-circle mr-1"></i> Verify</button>
-          <div class="text-center text-sm">
-            <span id="otpCountdown" class="text-gray-500"></span>
-            <button type="button" id="otpResend" class="forgot-link ml-2 hidden" onclick="authUI.resendOtp()">Resend code</button>
-          </div>
-          <button type="button" class="w-full text-gray-500 text-sm py-2 mt-2" onclick="authUI.backFromOtp()"><i class="fas fa-arrow-left mr-1"></i> Back</button>
+    <!-- Login form -->
+    <form id="loginForm" onsubmit="return authUI.login(event)">
+      <div class="auth-field">
+        <label class="auth-label" for="loginId">Phone or Email</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-user auth-icon"></i>
+          <input type="text" id="loginId" class="auth-input" placeholder="0712 345 678 or you@email.com" autocomplete="username" required>
         </div>
+        <p class="auth-err" data-error="loginId"></p>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="loginPwd">Password</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-lock auth-icon"></i>
+          <input type="password" id="loginPwd" class="auth-input auth-input-with-btn" placeholder="Enter your password" autocomplete="current-password" required>
+          <button type="button" class="auth-eye" onclick="authUI.togglePwd('loginPwd', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+        </div>
+        <p class="auth-err" data-error="loginPwd"></p>
+      </div>
+      <div class="flex justify-end mb-4">
+        <button type="button" class="auth-link" onclick="authUI.showForgot()">Forgot password?</button>
+      </div>
+      <button type="submit" class="auth-submit" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+    </form>
 
-        <!-- Switch between login/signup -->
-        <div class="text-center mt-6 text-sm text-gray-600" id="switchPrompt">
-          <span id="switchText">Don't have an account?</span>
-          <a href="#" class="text-yellow-700 font-semibold ml-1" id="switchLink" onclick="authUI.switchTab('signup');return false">Sign up</a>
+    <!-- Signup form -->
+    <form id="signupForm" onsubmit="return authUI.signup(event)" class="hidden">
+      <div class="auth-field">
+        <label class="auth-label" for="suName">Full Name</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-id-card auth-icon"></i>
+          <input type="text" id="suName" class="auth-input" placeholder="John Mwangi" autocomplete="name" required>
+        </div>
+        <p class="auth-err" data-error="suName"></p>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="suPhone">Phone Number</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-phone auth-icon"></i>
+          <input type="tel" id="suPhone" class="auth-input" placeholder="0712 345 678" autocomplete="tel" required>
+        </div>
+        <p class="auth-err" data-error="suPhone"></p>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="suEmail">Email <span style="color:#b0b0b0;font-weight:400">(code sent here)</span></label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-envelope auth-icon"></i>
+          <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email" required>
+        </div>
+        <p class="auth-err" data-error="suEmail"></p>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="suPwd">Password</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-lock auth-icon"></i>
+          <input type="password" id="suPwd" class="auth-input auth-input-with-btn" placeholder="At least 8 characters" autocomplete="new-password" required>
+          <button type="button" class="auth-eye" onclick="authUI.togglePwd('suPwd', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="strength-bars">
+          <div data-strength="1"></div><div data-strength="2"></div><div data-strength="3"></div><div data-strength="4"></div>
+        </div>
+        <p class="strength-label" id="strengthLabel">Enter a password</p>
+        <p class="auth-err" data-error="suPwd"></p>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="suConfirm">Confirm Password</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-lock auth-icon"></i>
+          <input type="password" id="suConfirm" class="auth-input" placeholder="Re-enter password" autocomplete="new-password" required>
+        </div>
+        <p class="auth-err" data-error="suConfirm"></p>
+      </div>
+      <label class="auth-terms">
+        <input type="checkbox" id="suTerms" required>
+        <span>I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a></span>
+      </label>
+      <button type="submit" class="auth-submit" id="signupBtn"><i class="fas fa-user-plus"></i> Create Account</button>
+    </form>
+
+    <!-- Forgot password -->
+    <form id="forgotForm" onsubmit="return authUI.sendReset(event)" class="hidden">
+      <div class="auth-block-intro">
+        <div class="abi-icon"><i class="fas fa-key"></i></div>
+        <h3>Forgot password?</h3>
+        <p>Enter your email — we'll send a reset code.</p>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label" for="resetEmail">Email</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-envelope auth-icon"></i>
+          <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email" required>
+        </div>
+        <p class="auth-err" data-error="resetEmail"></p>
+      </div>
+      <button type="submit" class="auth-submit mb-3" id="forgotBtn"><i class="fas fa-paper-plane"></i> Send Reset Code</button>
+      <button type="button" class="auth-otp-back" onclick="authUI.switchTab('login')"><i class="fas fa-arrow-left"></i> Back to login</button>
+    </form>
+
+    <!-- OTP verification (signup verify OR reset) -->
+    <div id="otpSection" class="hidden">
+      <div class="auth-otp-head">
+        <div class="auth-otp-icon"><i class="fas fa-shield-halved"></i></div>
+        <h3 id="otpTitle">Verify your email</h3>
+        <p>We sent a 6-digit code to <span id="otpTarget" class="auth-otp-target">—</span></p>
+      </div>
+      <div class="auth-otp-boxes" id="otpBoxes"></div>
+      <div id="otpDemoNotice" class="auth-demo hidden">
+        <i class="fas fa-circle-info"></i> <strong>Demo mode:</strong> your code is <span class="code" id="otpDemoCode">—</span><br>
+        <span style="opacity:.7">No SMTP/Resend configured — shown for testing.</span>
+      </div>
+      <!-- New password fields (reset only) -->
+      <div id="resetPwdFields" class="hidden">
+        <div class="auth-field" style="margin-top:1rem">
+          <label class="auth-label" for="newPwd1">New Password</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock auth-icon"></i>
+            <input type="password" id="newPwd1" class="auth-input" placeholder="At least 8 characters" autocomplete="new-password">
+          </div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="newPwd2">Confirm New Password</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock auth-icon"></i>
+            <input type="password" id="newPwd2" class="auth-input" placeholder="Re-enter new password" autocomplete="new-password">
+          </div>
         </div>
       </div>
+      <button onclick="authUI.verifyOtp()" class="auth-submit" id="verifyBtn"><i class="fas fa-check-circle"></i> Verify</button>
+      <div class="auth-otp-foot">
+        <span id="otpCountdown" class="auth-otp-count"></span>
+        <button type="button" id="otpResend" class="auth-link ml-2 hidden" onclick="authUI.resendOtp()">Resend code</button>
+      </div>
+      <button type="button" class="auth-otp-back" onclick="authUI.backFromOtp()"><i class="fas fa-arrow-left"></i> Back</button>
     </div>
 
-    <p class="text-center text-gray-400 text-xs mt-4">By continuing you agree to Next Wave Trends Terms & Privacy Policy</p>
+    <!-- Switch between login/signup -->
+    <div class="auth-switch" id="switchPrompt">
+      <span id="switchText">Don't have an account?</span>
+      <a href="#" id="switchLink" onclick="authUI.switchTab('signup');return false">Sign up</a>
+    </div>
   </div>
-</main>
+</div>
 
 <!-- Toast -->
-<div id="toast" class="toast"><i class="fas fa-circle-check text-yellow-500"></i><span id="toastMsg"></span></div>
+<div id="toast" class="toast"><i class="fas fa-circle-check" style="color:var(--gold)"></i><span id="toastMsg"></span></div>
 
 <script src="js/products.js"></script>
 <script src="js/api.js"></script>
@@ -240,21 +368,22 @@
   var authApi = window.auth;
 
   // Pending OTP context: { identifier, purpose, demoCode?, originTab }
-  // originTab = which tab to return to if the user hits "Back" from OTP.
   var otpCtx = null;
   var otpTimer = null;
 
+  // ---- Brand-only toast (no red text for non-errors; gold icon for success) ----
   function toast(msg, err){
     var t = document.getElementById('toast');
     document.getElementById('toastMsg').textContent = msg;
-    t.querySelector('i').className = err ? 'fas fa-circle-exclamation text-red-500' : 'fas fa-circle-check text-yellow-500';
+    t.querySelector('i').className = err ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+    t.querySelector('i').style.color = err ? '#ef4444' : 'var(--gold)';
     t.classList.add('show');
     clearTimeout(window._nwtToast);
     window._nwtToast = setTimeout(function(){ t.classList.remove('show'); }, 2800);
   }
   function showErr(field, msg){
     var el = document.querySelector('[data-error="'+field+'"]');
-    if(el){ if(msg){ el.textContent = msg; el.classList.remove('hidden'); } else { el.classList.add('hidden'); el.textContent=''; } }
+    if(el){ if(msg){ el.textContent = msg; el.classList.add('show'); } else { el.classList.remove('show'); el.textContent=''; } }
     var input = document.getElementById(field);
     if(input){ if(msg) input.classList.add('error'); else input.classList.remove('error'); }
   }
@@ -270,17 +399,23 @@
     var link = document.getElementById('switchLink');
     if(tab === 'login'){ prompt.textContent = "Don't have an account?"; link.textContent = 'Sign up'; }
     else { prompt.textContent = 'Already have an account?'; link.textContent = 'Login'; }
+    // Update intro subtitle per tab
+    var sub = document.getElementById('introSubtitle');
+    if(sub){ sub.textContent = tab === 'login' ? 'Sign in with your phone or email' : 'Sign up with your email — we\'ll send a verification code'; }
+    // Scroll to top of card on tab change (mobile)
+    window.scrollTo({top:0, behavior:'smooth'});
   }
   function togglePwd(id, btn){
     var inp = document.getElementById(id);
     var isP = inp.getAttribute('type') === 'password';
     inp.setAttribute('type', isP ? 'text' : 'password');
     btn.querySelector('i').className = isP ? 'fas fa-eye-slash' : 'fas fa-eye';
+    btn.setAttribute('aria-label', isP ? 'Hide password' : 'Show password');
   }
   function setLoading(btnId, loading){
     var b = document.getElementById(btnId);
     if(!b) return;
-    if(loading){ b.disabled = true; b.dataset.orig = b.innerHTML; b.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Please wait…'; }
+    if(loading){ b.disabled = true; b.dataset.orig = b.innerHTML; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait…'; }
     else { b.disabled = false; if(b.dataset.orig) b.innerHTML = b.dataset.orig; }
   }
 
@@ -300,7 +435,6 @@
         if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
         setTimeout(function(){ redirectAfter(); }, 700);
       } else if(r.needsVerification){
-        // Unverified account — go to OTP (code sent to their email)
         otpCtx = { identifier: r.email || r.phone, purpose: 'verify', demoCode: null, originTab: 'login' };
         showOtpSection(r.email || r.phone, null, 'verify');
         toast(r.message);
@@ -331,12 +465,10 @@
     authApi.register({ name: name, phone: phone, email: email, password: pwd }).then(function(r){
       setLoading('signupBtn', false);
       if(r.ok){
-        // OTP was sent to the email; show the OTP section
         otpCtx = { identifier: r.email, purpose: 'verify', demoCode: r.demoCode, originTab: 'signup' };
         showOtpSection(r.email, r.demoCode, 'verify');
         toast(r.message || 'Verification code sent to your email.');
       } else {
-        // Show the error on the most relevant field
         if(r.message && r.message.toLowerCase().indexOf('email') >= 0) showErr('suEmail', r.message);
         else if(r.message && r.message.toLowerCase().indexOf('phone') >= 0) showErr('suPhone', r.message);
         else showErr('suEmail', r.message || 'Could not create account');
@@ -352,6 +484,7 @@
     document.getElementById('forgotForm').classList.remove('hidden');
     document.getElementById('otpSection').classList.add('hidden');
     document.getElementById('switchPrompt').classList.add('hidden');
+    window.scrollTo({top:0, behavior:'smooth'});
   }
   function sendReset(e){
     e.preventDefault();
@@ -383,13 +516,11 @@
     } else {
       demoNotice.classList.add('hidden');
     }
-    // Show/hide new-password fields (only for reset)
     document.getElementById('resetPwdFields').classList.toggle('hidden', purpose !== 'reset');
-    // Button label
     var btn = document.getElementById('verifyBtn');
     btn.innerHTML = purpose === 'reset'
-      ? '<i class="fas fa-key mr-1"></i> Reset password'
-      : '<i class="fas fa-check-circle mr-1"></i> Verify';
+      ? '<i class="fas fa-key"></i> Reset password'
+      : '<i class="fas fa-check-circle"></i> Verify';
     document.getElementById('loginForm').classList.add('hidden');
     document.getElementById('signupForm').classList.add('hidden');
     document.getElementById('forgotForm').classList.add('hidden');
@@ -397,6 +528,7 @@
     document.getElementById('switchPrompt').classList.add('hidden');
     renderOtpBoxes();
     startOtpCountdown();
+    window.scrollTo({top:0, behavior:'smooth'});
   }
 
   function renderOtpBoxes(){
@@ -404,7 +536,9 @@
     wrap.innerHTML = '';
     for(var i=0;i<6;i++){
       var box = document.createElement('input');
-      box.type = 'text'; box.maxLength = 1; box.className = 'otp-box'; box.dataset.idx = i;
+      box.type = 'text'; box.maxLength = 1; box.className = 'otp-box';
+      box.dataset.idx = i;
+      box.setAttribute('inputmode','numeric'); box.setAttribute('pattern','[0-9]*');
       box.addEventListener('input', function(e){
         e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
         if(e.target.value) e.target.classList.add('filled'); else e.target.classList.remove('filled');
@@ -415,7 +549,7 @@
       });
       wrap.appendChild(box);
     }
-    setTimeout(function(){ if(wrap.children[0]) wrap.children[0].focus(); }, 50);
+    setTimeout(function(){ if(wrap.children[0]) wrap.children[0].focus(); }, 60);
   }
   function getOtpValue(){
     var code = '';
@@ -423,7 +557,7 @@
     return code;
   }
   function startOtpCountdown(){
-    var s = 600; // 10 minutes matches server TTL
+    var s = 600;
     var cd = document.getElementById('otpCountdown');
     var resend = document.getElementById('otpResend');
     resend.classList.add('hidden');
@@ -444,23 +578,20 @@
     var code = getOtpValue();
     if(!/^\d{6}$/.test(code)){ toast('Enter the 6-digit code', true); return; }
     if(!otpCtx){ toast('Session expired. Start again.', true); return; }
-
-    // Reset flow: validate new passwords client-side, then call resetConfirm
     if(otpCtx.purpose === 'reset'){
       var p1 = document.getElementById('newPwd1').value;
       var p2 = document.getElementById('newPwd2').value;
       if(!p1 || p1.length < 8){ toast('New password must be at least 8 characters', true); return; }
       if(p1 !== p2){ toast('Passwords do not match', true); return; }
       var btn = document.getElementById('verifyBtn');
-      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Resetting…';
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting…';
       authApi.resetConfirm({ identifier: otpCtx.identifier, code: code, newPassword: p1 }).then(function(r){
-        btn.disabled = false; btn.innerHTML = '<i class="fas fa-key mr-1"></i> Reset password';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Reset password';
         if(r.ok){
           clearInterval(otpTimer);
           toast(r.message || 'Password updated! You can now log in.');
           setTimeout(function(){
             otpCtx = null;
-            // Clear the password fields for safety
             document.getElementById('newPwd1').value = '';
             document.getElementById('newPwd2').value = '';
             document.getElementById('resetEmail').value = '';
@@ -472,22 +603,18 @@
       });
       return;
     }
-
-    // Verify flow (signup / unverified login): verify code, then go to login
     var vbtn = document.getElementById('verifyBtn');
-    vbtn.disabled = true; vbtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Verifying…';
+    vbtn.disabled = true; vbtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
     authApi.verifyOtp({ identifier: otpCtx.identifier, code: code, purpose: 'verify' }).then(function(r){
-      vbtn.disabled = false; vbtn.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Verify';
+      vbtn.disabled = false; vbtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
       if(r.ok){
         clearInterval(otpTimer);
         toast(r.message || 'Email verified! You can now log in.');
         setTimeout(function(){
           otpCtx = null;
           switchTab('login');
-          // Pre-fill the login identifier with the just-verified email for convenience
           var loginId = document.getElementById('loginId');
-          if(loginId) loginId.value = '';
-          loginId && loginId.focus();
+          if(loginId){ loginId.value = ''; loginId.focus(); }
         }, 900);
       } else {
         toast(r.message || 'Incorrect code', true);
@@ -505,7 +632,6 @@
           document.getElementById('otpDemoNotice').classList.remove('hidden');
           document.getElementById('otpDemoCode').textContent = r.demoCode;
         }
-        // Clear the boxes for a fresh entry
         document.querySelectorAll('#otpBoxes .otp-box').forEach(function(b){ b.value=''; b.classList.remove('filled'); });
         startOtpCountdown();
         toast('New code sent to your email');
@@ -525,7 +651,7 @@
     }
   }
 
-  // ---- Password strength ----
+  // ---- Password strength (brand gold tones, no green/orange) ----
   function scorePassword(p){
     if(!p) return 0;
     var s = 0;
@@ -536,29 +662,30 @@
     return s;
   }
   function paintStrength(score){
-    var colors = ['bg-gray-200','bg-red-500','bg-orange-500','bg-yellow-500','bg-green-500'];
-    var labels = ['Enter a password','Weak','Fair','Good','Strong'];
+    // 0=none(grey), 1-2=gold-dark, 3-4=gold
+    var color = score === 0 ? '#e5e5e5' : (score <= 2 ? '#d08000' : '#f0b000');
     document.querySelectorAll('[data-strength]').forEach(function(bar,i){
-      bar.className = 'h-1.5 flex-1 rounded-full transition-all ' + (i < score ? colors[score] : 'bg-gray-200');
+      bar.style.background = i < score ? color : '#e5e5e5';
     });
     var lbl = document.getElementById('strengthLabel');
-    if(lbl){ lbl.textContent = labels[score] || labels[0]; lbl.className = 'text-xs mt-1 ' + (score >= 3 ? 'text-green-600' : score >= 2 ? 'text-orange-600' : 'text-gray-500'); }
+    var labels = ['Enter a password','Weak','Fair','Good','Strong'];
+    if(lbl){
+      lbl.textContent = labels[score] || labels[0];
+      lbl.style.color = score === 0 ? 'var(--muted)' : (score <= 2 ? '#d08000' : '#0f0f0f');
+    }
   }
 
-  // ---- Redirect after auth (login success) ----
   function redirectAfter(){
     var q = new URLSearchParams(window.location.search);
     var redirect = q.get('redirect');
     window.location.href = redirect || 'index.html';
   }
 
-  // ---- Init ----
   document.addEventListener('DOMContentLoaded', function(){
     switchTab('login');
     var suPwd = document.getElementById('suPwd');
     if(suPwd) suPwd.addEventListener('input', function(){ paintStrength(scorePassword(suPwd.value)); });
     if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
-    // If already logged in, bounce to home (unless ?redirect is set)
     if(authApi.isLoggedIn()){
       var q = new URLSearchParams(window.location.search);
       if(!q.get('redirect')) window.location.href = 'index.html';
