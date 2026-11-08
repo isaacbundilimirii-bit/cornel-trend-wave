@@ -1,4 +1,5 @@
 // ===== Postgres pool + migrations + seed =====
+require('dotenv').config();
 const { Pool } = require('pg');
 const config = require('./config');
 const bcrypt = require('bcryptjs');
