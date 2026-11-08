@@ -82,8 +82,22 @@
     var existing = cart.find(function (i) { return i.id === id; });
     if (existing) existing.qty += 1; else cart.push({ id: id, qty: 1 });
     save(); updateBadges();
-    toast(p.name + ' added to cart');
+    // Loyalty points: 1 point per Ksh 100 spent
+    var points = Math.floor(p.price / 100);
+    if (points > 0) addLoyaltyPoints(points);
+    toast(p.name + ' added to cart' + (points > 0 ? ' (+' + points + ' pts)' : ''));
     renderCart();
+  }
+
+  // ---- Loyalty points ----
+  function getLoyaltyPoints() { return parseInt(localStorage.getItem('nwt_points') || '0', 10); }
+  function addLoyaltyPoints(n) { var p = getLoyaltyPoints() + n; localStorage.setItem('nwt_points', String(p)); updatePointsDisplay(); }
+  function deductLoyaltyPoints(n) { var p = Math.max(0, getLoyaltyPoints() - n); localStorage.setItem('nwt_points', String(p)); updatePointsDisplay(); }
+  function updatePointsDisplay() {
+    var el = document.getElementById('loyaltyPoints');
+    if (el) el.textContent = getLoyaltyPoints();
+    var badge = document.getElementById('pointsBadge');
+    if (badge) badge.textContent = getLoyaltyPoints();
   }
 
   function changeQty(id, delta) {
@@ -283,6 +297,7 @@
     // Recently viewed + search autocomplete
     renderRecentlyViewed();
     initSearchAutocomplete();
+    updatePointsDisplay();
     
     // Logout button handler
     document.querySelectorAll('[data-logout]').forEach(btn => {
@@ -307,6 +322,9 @@
     isLoggedIn: isLoggedIn,
     logoutUser: logoutUser,
     trackViewed: trackViewed,
-    renderRecentlyViewed: renderRecentlyViewed
+    renderRecentlyViewed: renderRecentlyViewed,
+    getLoyaltyPoints: getLoyaltyPoints,
+    addLoyaltyPoints: addLoyaltyPoints,
+    deductLoyaltyPoints: deductLoyaltyPoints
   };
 })();

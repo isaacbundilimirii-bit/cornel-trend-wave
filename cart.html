@@ -46,7 +46,7 @@
     var cart=JSON.parse(localStorage.getItem('ctw_cart')||'[]');
     var wrap=document.getElementById('pageCart');
     var sum=document.getElementById('cartSummary');
-    if(cart.length===0){wrap.innerHTML='<div class="cute-card p-10 text-center text-gray-400"><i class="fas fa-shopping-basket text-5xl mb-3"></i><p class="mb-4">Your cart is empty</p><a href="/products" class="cute-btn cute-grad text-white px-6 py-2.5">Start shopping</a></div>';sum.innerHTML='';return;}
+    if(cart.length===0){wrap.innerHTML='<div class="cute-card p-12 text-center"><div class="w-20 h-20 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-4"><i class="fas fa-shopping-basket text-3xl text-yellow-600"></i></div><h2 class="text-xl font-bold text-gray-800 mb-2">Your cart is empty</h2><p class="text-gray-500 mb-6">Looks like you haven\'t added anything yet. Let\'s fix that!</p><a href="/products" class="cute-btn cute-grad-gold text-white px-6 py-3 inline-flex items-center gap-2"><i class="fas fa-bag-shopping"></i> Start shopping</a></div>';sum.innerHTML='';return;}
     var total=0;
     wrap.innerHTML=cart.map(function(it){
       var p=window.CTW_PRODUCTS.find(function(x){return x.id===it.id;});if(!p)return '';
