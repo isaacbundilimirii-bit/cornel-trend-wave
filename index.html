@@ -5,8 +5,40 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Next Wave Trends — Electronics & Fashion Online Shop Kenya</title>
 <meta name="description" content="Next Wave Trends — shop trendy electronics and fashion online in Kenya. Phones, earbuds, clothes, shoes. Fast delivery & pickup.">
+<meta name="keywords" content="electronics, fashion, phones, earbuds, clothes, shoes, online shop, Kenya, Nairobi, M-Pesa, delivery">
+<meta name="author" content="Next Wave Trends">
+<meta name="robots" content="index, follow">
 <link rel="icon" href="images/logo.jpeg">
 <link rel="apple-touch-icon" href="images/logo.jpeg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f0f0f">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Next Wave Trends — Electronics & Fashion Online Shop Kenya">
+<meta property="og:description" content="Shop trendy electronics and fashion online in Kenya. Phones, earbuds, clothes, shoes. Fast delivery & pickup.">
+<meta property="og:image" content="images/logo.jpeg">
+<meta property="og:locale" content="en_KE">
+<meta property="og:site_name" content="Next Wave Trends">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Next Wave Trends — Electronics & Fashion Online Shop Kenya">
+<meta name="twitter:description" content="Shop trendy electronics and fashion online in Kenya. Fast delivery & pickup.">
+<meta name="twitter:image" content="images/logo.jpeg">
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "name": "Next Wave Trends",
+  "description": "Electronics & fashion online shop in Kenya",
+  "url": "https://next-wave-trends.onrender.com",
+  "image": "images/logo.jpeg",
+  "address": { "@type": "PostalAddress", "addressLocality": "Nairobi", "addressCountry": "KE" },
+  "telephone": "+254759051333",
+  "currenciesAccepted": "KES",
+  "paymentAccepted": "M-Pesa, Card, Cash on Delivery"
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -343,6 +375,26 @@
 
 <script src="js/products.js"></script>
 <script src="js/app.js"></script>
+<script>
+// Dark mode toggle
+(function(){
+  var btn = document.createElement('button');
+  btn.className = 'dark-toggle';
+  btn.innerHTML = '<i class="fas fa-moon"></i>';
+  btn.title = 'Toggle dark mode';
+  btn.onclick = function(){
+    document.body.classList.toggle('dark');
+    var isDark = document.body.classList.contains('dark');
+    btn.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    localStorage.setItem('nwt_dark', isDark ? '1' : '0');
+  };
+  document.body.appendChild(btn);
+  if(localStorage.getItem('nwt_dark') === '1'){
+    document.body.classList.add('dark');
+    btn.querySelector('i').className = 'fas fa-sun';
+  }
+})();
+</script>
 <script>
 // ---- Product card (Jumia-style) ----
 (function(){

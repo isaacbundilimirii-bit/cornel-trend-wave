@@ -290,3 +290,38 @@ footer{background:#0f0f0f;color:#e5e5e5}
 /* ---------- Fade ---------- */
 .fade-in{animation:fadeIn .5s ease both}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- Skeleton loading ---------- */
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:.5rem}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-card{border-radius:.9rem;overflow:hidden;border:1px solid #f0f0f0;background:#fff}
+.skeleton-img{aspect-ratio:1/1;border-radius:.5rem}
+.skeleton-line{height:.8rem;margin:.5rem .7rem;border-radius:.3rem}
+.skeleton-line-short{width:60%}
+.skeleton-line-long{width:90%}
+.skeleton-btn{height:2rem;margin:.5rem .7rem;border-radius:.5rem}
+
+/* ---------- Dark mode toggle ---------- */
+.dark-toggle{position:fixed;bottom:80px;right:1rem;z-index:60;width:44px;height:44px;border-radius:50%;background:#0f0f0f;color:#f0b000;border:2px solid #f0b000;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 4px 12px -4px rgba(0,0,0,.3);transition:transform .2s}
+.dark-toggle:hover{transform:scale(1.1)}
+@media(min-width:768px){.dark-toggle{bottom:1.5rem}}
+
+/* ---------- Dark mode body ---------- */
+body.dark{background:#0a0a0a;color:#e5e5e5}
+body.dark .cute-card{background:#1a1a1a;border-color:#333}
+body.dark .prod-card{background:#1a1a1a;border-color:#2a2a2a}
+body.dark .prod-card .body{color:#e5e5e5}
+body.dark .prod-card .name{color:#e5e5e5}
+body.dark .prod-card .price{color:#f0b000}
+body.dark .prod-card .img-wrap{background:#222}
+body.dark .auth-input{background:#222;border-color:#333;color:#fff}
+body.dark .auth-card{background:#1a1a1a}
+body.dark .auth-terms{background:#222;border-color:rgba(240,176,0,.2)}
+body.dark .auth-help{background:linear-gradient(135deg,#0f0f0f,#222)}
+body.dark .big-search{background:#1a1a1a;border-color:#f0b000}
+body.dark .big-search input{color:#fff}
+body.dark .big-search input::placeholder{color:#888}
+body.dark .search-input{background:#222;border-color:#444;color:#fff}
+body.dark .service-item{background:#1a1a1a;border-color:#2a2a2a}
+body.dark .shop-section-head .sub{color:#888}
+body.dark .flash-bar{background:linear-gradient(120deg,#0f0f0f,#222)}
