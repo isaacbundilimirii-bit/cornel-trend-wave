@@ -34,6 +34,28 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ----- Public promos (active only) -----
+app.get('/api/promos', async (req, res) => {
+  try {
+    const { query } = require('./db');
+    const r = await query("SELECT * FROM promos WHERE active = true ORDER BY created_at DESC");
+    res.json({ ok: true, promos: r.rows });
+  } catch (e) {
+    res.json({ ok: true, promos: [] });
+  }
+});
+
+// ----- Public notifications (for logged-in users) -----
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const { query } = require('./db');
+    const r = await query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20");
+    res.json({ ok: true, notifications: r.rows });
+  } catch (e) {
+    res.json({ ok: true, notifications: [] });
+  }
+});
+
 // ----- API routes -----
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/products', require('./routes/products.routes'));
@@ -73,6 +95,11 @@ app.use(express.static(ROOT, {
   setHeaders: (res, filePath) => {
     if (/\.html$/i.test(filePath)) res.setHeader('Cache-Control', 'no-cache');
   },
+}));
+
+// ----- Serve uploaded images (local storage fallback) -----
+app.use('/uploads', express.static(path.join(ROOT, 'uploads'), {
+  setHeaders: (res) => res.setHeader('Cache-Control', 'public, max-age=86400'),
 }));
 
 // 404 for everything else (including unknown .html)

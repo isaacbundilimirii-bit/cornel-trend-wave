@@ -1,12 +1,24 @@
 // ===== Admin routes (auth + admin role) =====
 const express = require('express');
+const multer = require('multer');
 const { query } = require('../db');
 const { requireAuth } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
 const { asyncHandler, errorHandler } = require('../middleware/error');
-const { ok, fail, mapProduct, mapOrder, normalizePhone } = require('../utils/helpers');
+const { ok, fail, mapProduct, mapOrder } = require('../utils/helpers');
+const { uploadFile } = require('../services/upload.service');
 
 const router = express.Router();
+
+// Multer: accept image files up to 5MB, store in memory (then upload to S3 or local)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function(req, file, cb) {
+    if (/^image\//.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Only image files allowed'), false);
+  },
+});
 
 // All admin routes require auth + admin role
 router.use(requireAuth, requireAdmin);
@@ -125,6 +137,76 @@ router.put('/settings/mpesa', asyncHandler(async (req, res) => {
 function config_mpesa() {
   return require('../config').mpesa;
 }
+
+// ---------- Image Upload (S3 or local) ----------
+router.post('/upload', upload.single('image'), asyncHandler(async (req, res) => {
+  if (!req.file) return fail(res, 'No image file provided');
+  const result = await uploadFile(req.file);
+  return ok(res, { url: result.url, key: result.key });
+}));
+
+// ---------- Promos ----------
+router.get('/promos', asyncHandler(async (req, res) => {
+  const r = await query('SELECT * FROM promos ORDER BY created_at DESC');
+  return ok(res, { promos: r.rows });
+}));
+
+router.post('/promos', asyncHandler(async (req, res) => {
+  const b = req.body || {};
+  if (!b.title) return fail(res, 'Title is required');
+  const r = await query(
+    `INSERT INTO promos (title, description, image_url, badge, discount_pct, product_ids, starts_at, ends_at, active)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+    [b.title, b.description || '', b.image_url || '', b.badge || null, b.discount_pct || null,
+     b.product_ids || [], b.starts_at || null, b.ends_at || null, b.active !== false]
+  );
+  return ok(res, { promo: r.rows[0] }, 201);
+}));
+
+router.patch('/promos/:id', asyncHandler(async (req, res) => {
+  const b = req.body || {};
+  const r = await query(
+    `UPDATE promos SET title=COALESCE($1,title), description=COALESCE($2,description),
+     image_url=COALESCE($3,image_url), badge=COALESCE($4,badge), discount_pct=COALESCE($5,discount_pct),
+     active=COALESCE($6,active) WHERE id=$7 RETURNING *`,
+    [b.title, b.description, b.image_url, b.badge, b.discount_pct, b.active, req.params.id]
+  );
+  if (r.rows.length === 0) return fail(res, 'Promo not found', 404);
+  return ok(res, { promo: r.rows[0] });
+}));
+
+router.delete('/promos/:id', asyncHandler(async (req, res) => {
+  await query('DELETE FROM promos WHERE id = $1', [req.params.id]);
+  return ok(res, { deleted: true });
+}));
+
+// ---------- Notifications ----------
+router.post('/notifications', asyncHandler(async (req, res) => {
+  const b = req.body || {};
+  if (!b.title || !b.body) return fail(res, 'title and body are required');
+  // Send to all users, or a specific user_id
+  if (b.user_id) {
+    const r = await query(
+      'INSERT INTO notifications (user_id, title, body, type, link) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+      [b.user_id, b.title, b.body, b.type || 'info', b.link || null]
+    );
+    return ok(res, { notification: r.rows[0] }, 201);
+  }
+  // Broadcast to all users
+  const users = await query('SELECT id FROM users WHERE role = $1', ['customer']);
+  for (const u of users.rows) {
+    await query(
+      'INSERT INTO notifications (user_id, title, body, type, link) VALUES ($1,$2,$3,$4,$5)',
+      [u.id, b.title, b.body, b.type || 'info', b.link || null]
+    );
+  }
+  return ok(res, { sent: users.rows.length }, 201);
+}));
+
+router.get('/notifications', asyncHandler(async (req, res) => {
+  const r = await query('SELECT * FROM notifications ORDER BY created_at DESC LIMIT 50');
+  return ok(res, { notifications: r.rows });
+}));
 
 router.use(errorHandler);
 module.exports = router;

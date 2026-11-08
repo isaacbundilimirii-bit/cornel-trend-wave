@@ -9,17 +9,26 @@
     "seed": "node server/db.js seed",
     "migrate:seed": "node server/db.js migrate:seed"
   },
-  "keywords": ["shop", "electronics", "fashion", "kenya", "mpesa", "daraja"],
+  "keywords": [
+    "shop",
+    "electronics",
+    "fashion",
+    "kenya",
+    "mpesa",
+    "daraja"
+  ],
   "author": "Next Wave Trends",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1164.0",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.5.0",
     "nodemailer": "^6.9.15",
     "pg": "^8.13.0"
   }
