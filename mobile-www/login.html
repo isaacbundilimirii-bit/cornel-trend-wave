@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<title>Login / Sign Up - Next Wave Trends</title>
+<meta name="description" content="Login or create an account at Next Wave Trends">
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+:root{--brand:#0f0f0f;--brand-2:#1a1a1a;--brand-3:#2a2a2a;--gold:#f0b000;--gold-dark:#d08000;--gold-light:#fbbf24;--cream:#fffbeb;--line:#ececec;--muted:#8a8a8a;--ink:#1a1a1a}
+.auth-bg{min-height:100vh;min-height:100dvh;background:#0a0a0a;display:flex;flex-direction:column}
+@media(min-width:768px){.auth-bg{background:radial-gradient(1200px 600px at 30% 20%,#1a1a1a,transparent 60%),radial-gradient(900px 500px at 80% 90%,#0a0a0a,transparent 55%),#080808;align-items:center;justify-content:center;padding:2rem 1rem}}
+
+/* Split layout: left brand panel (desktop), right form */
+.auth-wrap{display:flex;width:100%;flex:1}
+@media(min-width:768px){
+  .auth-wrap{max-width:920px;border-radius:1.5rem;overflow:hidden;box-shadow:0 24px 60px -24px rgba(0,0,0,.2);border:1px solid var(--line);flex:none}
+}
+
+/* Brand panel — desktop only */
+.auth-brand-panel{display:none;flex:1;background:linear-gradient(160deg,#0f0f0f 0%,#1a1a1a 40%,#0f0f0f 100%);color:#fff;padding:3rem 2.5rem;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+@media(min-width:768px){.auth-brand-panel{display:flex}}
+.auth-brand-panel::before{content:"";position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(240,176,0,.18),transparent 70%);pointer-events:none}
+.auth-brand-panel::after{content:"";position:absolute;bottom:-100px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(240,176,0,.1),transparent 70%);pointer-events:none}
+.auth-brand-panel .bp-logo{width:68px;height:68px;border-radius:18px;object-fit:cover;border:2.5px solid var(--gold);box-shadow:0 8px 24px -8px rgba(240,176,0,.6),0 0 40px -10px rgba(240,176,0,.3);margin-bottom:1.5rem;position:relative;z-index:1}
+.auth-brand-panel .bp-title{font-size:2.2rem;font-weight:800;letter-spacing:-.02em;position:relative;z-index:1;line-height:1.05}
+.auth-brand-panel .bp-title .accent{color:var(--gold);display:block;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;margin-top:3px;font-weight:700}
+.auth-brand-panel .bp-sub{color:rgba(255,255,255,.55);font-size:.88rem;margin-top:.8rem;line-height:1.5;position:relative;z-index:1;max-width:280px}
+.auth-brand-panel .bp-features{position:relative;z-index:1;margin-top:1rem}
+.auth-brand-panel .bp-feat{display:flex;align-items:center;gap:.8rem;margin-bottom:.85rem;color:rgba(255,255,255,.8);font-size:.82rem;font-weight:500}
+.auth-brand-panel .bp-feat i{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(240,176,0,.18),rgba(240,176,0,.06));color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:transform .3s,box-shadow .3s}
+.auth-brand-panel .bp-feat:hover i{transform:scale(1.1);box-shadow:0 4px 12px -4px rgba(240,176,0,.4)}
+.auth-brand-panel .bp-stats{display:flex;gap:1.5rem;position:relative;z-index:1;margin-top:auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.08)}
+.auth-brand-panel .bp-stat .num{font-size:2rem;font-weight:800;color:var(--gold);line-height:1;text-shadow:0 0 20px rgba(240,176,0,.3)}
+.auth-brand-panel .bp-stat .lbl{font-size:.66rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-top:.3rem;font-weight:600}
+
+/* Form panel */
+.auth-form-panel{flex:1;background:#fff;display:flex;flex-direction:column}
+@media(min-width:768px){.auth-form-panel{max-width:440px}}
+
+/* Mobile header */
+.auth-header{background:linear-gradient(135deg,#0f0f0f,#1a1a1a);border-bottom:2px solid var(--gold);padding:max(env(safe-area-inset-top,0),.75rem) 1rem;display:flex;align-items:center;justify-content:space-between}
+@media(min-width:768px){.auth-header{display:none}}
+.auth-header .ah-brand{display:flex;align-items:center;gap:.5rem;text-decoration:none}
+.auth-header .ah-logo{width:28px;height:28px;border-radius:7px;object-fit:cover;border:1.5px solid var(--gold);box-shadow:0 2px 8px -2px rgba(240,176,0,.4)}
+.auth-header .ah-name{font-weight:800;font-size:.85rem;color:#fff;line-height:1}
+.auth-header .ah-name small{display:block;font-size:.55rem;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-top:1px}
+.auth-header a{color:var(--gold);font-size:.8rem;font-weight:600;text-decoration:none;transition:color .15s}
+.auth-header a:hover{color:var(--gold-light)}
+
+/* Intro */
+.auth-intro{padding:1.75rem 1.25rem .5rem;text-align:center}
+@media(min-width:768px){.auth-intro{padding:2rem 1.5rem .5rem}}
+.auth-logo{width:56px;height:56px;border-radius:14px;object-fit:cover;border:2.5px solid var(--gold);box-shadow:0 8px 20px -8px rgba(240,176,0,.5),0 0 30px -8px rgba(240,176,0,.2);margin:0 auto .7rem;display:block}
+.auth-title{font-weight:800;font-size:1.35rem;color:var(--ink);letter-spacing:-.02em;line-height:1.1;margin:0}
+.auth-subtitle{color:var(--muted);font-size:.82rem;margin-top:.4rem}
+
+/* Tabs */
+.auth-tabs{display:flex;border-bottom:2px solid var(--line);margin-top:1rem}
+.auth-tab{flex:1;padding:.85rem;font-weight:700;text-align:center;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;transition:color .2s,border-color .2s,background .2s;background:none;border-top:0;border-left:0;border-right:0;font-family:inherit;font-size:.9rem;margin-bottom:-2px}
+.auth-tab.active{color:var(--brand);border-bottom-color:var(--gold);background:linear-gradient(180deg,transparent,var(--cream))}
+.auth-tab:active{color:var(--gold-dark)}
+.auth-tab:hover:not(.active){color:#6b6b6b}
+
+/* Body */
+.auth-body{padding:1.25rem 1.25rem 0;flex:1;overflow-y:auto}
+@media(min-width:768px){.auth-body{padding:1.5rem 1.5rem 0}}
+
+.auth-divider{display:flex;align-items:center;gap:.75rem;color:var(--muted);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin:0 0 1.1rem}
+.auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* Inputs */
+.auth-field{margin-bottom:.9rem;position:relative}
+.auth-label{display:block;font-size:.76rem;font-weight:600;color:#4b4b4b;margin-bottom:.3rem}
+.auth-input-wrap{position:relative}
+.auth-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:#b0b0b0;font-size:.95rem;pointer-events:none;transition:color .15s}
+.auth-input{width:100%;padding:.8rem 1rem .8rem 2.7rem;border:1.5px solid var(--line);border-radius:.7rem;font-size:.95rem;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;-webkit-appearance:none}
+.auth-input::placeholder{color:#b5b5b5}
+.auth-input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(240,176,0,.12);background:#fffbeb}
+.auth-input:focus + .auth-icon,.auth-input:focus ~ .auth-icon{color:var(--gold-dark)}
+.auth-input.error{border-color:#ef4444;box-shadow:0 0 0 4px rgba(239,68,68,.1)}
+.auth-input-with-btn{padding-right:2.8rem}
+.auth-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:0;color:#b0b0b0;cursor:pointer;padding:.4rem;font-size:1rem;transition:color .15s}
+.auth-eye:hover{color:var(--gold-dark)}
+.auth-err{display:none;font-size:.72rem;color:#ef4444;margin-top:.3rem;font-weight:500}
+.auth-err.show{display:block}
+
+/* Primary button — gold gradient, not flat black */
+.auth-submit{width:100%;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 100%);color:var(--brand);font-weight:800;font-size:.95rem;padding:.9rem;border:0;border-radius:.7rem;cursor:pointer;font-family:inherit;transition:filter .15s,transform .1s,box-shadow .2s;display:flex;align-items:center;justify-content:center;gap:.4rem;box-shadow:0 6px 16px -6px rgba(240,176,0,.4)}
+.auth-submit:hover{filter:brightness(1.08);box-shadow:0 8px 20px -6px rgba(240,176,0,.5)}
+.auth-submit:active{transform:scale(.99)}
+.auth-submit:disabled{opacity:.6;cursor:wait;box-shadow:none}
+
+/* Google button */
+.auth-google{width:100%;background:#fff;color:#374151;font-weight:600;padding:.8rem;border-radius:.7rem;border:1.5px solid var(--line);cursor:pointer;font-family:inherit;font-size:.9rem;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:border-color .15s,background .15s,box-shadow .15s;margin-bottom:.8rem}
+.auth-google:hover{border-color:#4285f4;background:#f8faff;box-shadow:0 4px 12px -4px rgba(66,133,244,.2)}
+
+/* Links */
+.auth-link{color:var(--gold-dark);font-size:.8rem;font-weight:600;cursor:pointer;background:none;border:0;padding:0;font-family:inherit;transition:color .15s}
+.auth-link:hover{color:var(--gold);text-decoration:underline}
+
+/* Terms checkbox — prominent with gradient border */
+.auth-terms{display:flex;align-items:flex-start;gap:.6rem;font-size:.76rem;color:#6b6b6b;margin-bottom:0;padding:.9rem;background:linear-gradient(135deg,var(--cream),#fffaeb);border:1.5px solid rgba(240,176,0,.3);border-radius:.7rem;transition:border-color .15s,box-shadow .15s}
+.auth-terms:hover{border-color:rgba(240,176,0,.5);box-shadow:0 4px 12px -4px rgba(240,176,0,.15)}
+.auth-terms input{margin-top:.15rem;width:18px;height:18px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.auth-terms a{color:var(--gold-dark);font-weight:600;text-decoration:none;transition:color .15s}
+.auth-terms a:hover{color:var(--gold);text-decoration:underline}
+
+/* ===== Help / Contact section — Jumia-style ===== */
+.auth-help{margin:1rem 0 1.5rem;padding:1.1rem;background:linear-gradient(135deg,#0f0f0f,#1a1a1a);border-radius:.8rem;overflow:hidden;position:relative}
+.auth-help::before{content:"";position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(240,176,0,.15),transparent 70%);pointer-events:none}
+.auth-help-title{display:flex;align-items:center;gap:.6rem;font-size:.82rem;font-weight:700;color:#fff;margin-bottom:.8rem;position:relative;z-index:1}
+.auth-help-title i{color:var(--gold);font-size:1rem}
+.auth-help-row{display:flex;align-items:center;gap:.7rem;padding:.6rem 0;font-size:.8rem;text-decoration:none;transition:padding .15s;position:relative;z-index:1;border-bottom:1px solid rgba(255,255,255,.05)}
+.auth-help-row:last-child{border-bottom:0}
+.auth-help-row:hover{padding-left:.3rem}
+.auth-help-row i{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,rgba(240,176,0,.15),rgba(240,176,0,.06));color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;transition:transform .2s}
+.auth-help-row:hover i{transform:scale(1.08)}
+.auth-help-row .label{font-weight:700;color:#fff;font-size:.76rem}
+.auth-help-row .val{font-size:.82rem;color:rgba(255,255,255,.6);transition:color .15s}
+.auth-help-row:hover .val{color:var(--gold)}
+
+/* Switch prompt */
+.auth-switch{text-align:center;margin:0 0 1.5rem;font-size:.85rem;color:var(--muted);padding-bottom:1rem}
+.auth-switch a{color:var(--gold-dark);font-weight:700;text-decoration:none;margin-left:.3rem}
+.auth-switch a:hover{text-decoration:underline}
+
+/* Forgot intro */
+.auth-block-intro{text-align:center;margin-bottom:1.25rem}
+.auth-block-intro .abi-icon{width:48px;height:48px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;color:var(--gold-dark);font-size:1.3rem;border:1.5px solid rgba(240,176,0,.3)}
+.auth-block-intro h3{font-weight:700;font-size:1.05rem;color:var(--ink);margin:0}
+.auth-block-intro p{color:var(--muted);font-size:.8rem;margin-top:.3rem}
+
+/* OTP */
+.auth-otp-head{text-align:center;margin-bottom:1.1rem}
+.auth-otp-icon{width:52px;height:52px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;color:var(--gold-dark);font-size:1.4rem;border:1.5px solid rgba(240,176,0,.35)}
+.auth-otp-head h3{font-weight:700;font-size:1.1rem;color:var(--ink);margin:0}
+.auth-otp-head p{color:var(--muted);font-size:.82rem;margin-top:.3rem}
+.auth-otp-target{color:var(--ink);font-weight:600}
+.auth-otp-boxes{display:flex;justify-content:center;gap:.5rem;margin-bottom:1.1rem}
+.otp-box{width:44px;height:52px;text-align:center;font-size:1.4rem;font-weight:800;border:1.5px solid var(--line);border-radius:.6rem;outline:none;color:var(--ink);font-family:inherit;transition:border-color .15s,background .15s,box-shadow .15s;-webkit-appearance:none}
+.otp-box:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(240,176,0,.12),0 4px 12px -4px rgba(240,176,0,.2)}
+.otp-box.filled{border-color:var(--gold);background:var(--cream);color:var(--brand);box-shadow:0 2px 8px -2px rgba(240,176,0,.2)}
+.auth-demo{margin-top:.75rem;background:var(--cream);border:1px solid rgba(240,176,0,.4);border-radius:.6rem;padding:.6rem .75rem;font-size:.75rem;color:var(--gold-dark);text-align:center}
+.auth-demo strong{color:var(--brand)}
+.auth-demo .code{font-family:monospace,monospace;font-size:1rem;letter-spacing:.3em;font-weight:800;color:var(--brand)}
+.auth-otp-foot{text-align:center;font-size:.8rem;margin-top:.7rem}
+.auth-otp-count{color:var(--muted)}
+.auth-otp-back{display:block;width:100%;text-align:center;color:var(--muted);font-size:.8rem;padding:.6rem;margin-top:.5rem;background:none;border:0;font-family:inherit;cursor:pointer}
+.auth-otp-back:hover{color:var(--gold-dark)}
+
+/* Strength */
+.strength-bars{display:flex;gap:.25rem;margin-top:.5rem}
+.strength-bars > div{height:4px;flex:1;border-radius:9999px;background:#e5e5e5;transition:background .2s}
+.strength-label{font-size:.72rem;margin-top:.3rem;color:var(--muted)}
+
+/* Password requirements checklist */
+.pwd-reqs{margin-top:.6rem;display:flex;flex-direction:column;gap:.3rem}
+.pwd-req{display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:#b0b0b0;transition:color .2s}
+.pwd-req i{font-size:.5rem;color:#d0d0d0;transition:color .2s,transform .2s}
+.pwd-req.met{color:#10b981}
+.pwd-req.met i{color:#10b981;transform:scale(1.3)}
+.pwd-req.met i::before{content:"\\f00c"} /* checkmark when met */
+
+/* Toast */
+.toast{bottom:calc(90px + env(safe-area-inset-bottom,0))}
+@media(min-width:768px){.toast{bottom:2rem}}
+</style>
+</head>
+<body class="auth-bg">
+
+<!-- Mobile header -->
+<header class="auth-header">
+  <a href="index.html" class="ah-brand">
+    <img src="images/logo.jpeg" alt="Next Wave Trends" class="ah-logo">
+    <span class="ah-name">Next Wave<small>Trends</small></span>
+  </a>
+  <a href="/"><i class="fas fa-store"></i> Shop</a>
+</header>
+
+<!-- Split layout -->
+<div class="auth-wrap">
+  <!-- Brand panel (desktop only) -->
+  <div class="auth-brand-panel">
+    <div>
+      <img src="images/logo.jpeg" alt="Next Wave Trends" class="bp-logo">
+      <div class="bp-title">Next Wave<span class="accent">Trends</span></div>
+      <p class="bp-sub">Electronics & fashion, delivered with love across Kenya. Join thousands of happy customers shopping the latest trends.</p>
+    </div>
+    <div class="bp-features">
+      <div class="bp-feat"><i class="fas fa-bolt"></i> <span>Flash deals up to 40% off every week</span></div>
+      <div class="bp-feat"><i class="fas fa-truck-fast"></i> <span>Same-day delivery in Nairobi · 1-2 days countrywide</span></div>
+      <div class="bp-feat"><i class="fas fa-shield-halved"></i> <span>Genuine products with 7-day return guarantee</span></div>
+      <div class="bp-feat"><i class="fas fa-mobile-screen"></i> <span>M-Pesa payment accepted</span></div>
+    </div>
+    <div class="bp-stats">
+      <div class="bp-stat"><div class="num">2k+</div><div class="lbl">Customers</div></div>
+      <div class="bp-stat"><div class="num">500+</div><div class="lbl">Products</div></div>
+      <div class="bp-stat"><div class="num">4.8</div><div class="lbl">Rating</div></div>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="auth-form-panel">
+    <div class="auth-intro">
+      <img src="images/logo.jpeg" alt="Next Wave Trends" class="auth-logo">
+      <h1 class="auth-title">Welcome to Next Wave</h1>
+      <p class="auth-subtitle" id="introSubtitle">Sign in with your phone or email</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="authUI.switchTab('login')">Login</button>
+      <button class="auth-tab" id="tabSignup" onclick="authUI.switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div class="auth-body">
+      <div class="auth-divider">Phone or email</div>
+
+      <!-- Login form -->
+      <form id="loginForm" onsubmit="return authUI.login(event)">
+        <div class="auth-field">
+          <label class="auth-label" for="loginId">Phone or Email</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-user auth-icon"></i>
+            <input type="text" id="loginId" class="auth-input" placeholder="0712 345 678 or you@email.com" autocomplete="username" required>
+          </div>
+          <p class="auth-err" data-error="loginId"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="loginPwd">Password</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock auth-icon"></i>
+            <input type="password" id="loginPwd" class="auth-input auth-input-with-btn" placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" class="auth-eye" onclick="authUI.togglePwd('loginPwd', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+          </div>
+          <p class="auth-err" data-error="loginPwd"></p>
+        </div>
+        <div class="flex justify-end mb-4">
+          <button type="button" class="auth-link" onclick="authUI.showForgot()">Forgot password?</button>
+        </div>
+        <button type="submit" class="auth-submit" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+
+        <!-- Switch prompt — below Login button -->
+        <div class="auth-switch" style="margin-top:1rem;margin-bottom:0">
+          <span>Don't have an account?</span>
+          <a href="#" onclick="authUI.switchTab('signup');return false">Sign up</a>
+        </div>
+
+        <!-- Help / Contact section (login) -->
+        <div class="auth-help" style="margin-top:1.25rem">
+          <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? We're here for you</div>
+          <a href="tel:+254759051333" class="auth-help-row">
+            <i class="fas fa-phone"></i>
+            <div><div class="label">Call us</div><div class="val">+254 759 051 333</div></div>
+          </a>
+          <a href="https://wa.me/254759051333?text=Hello%20Next%20Wave%20Trends%2C%20I%20need%20help%20logging%20in" target="_blank" class="auth-help-row">
+            <i class="fab fa-whatsapp"></i>
+            <div><div class="label">WhatsApp us</div><div class="val">+254 759 051 333</div></div>
+          </a>
+          <a href="mailto:hello@nextwavetrends.co.ke" class="auth-help-row">
+            <i class="fas fa-envelope"></i>
+            <div><div class="label">Email us</div><div class="val">hello@nextwavetrends.co.ke</div></div>
+          </a>
+        </div>
+      </form>
+
+      <!-- Signup form -->
+      <form id="signupForm" onsubmit="return authUI.signup(event)" class="hidden">
+        <div class="auth-field">
+          <label class="auth-label" for="suName">Full Name</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-id-card auth-icon"></i>
+            <input type="text" id="suName" class="auth-input" placeholder="John Mwangi" autocomplete="name" required>
+          </div>
+          <p class="auth-err" data-error="suName"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="suPhone">Phone Number</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-phone auth-icon"></i>
+            <input type="tel" id="suPhone" class="auth-input" placeholder="0712 345 678" autocomplete="tel" required>
+          </div>
+          <p class="auth-err" data-error="suPhone"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="suEmail">Email</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-envelope auth-icon"></i>
+            <input type="email" id="suEmail" class="auth-input" placeholder="you@email.com" autocomplete="email" required>
+          </div>
+          <p class="auth-err" data-error="suEmail"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="suPwd">Password</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock auth-icon"></i>
+            <input type="password" id="suPwd" class="auth-input auth-input-with-btn" placeholder="At least 8 characters" autocomplete="new-password" required>
+            <button type="button" class="auth-eye" onclick="authUI.togglePwd('suPwd', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+          </div>
+          <div class="strength-bars">
+            <div data-strength="1"></div><div data-strength="2"></div><div data-strength="3"></div><div data-strength="4"></div>
+          </div>
+          <p class="strength-label" id="strengthLabel">Enter a password</p>
+          <div class="pwd-reqs" id="pwdReqs">
+            <div class="pwd-req" data-req="length"><i class="fas fa-circle"></i> At least 8 characters</div>
+            <div class="pwd-req" data-req="upper"><i class="fas fa-circle"></i> One uppercase letter (A-Z)</div>
+            <div class="pwd-req" data-req="lower"><i class="fas fa-circle"></i> One lowercase letter (a-z)</div>
+            <div class="pwd-req" data-req="number"><i class="fas fa-circle"></i> One number (0-9)</div>
+            <div class="pwd-req" data-req="special"><i class="fas fa-circle"></i> One special character (@ # $ ! &)</div>
+          </div>
+          <p class="auth-err" data-error="suPwd"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="suConfirm">Confirm Password</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock auth-icon"></i>
+            <input type="password" id="suConfirm" class="auth-input auth-input-with-btn" placeholder="Re-enter password" autocomplete="new-password" required>
+            <button type="button" class="auth-eye" onclick="authUI.togglePwd('suConfirm', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+          </div>
+          <p class="auth-err" data-error="suConfirm"></p>
+        </div>
+
+        <!-- Consent checkbox — prominent -->
+        <label class="auth-terms">
+          <input type="checkbox" id="suTerms" required>
+          <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> of Next Wave Trends. By creating an account, I consent to receive order updates and promotional messages.</span>
+        </label>
+
+        <button type="submit" class="auth-submit" id="signupBtn"><i class="fas fa-user-plus"></i> Create Account</button>
+
+        <!-- Switch prompt — below Create Account button -->
+        <div class="auth-switch" style="margin-top:1rem;margin-bottom:0">
+          <span>Already have an account?</span>
+          <a href="#" onclick="authUI.switchTab('login');return false">Login</a>
+        </div>
+
+        <!-- Help / Contact section — below switch prompt -->
+        <div class="auth-help">
+          <div class="auth-help-title"><i class="fas fa-headset"></i> Need help? We're here for you</div>
+          <a href="tel:+254759051333" class="auth-help-row">
+            <i class="fas fa-phone"></i>
+            <div><div class="label">Call us</div><div class="val">+254 759 051 333</div></div>
+          </a>
+          <a href="https://wa.me/254759051333?text=Hello%20Next%20Wave%20Trends%2C%20I%20need%20help%20creating%20my%20account" target="_blank" class="auth-help-row">
+            <i class="fab fa-whatsapp"></i>
+            <div><div class="label">WhatsApp us</div><div class="val">+254 759 051 333</div></div>
+          </a>
+          <a href="mailto:hello@nextwavetrends.co.ke" class="auth-help-row">
+            <i class="fas fa-envelope"></i>
+            <div><div class="label">Email us</div><div class="val">hello@nextwavetrends.co.ke</div></div>
+          </a>
+        </div>
+      </form>
+
+      <!-- Forgot password -->
+      <form id="forgotForm" onsubmit="return authUI.sendReset(event)" class="hidden">
+        <div class="auth-block-intro">
+          <div class="abi-icon"><i class="fas fa-key"></i></div>
+          <h3>Forgot password?</h3>
+          <p>Enter your email — we'll send a reset code.</p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="resetEmail">Email</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-envelope auth-icon"></i>
+            <input type="email" id="resetEmail" class="auth-input" placeholder="you@email.com" autocomplete="email" required>
+          </div>
+          <p class="auth-err" data-error="resetEmail"></p>
+        </div>
+        <button type="submit" class="auth-submit mb-3" id="forgotBtn"><i class="fas fa-paper-plane"></i> Send Reset Code</button>
+        <button type="button" class="auth-otp-back" onclick="authUI.switchTab('login')"><i class="fas fa-arrow-left"></i> Back to login</button>
+      </form>
+
+      <!-- OTP verification -->
+      <div id="otpSection" class="hidden">
+        <div class="auth-otp-head">
+          <div class="auth-otp-icon"><i class="fas fa-shield-halved"></i></div>
+          <h3 id="otpTitle">Verify your email</h3>
+          <p>We sent a 6-digit code to <span id="otpTarget" class="auth-otp-target">—</span></p>
+        </div>
+        <div class="auth-otp-boxes" id="otpBoxes"></div>
+        <div id="otpDemoNotice" class="auth-demo hidden">
+          <i class="fas fa-circle-info"></i> <strong>Demo mode:</strong> your code is <span class="code" id="otpDemoCode">—</span><br>
+          <span style="opacity:.7">No SMTP/Resend configured — shown for testing.</span>
+        </div>
+        <div id="resetPwdFields" class="hidden">
+          <div class="auth-field" style="margin-top:1rem">
+            <label class="auth-label" for="newPwd1">New Password</label>
+            <div class="auth-input-wrap">
+              <i class="fas fa-lock auth-icon"></i>
+              <input type="password" id="newPwd1" class="auth-input auth-input-with-btn" placeholder="At least 8 characters" autocomplete="new-password">
+              <button type="button" class="auth-eye" onclick="authUI.togglePwd('newPwd1', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label class="auth-label" for="newPwd2">Confirm New Password</label>
+            <div class="auth-input-wrap">
+              <i class="fas fa-lock auth-icon"></i>
+              <input type="password" id="newPwd2" class="auth-input auth-input-with-btn" placeholder="Re-enter new password" autocomplete="new-password">
+              <button type="button" class="auth-eye" onclick="authUI.togglePwd('newPwd2', this)" aria-label="Show password"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+        </div>
+        <button onclick="authUI.verifyOtp()" class="auth-submit" id="verifyBtn"><i class="fas fa-check-circle"></i> Verify</button>
+        <div class="auth-otp-foot">
+          <span id="otpCountdown" class="auth-otp-count"></span>
+          <button type="button" id="otpResend" class="auth-link ml-2 hidden" onclick="authUI.resendOtp()">Resend code</button>
+        </div>
+        <button type="button" class="auth-otp-back" onclick="authUI.backFromOtp()"><i class="fas fa-arrow-left"></i> Back</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"><i class="fas fa-circle-check" style="color:var(--gold)"></i><span id="toastMsg"></span></div>
+
+<script>window.NWT_API_BASE = "https://next-wave-trends.onrender.com";</script><script src="js/products.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function(){
+  'use strict';
+  var authApi = window.auth;
+  var otpCtx = null;
+  var otpTimer = null;
+
+  function toast(msg, err){
+    var t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.querySelector('i').className = err ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+    t.querySelector('i').style.color = err ? '#ef4444' : 'var(--gold)';
+    t.classList.add('show');
+    clearTimeout(window._nwtToast);
+    window._nwtToast = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+  }
+  function showErr(field, msg){
+    var el = document.querySelector('[data-error="'+field+'"]');
+    if(el){ if(msg){ el.textContent = msg; el.classList.add('show'); } else { el.classList.remove('show'); el.textContent=''; } }
+    var input = document.getElementById(field);
+    if(input){ if(msg) input.classList.add('error'); else input.classList.remove('error'); }
+  }
+  function switchTab(tab){
+    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+    document.getElementById('forgotForm').classList.add('hidden');
+    document.getElementById('otpSection').classList.add('hidden');
+    
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    
+    
+    if(tab === 'login'){ prompt.textContent = "Don't have an account?"; link.textContent = 'Sign up'; }
+    
+    var sub = document.getElementById('introSubtitle');
+    if(sub){ sub.textContent = tab === 'login' ? 'Sign in with your phone or email' : 'Sign up with your email — we\'ll send a verification code'; }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function togglePwd(id, btn){
+    var inp = document.getElementById(id);
+    var isP = inp.getAttribute('type') === 'password';
+    inp.setAttribute('type', isP ? 'text' : 'password');
+    btn.querySelector('i').className = isP ? 'fas fa-eye-slash' : 'fas fa-eye';
+    btn.setAttribute('aria-label', isP ? 'Hide password' : 'Show password');
+  }
+  function setLoading(btnId, loading){
+    var b = document.getElementById(btnId);
+    if(!b) return;
+    if(loading){ b.disabled = true; b.dataset.orig = b.innerHTML; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please wait…'; }
+    else { b.disabled = false; if(b.dataset.orig) b.innerHTML = b.dataset.orig; }
+  }
+  function login(e){
+    e.preventDefault();
+    var id = document.getElementById('loginId').value.trim();
+    var pwd = document.getElementById('loginPwd').value;
+    ['loginId','loginPwd'].forEach(function(f){ showErr(f, ''); });
+    if(!id){ showErr('loginId','Enter your phone or email'); return false; }
+    if(!pwd){ showErr('loginPwd','Enter your password'); return false; }
+    setLoading('loginBtn', true);
+    authApi.login({ identifier: id, password: pwd }).then(function(r){
+      setLoading('loginBtn', false);
+      if(r.ok){
+        toast('Welcome back, ' + (r.user.name.split(' ')[0]) + '!');
+        if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
+        setTimeout(function(){ redirectAfter(); }, 700);
+      } else if(r.needsVerification){
+        otpCtx = { identifier: r.email || r.phone, purpose: 'verify', demoCode: null, originTab: 'login' };
+        showOtpSection(r.email || r.phone, null, 'verify');
+        toast(r.message);
+      } else {
+        showErr('loginPwd', r.message || 'Login failed');
+      }
+    });
+    return false;
+  }
+  function signup(e){
+    e.preventDefault();
+    var name = document.getElementById('suName').value.trim();
+    var phone = document.getElementById('suPhone').value.trim();
+    var email = document.getElementById('suEmail').value.trim();
+    var pwd = document.getElementById('suPwd').value;
+    var confirm = document.getElementById('suConfirm').value;
+    var terms = document.getElementById('suTerms').checked;
+    ['suName','suPhone','suEmail','suPwd','suConfirm'].forEach(function(f){ showErr(f, ''); });
+    if(name.length < 3){ showErr('suName','Enter your full name'); return false; }
+    if(!authApi.isPhone(phone)){ showErr('suPhone','Enter a valid Kenyan phone number'); return false; }
+    if(!authApi.isEmail(email)){ showErr('suEmail','Enter a valid email'); return false; }
+    if(pwd.length < 8){ showErr('suPwd','Password must be at least 8 characters'); return false; }
+    if(!/[A-Z]/.test(pwd)){ showErr('suPwd','Password must include at least one UPPERCASE letter (A-Z)'); return false; }
+    if(!/[a-z]/.test(pwd)){ showErr('suPwd','Password must include at least one lowercase letter (a-z)'); return false; }
+    if(!/\d/.test(pwd)){ showErr('suPwd','Password must include at least one number (0-9)'); return false; }
+    if(!/[^A-Za-z0-9]/.test(pwd)){ showErr('suPwd','Password must include at least one special character (@, #, $, !, etc.)'); return false; }
+    if(pwd !== confirm){ showErr('suConfirm','Passwords do not match'); return false; }
+    if(!terms){ toast('Please accept the terms to continue', true); return false; }
+    setLoading('signupBtn', true);
+    authApi.register({ name: name, phone: phone, email: email, password: pwd }).then(function(r){
+      setLoading('signupBtn', false);
+      if(r.ok){
+        otpCtx = { identifier: r.email, purpose: 'verify', demoCode: r.demoCode, originTab: 'signup' };
+        showOtpSection(r.email, r.demoCode, 'verify');
+        toast(r.message || 'Verification code sent to your email.');
+      } else {
+        if(r.message && r.message.toLowerCase().indexOf('email') >= 0) showErr('suEmail', r.message);
+        else if(r.message && r.message.toLowerCase().indexOf('phone') >= 0) showErr('suPhone', r.message);
+        else showErr('suEmail', r.message || 'Could not create account');
+      }
+    });
+    return false;
+  }
+  function showForgot(){
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('signupForm').classList.add('hidden');
+    document.getElementById('forgotForm').classList.remove('hidden');
+    document.getElementById('otpSection').classList.add('hidden');
+    
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function sendReset(e){
+    e.preventDefault();
+    var email = document.getElementById('resetEmail').value.trim();
+    showErr('resetEmail', '');
+    if(!email || !authApi.isEmail(email)){ showErr('resetEmail','Enter a valid email'); return false; }
+    setLoading('forgotBtn', true);
+    authApi.resetRequest(email).then(function(r){
+      setLoading('forgotBtn', false);
+      if(r.ok){
+        otpCtx = { identifier: email, purpose: 'reset', demoCode: r.demoCode, originTab: 'forgot' };
+        showOtpSection(email, r.demoCode, 'reset');
+        toast(r.message || 'Reset code sent to your email.');
+      } else {
+        showErr('resetEmail', r.message || 'No account found');
+      }
+    });
+    return false;
+  }
+  function showOtpSection(target, demoCode, purpose){
+    document.getElementById('otpTarget').textContent = target;
+    document.getElementById('otpTitle').textContent = purpose === 'reset' ? 'Reset your password' : 'Verify your email';
+    var demoNotice = document.getElementById('otpDemoNotice');
+    if(demoCode){ demoNotice.classList.remove('hidden'); document.getElementById('otpDemoCode').textContent = demoCode; }
+    else { demoNotice.classList.add('hidden'); }
+    document.getElementById('resetPwdFields').classList.toggle('hidden', purpose !== 'reset');
+    var btn = document.getElementById('verifyBtn');
+    btn.innerHTML = purpose === 'reset' ? '<i class="fas fa-key"></i> Reset password' : '<i class="fas fa-check-circle"></i> Verify';
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('signupForm').classList.add('hidden');
+    document.getElementById('forgotForm').classList.add('hidden');
+    document.getElementById('otpSection').classList.remove('hidden');
+    
+    renderOtpBoxes();
+    startOtpCountdown();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function renderOtpBoxes(){
+    var wrap = document.getElementById('otpBoxes');
+    wrap.innerHTML = '';
+    for(var i=0;i<6;i++){
+      var box = document.createElement('input');
+      box.type = 'text'; box.maxLength = 1; box.className = 'otp-box';
+      box.dataset.idx = i;
+      box.setAttribute('inputmode','numeric'); box.setAttribute('pattern','[0-9]*');
+      box.setAttribute('autocomplete','one-time-code');
+      box.addEventListener('input', function(e){
+        e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
+        if(e.target.value) e.target.classList.add('filled'); else e.target.classList.remove('filled');
+        if(e.target.value && e.target.nextElementSibling && e.target.nextElementSibling.tagName === 'INPUT') e.target.nextElementSibling.focus();
+      });
+      box.addEventListener('keydown', function(e){
+        if(e.key === 'Backspace' && !e.target.value && e.target.previousElementSibling && e.target.previousElementSibling.tagName === 'INPUT') e.target.previousElementSibling.focus();
+      });
+      box.addEventListener('paste', function(e){
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text') || '';
+        var digits = pasted.replace(/\D/g,'').slice(0,6);
+        if(!digits) return;
+        var boxes = wrap.querySelectorAll('.otp-box');
+        for(var j=0;j<boxes.length;j++){
+          if(j < digits.length){ boxes[j].value = digits[j]; boxes[j].classList.add('filled'); }
+          else { boxes[j].value = ''; boxes[j].classList.remove('filled'); }
+        }
+        var focusIdx = Math.min(digits.length, boxes.length - 1);
+        if(boxes[focusIdx]) boxes[focusIdx].focus();
+      });
+      wrap.appendChild(box);
+    }
+    setTimeout(function(){ if(wrap.children[0]) wrap.children[0].focus(); }, 60);
+  }
+  function getOtpValue(){
+    var code = '';
+    document.querySelectorAll('#otpBoxes .otp-box').forEach(function(b){ code += b.value; });
+    return code;
+  }
+  function fmtCountdown(s){
+    if(s > 60){ var m = Math.floor(s / 60); var sec = s % 60; return 'expires in ' + m + ':' + (sec < 10 ? '0' + sec : sec); }
+    return 'expires in ' + s + 's';
+  }
+  function startOtpCountdown(){
+    var s = 600;
+    var cd = document.getElementById('otpCountdown');
+    var resend = document.getElementById('otpResend');
+    resend.classList.add('hidden');
+    clearInterval(otpTimer);
+    if(cd) cd.textContent = fmtCountdown(s);
+    otpTimer = setInterval(function(){
+      s--;
+      if(cd) cd.textContent = fmtCountdown(s);
+      if(s <= 0){ clearInterval(otpTimer); if(cd) cd.textContent = 'Code expired — tap resend'; resend.classList.remove('hidden'); }
+    }, 1000);
+  }
+  function verifyOtp(){
+    var code = getOtpValue();
+    if(!/^\d{6}$/.test(code)){ toast('Enter the 6-digit code', true); return; }
+    if(!otpCtx){ toast('Session expired. Start again.', true); return; }
+    if(otpCtx.purpose === 'reset'){
+      var p1 = document.getElementById('newPwd1').value;
+      var p2 = document.getElementById('newPwd2').value;
+      if(!p1 || p1.length < 8){ toast('New password must be at least 8 characters', true); return; }
+      if(p1 !== p2){ toast('Passwords do not match', true); return; }
+      var btn = document.getElementById('verifyBtn');
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting…';
+      authApi.resetConfirm({ identifier: otpCtx.identifier, code: code, newPassword: p1 }).then(function(r){
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Reset password';
+        if(r.ok){
+          clearInterval(otpTimer);
+          toast(r.message || 'Password updated! You can now log in.');
+          setTimeout(function(){ otpCtx = null; document.getElementById('newPwd1').value = ''; document.getElementById('newPwd2').value = ''; document.getElementById('resetEmail').value = ''; switchTab('login'); }, 1000);
+        } else { toast(r.message || 'Could not reset password', true); }
+      });
+      return;
+    }
+    var vbtn = document.getElementById('verifyBtn');
+    vbtn.disabled = true; vbtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+    authApi.verifyOtp({ identifier: otpCtx.identifier, code: code, purpose: 'verify' }).then(function(r){
+      vbtn.disabled = false; vbtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+      if(r.ok){
+        clearInterval(otpTimer);
+        toast(r.message || 'Email verified! You can now log in.');
+        setTimeout(function(){ otpCtx = null; switchTab('login'); var loginId = document.getElementById('loginId'); if(loginId){ loginId.value = ''; loginId.focus(); } }, 900);
+      } else { toast(r.message || 'Incorrect code', true); }
+    });
+  }
+  function resendOtp(){
+    if(!otpCtx) return;
+    toast('Sending new code…');
+    authApi.sendOtp(otpCtx.identifier, otpCtx.purpose).then(function(r){
+      if(r.ok){
+        otpCtx.demoCode = r.demoCode;
+        if(r.demoCode){ document.getElementById('otpDemoNotice').classList.remove('hidden'); document.getElementById('otpDemoCode').textContent = r.demoCode; }
+        document.querySelectorAll('#otpBoxes .otp-box').forEach(function(b){ b.value=''; b.classList.remove('filled'); });
+        startOtpCountdown();
+        toast('New code sent to your email');
+      } else { toast(r.message || 'Could not resend', true); }
+    });
+  }
+  function backFromOtp(){
+    clearInterval(otpTimer);
+    otpCtx = null;
+    if(document.getElementById('resetEmail') && document.getElementById('resetEmail').value){ showForgot(); }
+    else { switchTab('signup'); }
+  }
+  function scorePassword(p){
+    if(!p) return 0;
+    var s = 0;
+    if(p.length >= 8) s++;
+    if(/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
+    if(/\d/.test(p)) s++;
+    if(/[^A-Za-z0-9]/.test(p)) s++;
+    return s;
+  }
+  function updatePwdReqs(p){
+    var reqs = {
+      length: p && p.length >= 8,
+      upper: /[A-Z]/.test(p),
+      lower: /[a-z]/.test(p),
+      number: /\d/.test(p),
+      special: /[^A-Za-z0-9]/.test(p)
+    };
+    document.querySelectorAll('.pwd-req').forEach(function(el){
+      var req = el.getAttribute('data-req');
+      if(reqs[req]) el.classList.add('met');
+      else el.classList.remove('met');
+    });
+  }
+  function paintStrength(score){
+    var color = score === 0 ? '#e5e5e5' : (score <= 2 ? '#d08000' : '#f0b000');
+    document.querySelectorAll('[data-strength]').forEach(function(bar,i){ bar.style.background = i < score ? color : '#e5e5e5'; });
+    var lbl = document.getElementById('strengthLabel');
+    var labels = ['Enter a password','Weak','Fair','Good','Strong'];
+    if(lbl){ lbl.textContent = labels[score] || labels[0]; lbl.style.color = score === 0 ? 'var(--muted)' : (score <= 2 ? '#d08000' : '#10b981'); }
+  }
+  function redirectAfter(){
+    var q = new URLSearchParams(window.location.search);
+    var redirect = q.get('redirect');
+    window.location.href = redirect || 'index.html';
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    switchTab('login');
+    var suPwd = document.getElementById('suPwd');
+    if(suPwd) suPwd.addEventListener('input', function(){ paintStrength(scorePassword(suPwd.value)); updatePwdReqs(suPwd.value); });
+    if(window.ctw && window.ctw.updateUserUI) window.ctw.updateUserUI();
+    if(authApi.isLoggedIn()){
+      var q = new URLSearchParams(window.location.search);
+      if(!q.get('redirect')) window.location.href = 'index.html';
+    }
+  });
+  window.authUI = { switchTab: switchTab, togglePwd: togglePwd, showForgot: showForgot, login: login, signup: signup, sendReset: sendReset, verifyOtp: verifyOtp, resendOtp: resendOtp, backFromOtp: backFromOtp };
+})();
+</script>
+</body>
+</html>

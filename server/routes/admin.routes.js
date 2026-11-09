@@ -6,17 +6,18 @@ const { requireAuth } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
 const { asyncHandler, errorHandler } = require('../middleware/error');
 const { ok, fail, mapProduct, mapOrder } = require('../utils/helpers');
-const { uploadFile } = require('../services/upload.service');
+const storage = require('../services/storage');
 
 const router = express.Router();
 
-// Multer: accept image files up to 5MB, store in memory (then upload to S3 or local)
+// Multer: accept files up to 10MB, store in memory
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: function(req, file, cb) {
-    if (/^image\//.test(file.mimetype)) cb(null, true);
-    else cb(new Error('Only image files allowed'), false);
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'application/pdf'];
+    if (allowed.includes(file.mimetype)) cb(null, true);
+    else cb(new Error('Only image and PDF files allowed'), false);
   },
 });
 
@@ -138,11 +139,48 @@ function config_mpesa() {
   return require('../config').mpesa;
 }
 
-// ---------- Image Upload (S3 or local) ----------
+// ---------- File Upload (centralized storage: SeaweedFS / S3 / Cloudinary) ----------
 router.post('/upload', upload.single('image'), asyncHandler(async (req, res) => {
-  if (!req.file) return fail(res, 'No image file provided');
-  const result = await uploadFile(req.file);
-  return ok(res, { url: result.url, key: result.key });
+  if (!req.file) return fail(res, 'No file provided');
+  const isImage = /^image\//.test(req.file.mimetype);
+  const options = { dir: req.body.dir || 'products' };
+  const result = isImage ? await storage.uploadImage(req.file, options) : await storage.uploadFile(req.file, options);
+  // Save media record to database
+  try {
+    await query(
+      `INSERT INTO media (file_name, stored_name, mime_type, file_size, storage_provider, storage_key, cloudinary_public_id, media_url, media_type, user_id, entity_type)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [
+        req.file.originalname,
+        result.key,
+        req.file.mimetype,
+        req.file.size || (req.file.buffer ? req.file.buffer.length : 0),
+        result.provider || storage.getStorageProvider(),
+        result.key,
+        result.publicId || null,
+        result.url,
+        isImage ? 'image' : 'document',
+        req.user ? req.user.id : null,
+        req.body.entity_type || null,
+      ]
+    );
+  } catch (e) { console.warn('[upload] Failed to save media record:', e.message); }
+  return ok(res, { url: result.url, key: result.key, provider: result.provider || storage.getStorageProvider(), publicId: result.publicId || null });
+}));
+
+// ---------- File Delete ----------
+router.delete('/media/:key', asyncHandler(async (req, res) => {
+  const key = decodeURIComponent(req.params.key);
+  const result = await storage.deleteFile(key);
+  // Delete media record from database
+  try { await query('DELETE FROM media WHERE storage_key = $1', [key]); } catch (e) { /* ignore */ }
+  return ok(res, result);
+}));
+
+// ---------- Storage Health ----------
+router.get('/storage/health', asyncHandler(async (req, res) => {
+  const health = await storage.checkStorageHealth();
+  return ok(res, health);
 }));
 
 // ---------- Promos ----------

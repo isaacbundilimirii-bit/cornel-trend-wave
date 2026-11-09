@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Next Wave Trends</title>
+<script>window.NWT_API_BASE = "https://next-wave-trends.onrender.com";</script>
+<script>
+// Immediate auth guard — runs before page renders, no flash
+(function(){
+  var token = localStorage.getItem('ctw_token');
+  var user = localStorage.getItem('ctw_user');
+  if(!token || !user){
+    window.location.replace('login.html');
+  }
+})();
+</script>
+<meta name="description" content="Next Wave Trends — shop trendy electronics and fashion online in Kenya. Phones, earbuds, clothes, shoes. Fast delivery & pickup.">
+<meta name="keywords" content="electronics, fashion, phones, earbuds, clothes, shoes, online shop, Kenya, Nairobi, M-Pesa, delivery">
+<meta name="author" content="Next Wave Trends">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f0f0f">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Next Wave Trends — Electronics & Fashion Online Shop Kenya">
+<meta property="og:description" content="Shop trendy electronics and fashion online in Kenya. Phones, earbuds, clothes, shoes. Fast delivery & pickup.">
+<meta property="og:image" content="images/logo.jpeg">
+<meta property="og:locale" content="en_KE">
+<meta property="og:site_name" content="Next Wave Trends">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Next Wave Trends — Electronics & Fashion Online Shop Kenya">
+<meta name="twitter:description" content="Shop trendy electronics and fashion online in Kenya. Fast delivery & pickup.">
+<meta name="twitter:image" content="images/logo.jpeg">
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "name": "Next Wave Trends",
+  "description": "Electronics & fashion online shop in Kenya",
+  "url": "https://next-wave-trends.onrender.com",
+  "image": "images/logo.jpeg",
+  "address": { "@type": "PostalAddress", "addressLocality": "Nairobi", "addressCountry": "KE" },
+  "telephone": "+254759051333",
+  "currenciesAccepted": "KES",
+  "paymentAccepted": "M-Pesa, Card, Cash on Delivery"
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<!-- ===== Header ===== -->
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-1.5">
+    <div class="container mx-auto px-4 text-center">
+      <i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-bolt ml-2 mr-1"></i> Flash Sale up to 40% off
+    </div>
+  </div>
+  <div id="logoSection" class="header-section py-3 md:py-2.5">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center gap-3 md:gap-5">
+        <a href="index.html" class="flex items-center gap-2.5 flex-shrink-0">
+          <img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy">
+          <span class="brand-name">Next Wave<span class="accent">Trends</span></span>
+        </a>
+        <!-- Big search (Jumia style) -->
+        <div class="flex-1 hidden md:block">
+          <form class="big-search" onsubmit="return ctw.search(event)">
+            <input type="text" id="searchInput" placeholder="Search products, brands and categories...">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+          </form>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4 ml-auto">
+          <a href="login.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
+            <i class="far fa-user"></i> 
+            <span data-user-name>Account</span>
+          </a>
+          <a href="wishlist.html" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600">
+            <i class="fas fa-heart"></i> 
+            <span data-wishlist-count>0</span>
+          </a>
+          <a href="#" onclick="alert('You have ' + (window.ctw ? window.ctw.getLoyaltyPoints() : 0) + ' loyalty points. Earn 1 point per Ksh 100 spent!');return false" class="hidden md:flex items-center gap-1.5 text-sm text-gray-700 hover:text-yellow-600" title="Loyalty Points">
+            <i class="fas fa-star text-yellow-500"></i>
+            <span id="pointsBadge">0</span> pts
+          </a>
+          <a href="cart.html" class="relative text-xl text-gray-800">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge hidden" data-cart-badge>0</span>
+          </a>
+          <button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+      <!-- Mobile search -->
+      <div class="md:hidden mt-3">
+        <form class="big-search" onsubmit="return ctw.search(event)">
+          <input type="text" id="searchInputM" placeholder="Search products...">
+          <button type="submit"><i class="fas fa-search"></i> <span class="hidden sm:inline">Search</span></button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="mainNav" class="header-section cat-nav hidden md:block">
+    <div class="container mx-auto px-4">
+      <div class="cat-nav-inner">
+        <a href="products.html" class="active"><i class="fas fa-th"></i> All</a>
+        <a href="products.html#phones"><i class="fas fa-mobile-screen"></i> Phones</a>
+        <a href="products.html#audio"><i class="fas fa-headphones"></i> Audio</a>
+        <a href="products.html#accessories"><i class="fas fa-plug"></i> Accessories</a>
+        <a href="products.html#tops"><i class="fas fa-shirt"></i> Tops</a>
+        <a href="products.html#bottoms"><i class="fas fa-person"></i> Bottoms</a>
+        <a href="products.html#shoes"><i class="fas fa-shoe-prints"></i> Shoes</a>
+        <a href="products.html#dresses"><i class="fas fa-vest"></i> Dresses</a>
+        <a href="about.html"><i class="fas fa-circle-info"></i> About</a>
+        <a href="contact.html"><i class="fas fa-phone"></i> Contact</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile menu -->
+<div id="menuOverlay" class="mobile-menu-overlay"></div>
+<aside id="mobileMenu" class="mobile-menu p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3"><img src="images/logo.jpeg" alt="CTW" class="logo-img"><span class="font-extrabold">Next Wave Trends</span></div>
+    <button id="menuClose" class="text-2xl"><i class="fas fa-times"></i></button>
+  </div>
+  <nav class="flex flex-col gap-1 text-base font-semibold">
+    <a href="index.html" class="py-2.5 text-yellow-700 border-l-4 border-yellow-600 pl-3">Home</a>
+    <a href="products.html" class="py-2.5 text-gray-700 pl-3">All Products</a>
+    <a href="products.html#electronics" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-bolt w-5"></i>Electronics</a>
+    <a href="products.html#fashion" class="py-2.5 text-gray-700 pl-3"><i class="fas fa-shirt w-5"></i>Fashion</a>
+    <a href="about.html" class="py-2.5 text-gray-700 pl-3">About</a>
+    <a href="contact.html" class="py-2.5 text-gray-700 pl-3">Contact</a>
+    <a href="login.html" class="py-2.5 text-gray-700 pl-3" data-guest-link><i class="fas fa-user w-5"></i>My Account</a>
+    <a href="wishlist.html" class="py-2.5 text-gray-700 pl-3 hidden" data-user-link><i class="fas fa-heart w-5"></i>Wishlist</a>
+    <a href="orders.html" class="py-2.5 text-gray-700 pl-3 hidden" data-user-link><i class="fas fa-box w-5"></i>Orders</a>
+    <a href="admin.html" class="py-2.5 text-yellow-700 pl-3 hidden" data-user-link data-admin-link><i class="fas fa-shield-halved w-5"></i>Admin Panel</a>
+    <a href="#" class="py-2.5 text-red-600 pl-3 hidden" data-user-link data-logout><i class="fas fa-sign-out-alt w-5"></i>Logout</a>
+  </nav>
+  <div class="mt-6 pt-6 border-t grid grid-cols-2 gap-2" data-guest-link>
+    <a href="login.html" class="cute-btn border-2 border-yellow-300 py-2 text-center text-yellow-700 text-sm">Login</a>
+    <a href="login.html" class="cute-btn cute-grad-gold text-white py-2 text-center text-sm">Sign up</a>
+  </div>
+</aside>
+
+<main class="fade-in" style="width:100%;max-width:100%;overflow-x:hidden">
+
+  <!-- ===== Hero banner carousel ===== -->
+  <section class="px-4 pt-4">
+    <div class="container mx-auto">
+      <div class="hero-banner" id="heroBanner">
+        <div class="hero-slide active" style="background:linear-gradient(90deg,rgba(15,15,15,.92) 0%,rgba(15,15,15,.65) 50%,rgba(15,15,15,.3) 100%), url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1400&q=80'); background-size: cover; background-position: center;">
+          <span class="eyebrow"><i class="fas fa-fire"></i> Trending now</span>
+          <h2>African Print Fashion<br><span class="accent">Trendy & Authentic</span></h2>
+          <p>Dresses, shirts, shoes & accessories — fresh drops every week</p>
+          <a href="products.html#fashion" class="cta">Shop fashion <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="hero-slide" style="background:linear-gradient(90deg,rgba(15,15,15,.92) 0%,rgba(15,15,15,.65) 50%,rgba(15,15,15,.3) 100%), url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1400&q=80'); background-size: cover; background-position: center;">
+          <span class="eyebrow"><i class="fas fa-bolt"></i> Hot deal</span>
+          <h2>Premium Audio<br><span class="accent">Noise Cancelling</span></h2>
+          <p>Wireless earbuds, speakers & headphones — up to 40% off</p>
+          <a href="products.html#audio" class="cta">Shop audio <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="hero-slide" style="background:linear-gradient(90deg,rgba(15,15,15,.92) 0%,rgba(15,15,15,.65) 50%,rgba(15,15,15,.3) 100%), url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1400&q=80'); background-size: cover; background-position: center;">
+          <span class="eyebrow"><i class="fas fa-mobile-screen"></i> New arrivals</span>
+          <h2>Latest Smartphones<br><span class="accent">Up to 30% Off</span></h2>
+          <p>Tecno, Infinix, Samsung & more — genuine with warranty</p>
+          <a href="products.html#phones" class="cta">Shop phones <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="hero-dots" id="heroDots">
+          <span class="active" data-slide="0"></span><span data-slide="1"></span><span data-slide="2"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Service strip ===== -->
+  <section class="px-4 pt-6">
+    <div class="container mx-auto">
+      <div class="service-strip">
+        <div class="service-item"><i class="fas fa-truck-fast"></i><div><div class="t">Fast Delivery</div><div class="s">Same-day in Nairobi</div></div></div>
+        <div class="service-item"><i class="fas fa-store"></i><div><div class="t">Free Pickup</div><div class="s">At our Nairobi shop</div></div></div>
+        <div class="service-item"><i class="fas fa-shield-halved"></i><div><div class="t">7-Day Returns</div><div class="s">Hassle-free</div></div></div>
+        <div class="service-item"><i class="fas fa-headset"></i><div><div class="t">24/7 Support</div><div class="s">WhatsApp & call</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Flash Deals ===== -->
+  <section class="px-4 pt-8">
+    <div class="container mx-auto">
+      <div class="flash-bar mb-4">
+        <h3><i class="fas fa-bolt"></i> Flash Deals</h3>
+        <div class="countdown">
+          <span id="cdH">00</span>:<span id="cdM">00</span>:<span id="cdS">00</span>
+          <span class="text-xs font-medium opacity-80 ml-1">left</span>
+        </div>
+      </div>
+      <div id="flashGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Recommended for You ===== -->
+  <section class="px-4 pt-10 shop-section" id="recommended">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap" style="background:linear-gradient(135deg,#fbbf24,#f59e0b)"><i class="fas fa-wand-magic-sparkles"></i></div>
+          <div>
+            <h2>Recommended for You</h2>
+            <div class="sub">Handpicked picks you might love</div>
+          </div>
+        </div>
+        <a href="products.html" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="recommendedGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Shop Fashion ===== -->
+  <section class="px-4 pt-10 shop-section" id="fashion">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-fashion"><i class="fas fa-shirt"></i></div>
+          <div>
+            <h2>Shop Fashion</h2>
+            <div class="sub">Clothes, shoes & accessories</div>
+          </div>
+        </div>
+        <a href="products.html#fashion" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="fashionGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Shop Phones ===== -->
+  <section class="px-4 pt-10 shop-section" id="phones">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-phones"><i class="fas fa-mobile-screen"></i></div>
+          <div>
+            <h2>Shop Phones</h2>
+            <div class="sub">Smartphones & feature phones</div>
+          </div>
+        </div>
+        <a href="products.html#phones" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="phonesGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Shop Audio ===== -->
+  <section class="px-4 pt-10 shop-section" id="audio">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-audio"><i class="fas fa-headphones"></i></div>
+          <div>
+            <h2>Shop Audio</h2>
+            <div class="sub">Earbuds, speakers & headphones</div>
+          </div>
+        </div>
+        <a href="products.html#audio" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="audioGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Electronics accessories ===== -->
+  <section class="px-4 pt-10 shop-section" id="electronics">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap icon-phones" style="background:linear-gradient(135deg,#34d399,#10b981)"><i class="fas fa-plug"></i></div>
+          <div>
+            <h2>Electronics Accessories</h2>
+            <div class="sub">Chargers, power banks & gadgets</div>
+          </div>
+        </div>
+        <a href="products.html#accessories" class="view-all">View all <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div id="electronicsGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Recently Viewed ===== -->
+  <section class="px-4 pt-10 shop-section" id="recentlyViewed" style="display:none">
+    <div class="container mx-auto">
+      <div class="shop-section-head">
+        <div class="title">
+          <div class="icon-wrap" style="background:linear-gradient(135deg,#a78bfa,#c4b5fd)"><i class="fas fa-clock-rotate-left"></i></div>
+          <div>
+            <h2>Recently Viewed</h2>
+            <div class="sub">Pick up where you left off</div>
+          </div>
+        </div>
+      </div>
+      <div id="recentlyViewedGrid" class="prod-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Testimonials ===== -->
+  <section class="px-4 py-10">
+    <div class="container mx-auto">
+      <div class="section-head">
+        <h2><i class="fas fa-star text-yellow-600"></i> What Our Customers Say</h2>
+        <a href="products.html" class="text-sm">View all reviews →</a>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="cute-card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 flex items-center justify-center text-white font-bold">JM</div>
+            <div>
+              <div class="font-bold">James M.</div>
+              <div class="flex text-yellow-400 text-sm">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm">"Ordered a Tecno Spark 20 Pro, delivered same day in Nairobi! Phone works perfectly and the price was much lower than other shops."</p>
+        </div>
+        <div class="cute-card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold">SN</div>
+            <div>
+              <div class="font-bold">Sarah N.</div>
+              <div class="flex text-yellow-400 text-sm">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm">"The Ankara dress I bought is stunning! Perfect fit and the quality is excellent. Will definitely shop here again for African print fashion."</p>
+        </div>
+        <div class="cute-card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">PK</div>
+            <div>
+              <div class="font-bold">Peter K.</div>
+              <div class="flex text-yellow-400 text-sm">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm">"Oraimo power bank arrived quickly and works like a charm. Customer service on WhatsApp was very responsive. Highly recommended!"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Newsletter ===== -->
+  <section class="px-4 py-10">
+    <div class="container mx-auto">
+      <div class="cute-grad rounded-3xl p-8 md:p-10 text-white text-center relative overflow-hidden">
+        <div class="cute-blob" style="width:180px;height:180px;background:#fff;opacity:.15;top:-30px;right:-10px"></div>
+        <h2 class="text-2xl md:text-3xl font-extrabold mb-2">Get 10% off your first order</h2>
+        <p class="opacity-80 mb-5">Drop your email — deals, drops & trends straight to you.</p>
+        <form class="flex gap-2 max-w-md mx-auto" onsubmit="return ctw.subscribe(event)">
+          <input required type="email" placeholder="you@example.com" class="flex-1 px-4 py-3 rounded-full text-gray-800 outline-none">
+          <button class="bg-white text-yellow-700 font-bold px-6 py-3 rounded-full hover:bg-yellow-50">Join</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="px-4 pt-14 pb-28 md:pb-10 mt-6">
+  <div class="container mx-auto grid md:grid-cols-4 gap-8">
+    <div>
+      <div class="flex items-center gap-3 mb-4"><img src="images/logo.jpeg" alt="CTW" class="logo-img"><span class="font-extrabold text-lg text-white">Next Wave Trends</span></div>
+      <p class="text-white/60 text-sm">Trendy electronics & fashion, delivered with love across Kenya.</p>
+      <div class="flex gap-2 mt-4 text-lg">
+        <a href="https://wa.me/254759051333" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-tiktok"></i></a>
+        <a href="#" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fab fa-facebook"></i></a>
+      </div>
+    </div>
+    <div><h4 class="font-bold mb-3">Shop</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="products.html#electronics" class="hover:text-white">Electronics</a></li><li><a href="products.html#fashion" class="hover:text-white">Fashion</a></li><li><a href="products.html" class="hover:text-white">All products</a></li></ul></div>
+    <div><h4 class="font-bold mb-3">Help</h4><ul class="space-y-2 text-sm text-white/60"><li><a href="about.html" class="hover:text-white">About us</a></li><li><a href="contact.html" class="hover:text-white">Contact</a></li><li><a href="returns.html" class="hover:text-white">Returns</a></li><li><a href="delivery.html" class="hover:text-white">Delivery info</a></li></ul></div>
+    <div><h4 class="font-bold mb-3">Reach us</h4><ul class="space-y-2 text-sm text-white/60"><li><i class="fas fa-phone w-5"></i>+254 759 051 333</li><li><i class="fas fa-envelope w-5"></i>sales@nextwavetrends.co.ke</li><li><i class="fas fa-location-dot w-5"></i>Eastleigh 9th Street, Nairobi, Kenya</li></ul></div>
+  </div>
+  <div class="container mx-auto mt-8 pt-5 border-t border-white/10 text-center text-white/50 text-sm">© 2026 Next Wave Trends · Made with <i class="fas fa-heart text-yellow-500"></i> in Kenya</div>
+</footer>
+
+<!-- ===== Toast ===== -->
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg">Added!</span></div>
+
+<!-- ===== Bottom nav ===== -->
+<nav class="bottom-nav md:hidden"><div>
+  <a href="index.html" class="bottom-nav-item active"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="cart.html" class="bottom-nav-item relative"><i class="fas fa-shopping-cart"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+  <a href="admin.html" class="bottom-nav-item" data-admin-link><i class="fas fa-shield-halved"></i><span>Admin</span></a>
+  <a href="contact.html" class="bottom-nav-item"><i class="fas fa-phone"></i><span>Contact</span></a>
+</div></nav>
+
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+<script>
+// Dark mode toggle
+(function(){
+  var btn = document.createElement('button');
+  btn.className = 'dark-toggle';
+  btn.innerHTML = '<i class="fas fa-moon"></i>';
+  btn.title = 'Toggle dark mode';
+  btn.onclick = function(){
+    document.body.classList.toggle('dark');
+    var isDark = document.body.classList.contains('dark');
+    btn.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    localStorage.setItem('nwt_dark', isDark ? '1' : '0');
+  };
+  document.body.appendChild(btn);
+  if(localStorage.getItem('nwt_dark') === '1'){
+    document.body.classList.add('dark');
+    btn.querySelector('i').className = 'fas fa-sun';
+  }
+})();
+</script>
+<script>
+// ---- Product card (Jumia-style) ----
+(function(){
+  function money(n){return 'Ksh '+Number(n).toLocaleString('en-KE');}
+  function stars(r){var s='';for(var i=1;i<=5;i++){s+='<i class="fas fa-star '+(i<=Math.round(r)?'text-yellow-400':'text-gray-300')+'"></i>';}return s;}
+  function inStockFor(id){ try{var s=JSON.parse(localStorage.getItem('ctw_admin_stock')||'{}'); if(s[id]!==undefined) return s[id];}catch(e){} return true; }
+  function card(p){
+    var disc = p.oldPrice ? Math.round((1 - p.price/p.oldPrice)*100) : 0;
+    var discBadge = disc>0 ? '<span class="discount-badge">-'+disc+'%</span>' : '';
+    var newBadge = p.badge==='New' ? '<span class="new-badge">NEW</span>' : '';
+    var oldPrice = p.oldPrice ? '<span class="old-price">'+money(p.oldPrice)+'</span>' : '';
+    var waMsg = encodeURIComponent('Hello Next Wave Trends!\n\nI want to order:\n*'+p.name+'*\nPrice: '+money(p.price)+'\n\nIs it available?');
+    var WA = '254759051333';
+    var inStock = p.inStock !== undefined ? p.inStock !== false : inStockFor(p.id);
+    var soldOverlay = inStock ? '' : '<div class="absolute inset-0 bg-black/50 flex items-center justify-center z-10 pointer-events-none"><span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">SOLD OUT</span></div>';
+    var addBtn = inStock
+      ? '<button onclick="ctw.addToCart(\''+p.id+'\')" class="add-btn flex-1"><i class="fas fa-cart-plus"></i> <span class="hidden sm:inline">Add to cart</span><span class="sm:hidden">Add</span></button>'
+      : '<button disabled class="add-btn flex-1 opacity-50 cursor-not-allowed">Sold out</button>';
+    return '<div class="prod-card cute-card'+(inStock?'':' opacity-75')+'">'
+      + '<a href="product.html?id='+p.id+'" class="block relative">'
+      + '<div class="img-wrap relative">'+discBadge+newBadge+soldOverlay+'<button class="wish-btn" onclick="event.preventDefault();this.classList.toggle(\'active\')"><i class="fas fa-heart"></i></button><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div>'
+      + '<div class="body">'
+      + '<div class="name">'+p.name+'</div>'
+      + '<div class="rating">'+stars(p.rating)+' <span>'+p.rating+' ('+p.reviews+')</span></div>'
+      + '<div class="price-row"><span class="price">'+money(p.price)+'</span>'+oldPrice+'</div>'
+      + '</div></a>'
+      + '<div class="px-3 pb-3 flex gap-1.5">'
+      + addBtn
+      + '<a href="https://wa.me/'+WA+'?text='+waMsg+'" target="_blank" class="add-btn wa-btn" title="Order on WhatsApp"><i class="fab fa-whatsapp"></i></a>'
+      + '</div></div>';
+  }
+  function renderGrid(id, filter){
+    var el=document.getElementById(id); if(!el) return;
+    el.innerHTML = window.CTW_PRODUCTS.filter(filter).map(card).join('');
+  }
+  // Flash deals = products with discount
+  renderGrid('flashGrid', function(p){return p.oldPrice && p.oldPrice>p.price;});
+  renderGrid('phonesGrid', function(p){return p.sub==='Phones';});
+  renderGrid('audioGrid', function(p){return p.sub==='Audio';});
+  renderGrid('fashionGrid', function(p){return p.cat==='fashion';});
+  renderGrid('electronicsGrid', function(p){return p.cat==='electronics' && p.sub!=='Phones' && p.sub!=='Audio';});
+  // Recommended for You = mix of top-rated + discounted products across categories
+  renderGrid('recommendedGrid', function(p){return p.rating >= 4.6 || (p.badge === 'Hot') || (p.badge === 'Best');});
+  window.ctw.card = card;
+
+  // ---- Hero carousel ----
+  var slides = document.querySelectorAll('.hero-slide');
+  var dots = document.querySelectorAll('#heroDots span');
+  var current = 0;
+  function showSlide(n){
+    slides.forEach(function(s,i){s.classList.toggle('active',i===n);});
+    dots.forEach(function(d,i){d.classList.toggle('active',i===n);});
+    current = n;
+  }
+  var heroTimer = setInterval(function(){showSlide((current+1)%slides.length);},5000);
+  dots.forEach(function(d,i){d.addEventListener('click',function(){clearInterval(heroTimer);showSlide(i);});});
+
+  // ---- Flash deal countdown ----
+  var end = Date.now() + 5*60*60*1000; // 5 hours
+  function tick(){
+    var s = Math.max(0, Math.floor((end-Date.now())/1000));
+    var h=String(Math.floor(s/3600)).padStart(2,'0');
+    var m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+    var sec=String(s%60).padStart(2,'0');
+    var eH=document.getElementById('cdH'),eM=document.getElementById('cdM'),eS=document.getElementById('cdS');
+    if(eH)eH.textContent=h; if(eM)eM.textContent=m; if(eS)eS.textContent=sec;
+  }
+  setInterval(tick,1000); tick();
+})();
+</script>
+</body></html>

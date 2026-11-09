@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cart — Next Wave Trends</title>
+<link rel="icon" href="images/logo.jpeg">
+<link rel="apple-touch-icon" href="images/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="headerWrap">
+  <div id="topBar" class="header-section top-bar text-xs py-2"><div class="container mx-auto px-4 text-center"><i class="fas fa-truck mr-1"></i> Free delivery over Ksh 3,000 · <i class="fas fa-phone ml-2 mr-1"></i> +254 759 051 333</div></div>
+  <div id="logoSection" class="header-section py-4 md:py-3"><div class="container mx-auto px-4 flex items-center justify-between gap-4">
+    <a href="index.html" class="flex items-center gap-3"><img src="images/logo.jpeg" alt="Next Wave Trends" class="logo-img" loading="lazy"><span class="brand-name">Next Wave<span class="accent">Trends</span></span></a>
+    <div class="flex items-center gap-3"><a href="cart.html" class="relative text-xl text-gray-800"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span></a><button id="menuBtn" class="md:hidden text-2xl text-gray-800"><i class="fas fa-bars"></i></button></div>
+  </div></div>
+  <div id="mainNav" class="header-section hidden md:block py-2"><div class="container mx-auto px-4"><nav class="flex items-center justify-center gap-8 text-sm font-semibold uppercase tracking-wide">
+    <a href="index.html" class="text-gray-600 hover:text-yellow-700">Home</a><a href="products.html" class="text-gray-600 hover:text-yellow-700">Shop</a>
+    <a href="products.html#electronics" class="text-gray-600 hover:text-yellow-700">Electronics</a><a href="products.html#fashion" class="text-gray-600 hover:text-yellow-700">Fashion</a>
+    <a href="about.html" class="text-gray-600 hover:text-yellow-700">About</a><a href="contact.html" class="text-gray-600 hover:text-yellow-700">Contact</a>
+  </nav></div></div>
+</div>
+<main class="fade-in pt-32 pb-20 px-4" style="width:100%;max-width:100%;overflow-x:hidden">
+  <div class="container mx-auto max-w-3xl">
+    <h1 class="section-title text-3xl mb-8">Your <span class="cute-grad-text">cart</span></h1>
+    <div id="pageCart" class="space-y-3"></div>
+    <div id="cartSummary" class="cute-card p-6 mt-6"></div>
+  </div>
+</main>
+<footer class="px-4 pt-14 pb-28 md:pb-10"><div class="container mx-auto text-center text-white/60 text-sm">© 2026 Next Wave Trends</div></footer>
+<div id="toast" class="toast"><i class="fas fa-check-circle text-yellow-500"></i><span id="toastMsg"></span></div>
+<nav class="bottom-nav md:hidden"><div>
+  <a href="index.html" class="bottom-nav-item"><i class="fas fa-house"></i><span>Home</span></a>
+  <a href="products.html" class="bottom-nav-item"><i class="fas fa-bag-shopping"></i><span>Shop</span></a>
+  <a href="cart.html" class="bottom-nav-item relative active"><i class="fas fa-shopping-bag"></i><span class="cart-badge hidden" data-cart-badge>0</span><span>Cart</span></a>
+  <a href="contact.html" class="bottom-nav-item"><i class="fas fa-phone"></i><span>Contact</span></a>
+</div></nav>
+<script>window.NWT_API_BASE = "https://next-wave-trends.onrender.com";</script><script src="js/products.js"></script><script src="js/app.js"></script>
+<script>
+(function(){
+  function money(n){return 'Ksh '+Number(n).toLocaleString('en-KE');}
+  function render(){
+    var cart=JSON.parse(localStorage.getItem('ctw_cart')||'[]');
+    var wrap=document.getElementById('pageCart');
+    var sum=document.getElementById('cartSummary');
+    if(cart.length===0){wrap.innerHTML='<div class="cute-card p-12 text-center"><div class="w-20 h-20 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-4"><i class="fas fa-shopping-basket text-3xl text-yellow-600"></i></div><h2 class="text-xl font-bold text-gray-800 mb-2">Your cart is empty</h2><p class="text-gray-500 mb-6">Looks like you haven\'t added anything yet. Let\'s fix that!</p><a href="products.html" class="cute-btn cute-grad-gold text-white px-6 py-3 inline-flex items-center gap-2"><i class="fas fa-bag-shopping"></i> Start shopping</a></div>';sum.innerHTML='';return;}
+    var total=0;
+    wrap.innerHTML=cart.map(function(it){
+      var p=window.CTW_PRODUCTS.find(function(x){return x.id===it.id;});if(!p)return '';
+      total+=p.price*it.qty;
+      return '<div class="cute-card p-4 flex items-center gap-4"><img src="'+p.img+'" class="w-20 h-20 rounded-2xl object-cover"><div class="flex-1"><div class="font-bold">'+p.name+'</div><div class="text-sm text-gray-500">'+money(p.price)+'</div></div><div class="flex items-center gap-2"><button onclick="window.ctw2.change(\''+it.id+'\',-1)" class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-700 font-bold">-</button><span class="w-8 text-center">'+it.qty+'</span><button onclick="window.ctw2.change(\''+it.id+'\',1)" class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-700 font-bold">+</button></div></div>';
+    }).join('');
+    var delivery=total>=3000?0:250; var pickup=0;
+    var deliveryOptions='<div class="mb-4"><div class="font-bold mb-2">Delivery Options</div><div class="space-y-2"><label class="flex items-center gap-2"><input type="radio" name="delivery" value="standard" checked class="accent-yellow-600"><span>Standard Delivery (1-2 days) - '+(delivery?'Ksh 250':'Free')+'</span></label><label class="flex items-center gap-2"><input type="radio" name="delivery" value="same-day" class="accent-yellow-600"><span>Same-day Nairobi - Ksh 500</span></label><label class="flex items-center gap-2"><input type="radio" name="delivery" value="pickup" class="accent-yellow-600"><span>Pickup at Eastleigh 9th Street, Nairobi - Free</span></label></div></div>';
+    sum.innerHTML='<div class="flex justify-between mb-2"><span>Subtotal</span><span>'+money(total)+'</div>'+deliveryOptions+'<div class="border-t pt-3 mt-3 flex justify-between font-bold text-lg"><span>Total</span><span class="cute-grad-text">'+money(total+delivery)+'</span></div><div class="mt-4 text-sm text-gray-600"><i class="fas fa-info-circle mr-1"></i>Free delivery on orders over Ksh 3,000. Same-day delivery available for Nairobi orders placed before 2 PM.</div><button class="cute-btn cute-grad text-white w-full py-3 mt-4" onclick="window.ctw.checkout()">Checkout <i class="fas fa-arrow-right ml-2"></i></button>';
+  }
+  window.ctw2={change:function(id,d){window.ctw.changeQty(id,d);render();}};
+  window.ctw.renderPage=render;
+  document.addEventListener('DOMContentLoaded',render);
+})();
+</script>
+</body></html>

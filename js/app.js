@@ -44,6 +44,12 @@
         if (user && user.name) el.textContent = user.name.split(' ')[0];
         else el.textContent = 'Account';
       });
+      // Show/hide admin links based on role
+      var adminLinks = document.querySelectorAll('[data-admin-link]');
+      adminLinks.forEach(function (el) {
+        if (user && user.role === 'admin') el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
       // Best-effort: refresh wishlist count badge in the header
       if (window.api && window.api.getToken) {
         window.api.get('/api/wishlist').then(function (d) {
@@ -56,6 +62,7 @@
       guestLinks.forEach(function (el) { el.classList.remove('hidden'); });
       userNameEls.forEach(function (el) { el.textContent = 'Account'; });
       document.querySelectorAll('[data-wishlist-count]').forEach(function (el) { el.textContent = '0'; });
+      document.querySelectorAll('[data-admin-link]').forEach(function (el) { el.classList.add('hidden'); });
     }
   }
 

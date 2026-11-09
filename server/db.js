@@ -158,6 +158,25 @@ CREATE TABLE IF NOT EXISTS notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS notif_user_idx ON notifications(user_id);
+
+CREATE TABLE IF NOT EXISTS media (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  file_name TEXT NOT NULL,
+  stored_name TEXT NOT NULL,
+  mime_type TEXT NOT NULL,
+  file_size BIGINT NOT NULL DEFAULT 0,
+  storage_provider TEXT NOT NULL DEFAULT 'seaweedfs',
+  storage_key TEXT NOT NULL,
+  cloudinary_public_id TEXT,
+  media_url TEXT,
+  media_type TEXT NOT NULL DEFAULT 'image',
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  entity_type TEXT,
+  entity_id TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS media_user_idx ON media(user_id);
+CREATE INDEX IF NOT EXISTS media_entity_idx ON media(entity_type, entity_id);
 `;
 
 async function migrate() {

@@ -1,0 +1,9 @@
+{
+  "appId": "com.nextwave.trends",
+  "appName": "Next Wave Trends",
+  "webDir": "mobile-www",
+  "backgroundColor": "#0f0f0f",
+  "android": {
+    "allowMixedContent": true
+  }
+}

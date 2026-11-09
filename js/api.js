@@ -1,11 +1,14 @@
 /* ===== Next Wave Trends — API client (fetch wrapper with JWT) =====
  * Loaded on pages that talk to /api/*. Reads token from localStorage.ctw_token
  * and sends it as Authorization: Bearer. Exposes window.api.
+ * In the Capacitor app, set window.NWT_API_BASE to the live URL (e.g. 'https://next-wave-trends.onrender.com').
  */
 (function () {
   'use strict';
   var TOKEN_KEY = 'ctw_token';
   var USER_KEY = 'ctw_user';
+  // Base URL for API calls. Empty = same origin (web). Set to live URL for mobile app.
+  var BASE = (typeof window !== 'undefined' && window.NWT_API_BASE) ? window.NWT_API_BASE : '';
 
   function getToken() { return localStorage.getItem(TOKEN_KEY); }
   function setToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
@@ -23,7 +26,7 @@
     }
     var res, data;
     try {
-      res = await fetch(url, opts);
+      res = await fetch(BASE + url, opts);
     } catch (e) {
       var err = new Error('Network error: ' + (e && e.message ? e.message : 'fetch failed'));
       err.networkError = true;

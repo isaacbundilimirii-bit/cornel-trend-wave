@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Next Wave Trends</string>
+    <string name="title_activity_main">Next Wave Trends</string>
+    <string name="package_name">com.nextwave.trends</string>
+    <string name="custom_url_scheme">com.nextwave.trends</string>
+</resources>

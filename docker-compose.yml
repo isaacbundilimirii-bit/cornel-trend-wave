@@ -1,0 +1,113 @@
+# ===== Next Wave Trends — Docker Compose =====
+# SeaweedFS infrastructure for local development media storage.
+# Run: docker compose up -d
+# Stop: docker compose down (keeps volumes)
+# Reset: docker compose down -v (deletes volumes — careful!)
+
+services:
+  # ===== SeaweedFS Master =====
+  seaweedfs-master:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-master
+    ports:
+      - "9333:9333"
+    command: master -ip=seaweedfs-master -port=9333 -volumeSizeLimitMB=1024
+    volumes:
+      - seaweedfs-master-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ls /usr/bin/weed && echo ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - seaweedfs-net
+
+  # ===== SeaweedFS Volume Server =====
+  seaweedfs-volume:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-volume
+    ports:
+      - "8080:8080"
+      - "18080:18080"
+    command: volume -ip=seaweedfs-volume -port=8080 -master=seaweedfs-master:9333 -publicUrl=http://localhost:8080
+    volumes:
+      - seaweedfs-volume-data:/data
+    depends_on:
+      seaweedfs-master:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ls /usr/bin/weed && echo ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - seaweedfs-net
+
+  # ===== SeaweedFS Filer =====
+  seaweedfs-filer:
+    image: chrislusf/seaweedfs:latest
+    container_name: seaweedfs-filer
+    ports:
+      - "8888:8888"
+    command: filer -ip=seaweedfs-filer -port=8888 -master=seaweedfs-master:9333 -s3
+    volumes:
+      - seaweedfs-filer-data:/data
+    depends_on:
+      seaweedfs-master:
+        condition: service_started
+      seaweedfs-volume:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ls /usr/bin/weed && echo ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - seaweedfs-net
+
+  # ===== PostgreSQL (for app database) =====
+  twave-pg:
+    image: postgres:16-alpine
+    container_name: twave-pg
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_DB: twave
+    volumes:
+      - twave-pg-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+
+  # ===== MailHog (dev email) =====
+  twave-mailhog:
+    image: mailhog/mailhog
+    container_name: twave-mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    restart: unless-stopped
+    networks:
+      - seaweedfs-net
+
+volumes:
+  seaweedfs-master-data:
+    driver: local
+  seaweedfs-volume-data:
+    driver: local
+  seaweedfs-filer-data:
+    driver: local
+  twave-pg-data:
+    driver: local
+
+networks:
+  seaweedfs-net:
+    driver: bridge

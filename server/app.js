@@ -31,7 +31,19 @@ app.get('/api/health', (req, res) => {
     db: !!config.databaseUrl,
     mpesaMode: config.mpesa.mode,
     smsConfigured: !!config.at.apiKey,
+    storage: process.env.STORAGE_PROVIDER || 'seaweedfs',
   });
+});
+
+// ----- Storage Health (public) -----
+app.get('/api/storage/health', async (req, res) => {
+  try {
+    const storage = require('./services/storage');
+    const health = await storage.checkStorageHealth();
+    res.json({ ok: true, ...health });
+  } catch (e) {
+    res.json({ ok: false, error: e.message });
+  }
 });
 
 // ----- Public promos (active only) -----

@@ -545,7 +545,7 @@
     showStep3Loading();
 
     // 1) Create the order
-    fetch('/api/orders', {
+    fetch((window.NWT_API_BASE||'')+'/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -563,7 +563,7 @@
       showStep3Waiting(orderId, total);
 
       // 2) Initiate STK push
-      return fetch('/api/payments/mpesa/stk', {
+      return fetch((window.NWT_API_BASE||'')+'/api/payments/mpesa/stk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId: orderId, phone: phoneInput })
@@ -743,7 +743,7 @@
     var max = 40; // ~2 minutes at 3s intervals
     var iv = setInterval(function(){
       attempts++;
-      fetch('/api/payments/order/' + encodeURIComponent(orderId))
+      fetch((window.NWT_API_BASE||'')+'/api/payments/order/' + encodeURIComponent(orderId))
         .then(function(r){ return r.json(); })
         .then(function(data){
           var status = data && data.payment && data.payment.status;
@@ -808,7 +808,7 @@
     var btn = e.target.querySelector('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing…'; }
 
-    fetch('/api/orders', {
+    fetch((window.NWT_API_BASE||'')+'/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: cart, total: total, shippingAddress: 'Eastleigh 9th Street, Nairobi', paymentMethod: 'Card' })
@@ -839,7 +839,7 @@
     var { total } = calculateOrder();
     if (!address) { toast('Please enter delivery address'); return false; }
 
-    fetch('/api/orders', {
+    fetch((window.NWT_API_BASE||'')+'/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: cart, total: total, shippingAddress: address, paymentMethod: 'Cash on Delivery' })
@@ -861,7 +861,7 @@
   
   // Load M-Pesa display settings from the API (admin-set till/paybill for manual mode)
   function loadMpesaSettings(){
-    fetch('/api/admin/settings/mpesa').then(function(r){ return r.json(); }).then(function(data){
+    fetch((window.NWT_API_BASE||'')+'/api/admin/settings/mpesa').then(function(r){ return r.json(); }).then(function(data){
       var mpesa = data && data.mpesa;
       var tillBox = document.getElementById('mpesaTillBox');
       var noTillBox = document.getElementById('mpesaNoTillBox');
